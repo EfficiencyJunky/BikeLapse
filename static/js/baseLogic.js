@@ -73,20 +73,52 @@ function createMap(){
 
   
   // *************************************************************
+  // Define the overlayMaps object to hold our overlay layers
+  // *************************************************************
+  let overlayMaps = {};
+
+
+  // *************************************************************
   //     SECOND DEFINE THE "DATA LAYERS" TO USE AS THE VISUAL 
   //     INFORMATION/DATA WE WILL DRAW ON TOP OF THE TILE LAYER 
+  //     ADD THEM AS KEY/VALUE PAIRS IN THE OVERLAYMAPS OBJECT
   // *************************************************************
 
-  let routeColor = bikeRidesInfo["ride0001"].color;
+  let rideMetadataTemp = bikeRidesMetadata["ride0001"];
 
-  let bikeRides = L.geoJson(bikeRide01GeoJSON, 
-    { 
-      pane: 'bikeRidesPane', // the "pane" option is inherited from the "Layer" object
-      style: { fillOpacity: 0.0, weight: 4, opacity: 1, color: routeColor},
-      pointToLayer: pointToLayerFunction,
-      onEachFeature: onEachFeatureFunction
+  bikeRideIDsList.map( (rideID,i) => {
+    // console.log("key:" + rideID);
+    // console.log("index:" + i);
+
+    let rideMetadata = bikeRidesMetadata[rideID];
+
+    if (typeof(rideMetadata.geoJSON) !== 'undefined'){
+      // console.log("DATA EXISTS: " + rideMetadata.route_name);
+
+      overlayMaps[rideMetadata.route_name] = L.geoJson(rideMetadata.geoJSON, { 
+                                                                                pane: 'bikeRidesPane', // the "pane" option is inherited from the "Layer" object
+                                                                                style: { fillOpacity: 0.0, weight: 4, opacity: 1, color: rideMetadata.line_color},
+                                                                                pointToLayer: pointToLayerFunction,
+                                                                                onEachFeature: onEachFeatureFunction
+                                                                              });
     }
-  );
+    else{
+      console.log("DATA UNDEFINED: " + rideMetadata.route_name);
+    }
+
+  });
+
+
+  // let bikeRides = L.geoJson(bikeRide0001GeoJSON, { 
+  //                                                 pane: 'bikeRidesPane', // the "pane" option is inherited from the "Layer" object
+  //                                                 style: { fillOpacity: 0.0, weight: 4, opacity: 1, color: rideMetadataTemp.line_color},
+  //                                                 pointToLayer: pointToLayerFunction,
+  //                                                 onEachFeature: onEachFeatureFunction
+  //                                               });
+
+  // overlayMaps[rideMetadataTemp.route_name] = bikeRides;
+
+
 
   // let muniLines = L.geoJson(muniLinesGeoJSONFiltered, 
   //     { 
@@ -112,13 +144,9 @@ function createMap(){
 
   // let muniStops = createFeatures(muniStopsGeoJSONFiltered, 'muniStopsPane');
   
-  // *************************************************************
-  // Define the overlayMaps object to hold our overlay layers
-  // *************************************************************
-  let overlayMaps = {
-    "All Bike Rides": bikeRides
-  };
-  
+
+
+
 
   // *************************************************************
   //     ADD THE BASIC LAYERS TO THE ACTUAL MAP
@@ -133,12 +161,13 @@ function createMap(){
   myMap.getPane('bikeRidesPane').style.zIndex = 400;
 
   // *************************************************************
+  // ADD THE INITIALLY CHOSEN MAP LAYERS TO THE MAP
   // add the initial layers we want to display on the map
   // our basemap (the canvas we'll draw on) will come from the basemaps object 
   // and our overlay (bike routes) will come from the overlayMaps objects
   // *************************************************************
   baseMaps[selectedBaseMap].addTo(myMap);
-  overlayMaps["All Bike Rides"].addTo(myMap);
+  overlayMaps[bikeRidesMetadata[bikeRideIDsList[initialVisibleRideIndex]].route_name].addTo(myMap);
 
   // *************************************************************
   //     ADD ADDITIONAL UI ELEMENTS TO THE MAP
@@ -164,7 +193,7 @@ function createUIElements(baseMaps, overlayMaps){
       position: 'bottomleft'
   }).addTo(myMap);
 
-  console.log("layer control", mapLayerControl.getContainer());
+  // console.log("layer control", mapLayerControl.getContainer());
 
   // *************************************************************
   //  ADD CONTROL ELEMENT TO ACT AS A LEGEND - Bottom right
@@ -240,5 +269,4 @@ asyncCounter.prototype.increment = function(){
 // THIS IS THE MAIN FUNCTION OF THE JS FILE
 for(i=0; i < numAPICalls; i++){
   myAsyncCounter.increment();
-  console.log("this");
 }

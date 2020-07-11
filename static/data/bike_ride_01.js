@@ -1,4 +1,4 @@
-var bikeRide01GeoJSON = {
+var bikeRide0001GeoJSON = {
     "type": "FeatureCollection",
     "features": [
         {
@@ -6920,7 +6920,7 @@ var bikeRide01GeoJSON = {
             "properties": {
                 "name": "San Andreas Lake Dam",
                 "rideID": "ride0001",
-                "type": "photo_op",
+                "type": "details",
                 "styleUrl": "#icon-1899-0288D1-nodesc",
                 "styleHash": "48999a20",
                 "styleMapHash": {
