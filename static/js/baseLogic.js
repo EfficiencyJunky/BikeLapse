@@ -77,22 +77,14 @@ function createMap(){
   //     INFORMATION/DATA WE WILL DRAW ON TOP OF THE TILE LAYER 
   // *************************************************************
 
-  let routeColor = bikeRidesInfo["Ride Name 02"].color;
+  let routeColor = bikeRidesInfo["ride0001"].color;
 
   let bikeRides = L.geoJson(bikeRide01GeoJSON, 
     { 
       pane: 'bikeRidesPane', // the "pane" option is inherited from the "Layer" object
       style: { fillOpacity: 0.0, weight: 4, opacity: 1, color: routeColor},
       pointToLayer: pointToLayerFunction,
-      onEachFeature: onEachFeatureFunction,
-      // filter: filterFunction
-      
-      // style: { fillOpacity: 0.0, weight: 2, opacity: 1, color: 'orange' }
-      // style: (function (feature) {
-      //   let bikeRouteName = feature.properties.name;
-      //   let bikeRouteColor = MUNILinesInfo[bikeRouteName].color;
-      //   return {fillOpacity: 0.0, weight: 2, opacity: 1, color: bikeRouteColor };
-      // })
+      onEachFeature: onEachFeatureFunction
     }
   );
 

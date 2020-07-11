@@ -14,10 +14,10 @@ let bikeRouteColorCodesKeys = Object.keys(bikeRouteColorCodes);
 
 // DEFINE WHICH LINES WE WANT TO ADD TO THE MAP AND SOME METADATA FOR EACH OF THEM
 let bikeRidesInfo = {
-    "Ride Name 01":  {"long_name":"Bike Ride 01 Long Name",  "color": "rgba(144, 252, 249, 1)"},
-    "Ride Name 02":  {"long_name":"Bike Ride 02 Long Name",  "color": "rgba(62, 146, 204, 1)"},
-    "Ride Name 03":  {"long_name":"Bike Ride 03 Long Name",  "color": "rgba(56, 145, 166, 1)"},  
-    "Ride Name 04":  {"long_name":"Bike Ride 04 Long Name",  "color": "rgba(42, 98, 143, 1)"}
+    ride0001:  {"route_name":"SF to SM via Crystal Springs",  start: "Ritual", finish: "SM Caltrain", videoEmbedID: "YN9b3LK1la0", "color": "rgba(62, 146, 204, 1)"},
+    ride0002:  {"route_name":"Bike Ride 02 Long Name",  "color": "rgba(144, 252, 249, 1)"},
+    ride0003:  {"route_name":"Bike Ride 03 Long Name",  "color": "rgba(56, 145, 166, 1)"},  
+    ride0004:  {"route_name":"Bike Ride 04 Long Name",  "color": "rgba(42, 98, 143, 1)"}
 };
 
 // CREATE A LIST OF JUST THE MUNI LINE NUMBERS FROM THE KEYS OF THE 'MUNILinesInfo' OBJECT ABOVE
@@ -25,13 +25,16 @@ let BikeRideNamesList = Object.keys(bikeRidesInfo);
 
 
 let mapIcons = {
-  "start":    {iconUrl: "https://maps.gstatic.com/mapfiles/ms2/micons/green.png",   iconSize: [38, 38], iconAnchor: [22, 37], popupAnchor: [-3, -38]},
-  "finish":   {iconUrl: "https://maps.gstatic.com/mapfiles/ms2/micons/red.png",     iconSize: [38, 38], iconAnchor: [22, 37], popupAnchor: [-3, -38]},
-  "photo_op": {iconUrl: "https://maps.gstatic.com/mapfiles/ms2/micons/camera.png",  iconSize: [38, 38], iconAnchor: [22, 37], popupAnchor: [-3, -30]},
-  "poi":      {iconUrl: "https://maps.gstatic.com/mapfiles/ms2/micons/POI.png",     iconSize: [38, 38], iconAnchor: [22, 37], popupAnchor: [-3, -38]}
+  "start":    {markerText: "START",     iconUrl: "https://maps.gstatic.com/mapfiles/ms2/micons/green.png",   iconSize: [38, 38], iconAnchor: [22, 37], popupAnchor: [-3, -38]},
+  "finish":   {markerText: "FINISH",    iconUrl: "https://maps.gstatic.com/mapfiles/ms2/micons/red.png",     iconSize: [38, 38], iconAnchor: [22, 37], popupAnchor: [-3, -38]},
+  "photo_op": {markerText: "PHOTO OP",  iconUrl: "https://maps.gstatic.com/mapfiles/ms2/micons/camera.png",  iconSize: [38, 38], iconAnchor: [22, 37], popupAnchor: [-3, -30]},
+  "poi":      {markerText: "POI",       iconUrl: "https://maps.gstatic.com/mapfiles/ms2/micons/POI.png",     iconSize: [38, 38], iconAnchor: [22, 37], popupAnchor: [-3, -38]}
 }
 
-
+let videoEmbedParams = {
+  firstHalf: '<iframe width="355" height="200" src="https://www.youtube.com/embed/',
+  secondHalf: '" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>'
+};
 
 
 

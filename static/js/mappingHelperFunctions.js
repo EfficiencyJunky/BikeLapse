@@ -29,7 +29,7 @@ function getColorSignificant(d) {
 // the default behavior is to simply create a marker for each point
 // by simply using the following code: "return L.marker(latlng);"
 function pointToLayerFunction(geoJsonPoint, latlng) {
-  console.log(geoJsonPoint);
+  // console.log(geoJsonPoint);
 
   let iconVals = mapIcons[geoJsonPoint.properties.type];
 
@@ -43,8 +43,8 @@ function pointToLayerFunction(geoJsonPoint, latlng) {
     // shadowAnchor: [22, 94]
   });
 
-  return L.marker(latlng, {icon: myIcon})
-  // return L.marker(latlng);
+  return L.marker(latlng, {icon: myIcon});
+  // return L.marker(latlng); // this is the default functionality
 }
 
 
@@ -53,15 +53,27 @@ function pointToLayerFunction(geoJsonPoint, latlng) {
 // The default is to do nothing with the newly created layers:
 // function (feature, layer) {}
 function onEachFeatureFunction(feature, layer) {
+  // console.log(layer);
+
   switch (feature.geometry.type) {
     case 'LineString': 
-      layer.bindPopup(
-        "<h3>" + feature.properties.name + "</h3>"
-      );
+      let videoEmbedID = bikeRidesInfo[feature.properties.rideID].videoEmbedID;
+      let popupContent = "<h3>Route: " + feature.properties.name + "</h3>" +
+                          videoEmbedParams.firstHalf + videoEmbedID + videoEmbedParams.secondHalf;
+
+      layer.bindPopup(popupContent,{maxWidth: 400});
+
+      break;
     case 'Point':   
+      
+      let preamble = mapIcons[feature.properties.type].markerText;
+      let routeName = bikeRidesInfo[feature.properties.rideID].route_name;
+
       layer.bindPopup(
-        "<h3>" + feature.properties.name + "</h3>"
+        "<h3><b>" + preamble + "</b>: " + feature.properties.name + "</h3>" +
+        "<b>ROUTE:</b> " + routeName
       );
+      break;
   }
 }
 // This function allows us to filter out features

@@ -6826,6 +6826,7 @@ var bikeRide01GeoJSON = {
             "properties": {
                 "name": "SF to SM via Crystal Springs",
                 "description": "Route from Ritual Coffee On Valencia to San Mateo Caltrain Station via Crystal Springs Reservoir",
+                "rideID": "ride0001",
                 "styleUrl": "#line-1267FF-5000-nodesc",
                 "styleHash": "4b899179",
                 "styleMapHash": {
@@ -6848,8 +6849,9 @@ var bikeRide01GeoJSON = {
                 ]
             },
             "properties": {
-                "name": "Ritual Coffee Roasters",
-                "type": "finish",
+                "name": "Ritual Coffee On Valencia",
+                "rideID": "ride0001",
+                "type": "start",
                 "styleUrl": "#icon-1899-DB4436-nodesc",
                 "styleHash": "39590fa4",
                 "styleMapHash": {
@@ -6871,6 +6873,7 @@ var bikeRide01GeoJSON = {
             },
             "properties": {
                 "name": "San Andreas Trail Head",
+                "rideID": "ride0001",
                 "type": "poi",
                 "styleUrl": "#icon-1899-DB4436-nodesc",
                 "styleHash": "39590fa4",
@@ -6893,7 +6896,8 @@ var bikeRide01GeoJSON = {
             },
             "properties": {
                 "name": "San Mateo Caltrain Station",
-                "type": "start",
+                "rideID": "ride0001",
+                "type": "finish",
                 "styleUrl": "#icon-1899-DB4436-nodesc",
                 "styleHash": "39590fa4",
                 "styleMapHash": {
@@ -6915,6 +6919,7 @@ var bikeRide01GeoJSON = {
             },
             "properties": {
                 "name": "San Andreas Lake Dam",
+                "rideID": "ride0001",
                 "type": "photo_op",
                 "styleUrl": "#icon-1899-0288D1-nodesc",
                 "styleHash": "48999a20",
