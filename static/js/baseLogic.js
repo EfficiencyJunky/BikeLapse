@@ -51,22 +51,22 @@ function createMap(){
       accessToken: API_KEY
   });  
   
-  // let streetmap = L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}", {
-  let outdoors = L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
-      attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",
-      maxZoom: maximumZoom,
-      minZoom: minimumZoom,
-      id: "mapbox/outdoors-v11",
-      // id: "mapbox.outdoors",
-      accessToken: API_KEY
-  });
+  // // let streetmap = L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}", {
+  // let outdoors = L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
+  //     attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",
+  //     maxZoom: maximumZoom,
+  //     minZoom: minimumZoom,
+  //     id: "mapbox/outdoors-v11",
+  //     // id: "mapbox.outdoors",
+  //     accessToken: API_KEY
+  // });
 
   // *************************************************************
   // Define a baseMaps object to hold our base layers
   // *************************************************************
   let baseMaps = {
       "Street Map": streetmap,
-      "Outdoors": outdoors,
+      // "Outdoors": outdoors,
       "Satellite": satellite,
       "Dark Map": darkmap
   };
@@ -81,30 +81,12 @@ function createMap(){
 
   let bikeRides = L.geoJson(bikeRide01GeoJSON, 
     { 
-      pane: 'bikeRidesPane',
-      onEachFeature: (function (feature, layer) {
-        switch (feature.geometry.type) {
-          case 'LineString': 
-            layer.bindPopup(
-              "<h3>" + feature.properties.name + "</h3>"
-            );
-          case 'Point':   
-            layer.bindPopup(
-              "<h3>" + feature.properties.name + "</h3>"
-            );
-        }
-        // if(feature.geometry.type === "LineString"){
-        //   layer.bindPopup(
-        //     "<h3>" + feature.properties.name + "</h3>"
-        //   );
-        // }
-        // else if(feature.geometry.type === "Point"){
-        //   layer.bindPopup(
-        //     "<h3>" + feature.properties.name + "</h3>"
-        //   );
-        // }
-      }),
-      style: { fillOpacity: 0.0, weight: 4, opacity: 1, color: routeColor}
+      pane: 'bikeRidesPane', // the "pane" option is inherited from the "Layer" object
+      style: { fillOpacity: 0.0, weight: 4, opacity: 1, color: routeColor},
+      pointToLayer: pointToLayerFunction,
+      onEachFeature: onEachFeatureFunction,
+      // filter: filterFunction
+      
       // style: { fillOpacity: 0.0, weight: 2, opacity: 1, color: 'orange' }
       // style: (function (feature) {
       //   let bikeRouteName = feature.properties.name;

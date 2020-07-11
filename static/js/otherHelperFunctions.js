@@ -1,21 +1,6 @@
-// **************** HELPER FUNCTIONS ******************
-// **************** HELPER FUNCTIONS ******************
-// **************** HELPER FUNCTIONS ******************
-
-// **************** FUNCTIONS TO GET COLORS FOR CIRCLES BASED ON SHAME SCORE AND LEGEND ******************
-function getColorNormal(d) {
-  return d >= 5.0  ? '#FF0000' :
-         d >= 4.0  ? '#FFCC00' :
-         d >= 3.0   ? '#ccff00' :
-         d >= 2.0   ? '#66ff00' :
-         d >= 1.0   ? '#00FF00' :
-                    '#00FF00';
-}
-
-function getColorSignificant(d) {
-  return '#000000';
-}
-
+// **************** NON MAPPING HELPER FUNCTIONS ******************
+// **************** NON MAPPING HELPER FUNCTIONS ******************
+// **************** NON MAPPING HELPER FUNCTIONS ******************
 
 
 // **************** GET THE CURRENT TIME AND IF IT'S NIGHT OR NOT ******************

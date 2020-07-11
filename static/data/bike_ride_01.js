@@ -4,27 +4,6 @@ var bikeRide01GeoJSON = {
         {
             "type": "Feature",
             "geometry": {
-                "type": "Point",
-                "coordinates": [
-                    -122.4210954,
-                    37.7564438,
-                    0
-                ]
-            },
-            "properties": {
-                "name": "Ritual Coffee Roasters",
-                "styleUrl": "#icon-1899-DB4436-nodesc",
-                "styleHash": "39590fa4",
-                "styleMapHash": {
-                    "normal": "#icon-1899-DB4436-nodesc-normal",
-                    "highlight": "#icon-1899-DB4436-nodesc-highlight"
-                },
-                "icon": "https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png"
-            }
-        },
-        {
-            "type": "Feature",
-            "geometry": {
                 "type": "LineString",
                 "coordinates": [
                     [
@@ -6845,7 +6824,8 @@ var bikeRide01GeoJSON = {
                 ]
             },
             "properties": {
-                "name": "Directions from Ritual Coffee On Valencia to San Mateo Caltrain Station via Crystal Springs Reservoir",
+                "name": "SF to SM via Crystal Springs",
+                "description": "Route from Ritual Coffee On Valencia to San Mateo Caltrain Station via Crystal Springs Reservoir",
                 "styleUrl": "#line-1267FF-5000-nodesc",
                 "styleHash": "4b899179",
                 "styleMapHash": {
@@ -6862,6 +6842,28 @@ var bikeRide01GeoJSON = {
             "geometry": {
                 "type": "Point",
                 "coordinates": [
+                    -122.4210954,
+                    37.7564438,
+                    0
+                ]
+            },
+            "properties": {
+                "name": "Ritual Coffee Roasters",
+                "type": "finish",
+                "styleUrl": "#icon-1899-DB4436-nodesc",
+                "styleHash": "39590fa4",
+                "styleMapHash": {
+                    "normal": "#icon-1899-DB4436-nodesc-normal",
+                    "highlight": "#icon-1899-DB4436-nodesc-highlight"
+                },
+                "icon": "https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
                     -122.4421602,
                     37.6184869,
                     0
@@ -6869,6 +6871,7 @@ var bikeRide01GeoJSON = {
             },
             "properties": {
                 "name": "San Andreas Trail Head",
+                "type": "poi",
                 "styleUrl": "#icon-1899-DB4436-nodesc",
                 "styleHash": "39590fa4",
                 "styleMapHash": {
@@ -6890,6 +6893,7 @@ var bikeRide01GeoJSON = {
             },
             "properties": {
                 "name": "San Mateo Caltrain Station",
+                "type": "start",
                 "styleUrl": "#icon-1899-DB4436-nodesc",
                 "styleHash": "39590fa4",
                 "styleMapHash": {
@@ -6911,6 +6915,7 @@ var bikeRide01GeoJSON = {
             },
             "properties": {
                 "name": "San Andreas Lake Dam",
+                "type": "photo_op",
                 "styleUrl": "#icon-1899-0288D1-nodesc",
                 "styleHash": "48999a20",
                 "styleMapHash": {

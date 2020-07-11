@@ -23,6 +23,18 @@ let bikeRidesInfo = {
 // CREATE A LIST OF JUST THE MUNI LINE NUMBERS FROM THE KEYS OF THE 'MUNILinesInfo' OBJECT ABOVE
 let BikeRideNamesList = Object.keys(bikeRidesInfo);
 
+
+let mapIcons = {
+  "start":    {iconUrl: "https://maps.gstatic.com/mapfiles/ms2/micons/green.png",   iconSize: [38, 38], iconAnchor: [22, 37], popupAnchor: [-3, -38]},
+  "finish":   {iconUrl: "https://maps.gstatic.com/mapfiles/ms2/micons/red.png",     iconSize: [38, 38], iconAnchor: [22, 37], popupAnchor: [-3, -38]},
+  "photo_op": {iconUrl: "https://maps.gstatic.com/mapfiles/ms2/micons/camera.png",  iconSize: [38, 38], iconAnchor: [22, 37], popupAnchor: [-3, -30]},
+  "poi":      {iconUrl: "https://maps.gstatic.com/mapfiles/ms2/micons/POI.png",     iconSize: [38, 38], iconAnchor: [22, 37], popupAnchor: [-3, -38]}
+}
+
+
+
+
+
 let userSelectedTime = getCurrentTime();
 let isNight = getIsNight();
 
