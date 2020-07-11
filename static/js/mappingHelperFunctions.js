@@ -87,8 +87,10 @@ function filterFunction (geoJsonFeature) {
 function markerContentVideo(properties){
   let videoEmbedID = bikeRidesMetadata[properties.rideID].videoEmbedID;
   let routeName = bikeRidesMetadata[properties.rideID].route_name;
+  let routeMap = bikeRidesMetadata[properties.rideID].routeMap;
  
-  return  "<h3>ROUTE: " + routeName + "</h3>" +
+  return  "<h2>ROUTE: " + routeName + "</h2>" +
+          "<h3><a href=" + routeMap + ">Click here for detailed Google Map</a>" + "</h3>" +
           videoEmbedParams.firstHalf + videoEmbedID + videoEmbedParams.secondHalf;
 }
 

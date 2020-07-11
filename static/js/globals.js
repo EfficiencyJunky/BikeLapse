@@ -14,8 +14,8 @@ let bikeRouteColorCodesKeys = Object.keys(bikeRouteColorCodes);
 
 // DEFINE WHICH LINES WE WANT TO ADD TO THE MAP AND SOME METADATA FOR EACH OF THEM
 let bikeRidesMetadata = {
-    ride0001:  {"route_name":"SF to SM via Crystal Springs",  start: "Ritual",      finish: "SM Caltrain",  geoJSON: bikeRide0001GeoJSON, videoEmbedID: "YN9b3LK1la0", "line_color": "rgba(62, 146, 204, 1)"},
-    ride0002:  {"route_name":"SF to Tiburon/Paradise Loop",   start: "Velo Rouge",  finish: "Velo Rouge",   geoJSON: bikeRide0002GeoJSON, videoEmbedID: "YN9b3LK1la0", "line_color": "rgba(144, 252, 249, 1)"},
+    ride0001:  {"route_name":"SF to SM via Crystal Springs",  start: "Ritual",      finish: "SM Caltrain",  geoJSON: bikeRide0001GeoJSON, videoEmbedID: "YN9b3LK1la0", routeMap: "https://www.google.com/maps/d/edit?mid=10cQNnnBswOwCTTvcCW36Qsjviech_7ZL&usp=sharing", "line_color": "rgba(62, 146, 204, 1)"},
+    ride0002:  {"route_name":"SF to Tiburon/Paradise Loop",   start: "Velo Rouge",  finish: "Velo Rouge",   geoJSON: bikeRide0002GeoJSON, videoEmbedID: "YN9b3LK1la0", routeMap: "https://www.google.com/maps/d/edit?mid=1kbFUwUOR_V6mTTQa0W-lTlp9hsY_Ekkq&usp=sharing", "line_color": "rgba(144, 252, 249, 1)"},
     ride0003:  {"route_name":"Bike Ride 03 Long Name",  "line_color": "rgba(56, 145, 166, 1)"},  
     ride0004:  {"route_name":"Bike Ride 04 Long Name",  "line_color": "rgba(42, 98, 143, 1)"}
 };
@@ -23,7 +23,7 @@ let bikeRidesMetadata = {
 // CREATE A LIST OF JUST THE MUNI LINE NUMBERS FROM THE KEYS OF THE 'MUNILinesInfo' OBJECT ABOVE
 let bikeRideIDsList = Object.keys(bikeRidesMetadata);
 
-let initialVisibleRideIndex = 1;
+let initialVisibleRideIndex = 0;
 
 
 

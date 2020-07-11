@@ -84,8 +84,6 @@ function createMap(){
   //     ADD THEM AS KEY/VALUE PAIRS IN THE OVERLAYMAPS OBJECT
   // *************************************************************
 
-  let rideMetadataTemp = bikeRidesMetadata["ride0001"];
-
   bikeRideIDsList.map( (rideID,i) => {
     // console.log("key:" + rideID);
     // console.log("index:" + i);
@@ -107,45 +105,6 @@ function createMap(){
     }
 
   });
-
-
-  // let bikeRides = L.geoJson(bikeRide0001GeoJSON, { 
-  //                                                 pane: 'bikeRidesPane', // the "pane" option is inherited from the "Layer" object
-  //                                                 style: { fillOpacity: 0.0, weight: 4, opacity: 1, color: rideMetadataTemp.line_color},
-  //                                                 pointToLayer: pointToLayerFunction,
-  //                                                 onEachFeature: onEachFeatureFunction
-  //                                               });
-
-  // overlayMaps[rideMetadataTemp.route_name] = bikeRides;
-
-
-
-  // let muniLines = L.geoJson(muniLinesGeoJSONFiltered, 
-  //     { 
-  //       pane: 'muniLinesPane',
-  //       onEachFeature: (function (feature, layer) {
-  //           layer.bindPopup(
-  //             "<h3>" + feature.properties.name + " Muni Line</h3>"
-  //           );
-  //       }),
-  //       style:  (function (feature) {
-  //         let muniLineName = feature.properties.name;
-  //         let muniLineLineColor = MUNILinesInfo[muniLineName].color;
-  //         return { fillOpacity: 0.0, weight: 2, opacity: 1, color: muniLineLineColor };
-  //       }),
-  //       filter: (function (feature) {
-  //         let lineName = feature.properties.name;
-  //         // let fakelines = ["2", "7", "14", "38", "KT", "J", "M"];
-  //         return userSelectedMUNILineList.includes(lineName);
-  //       })
-
-  //     }
-  // );
-
-  // let muniStops = createFeatures(muniStopsGeoJSONFiltered, 'muniStopsPane');
-  
-
-
 
 
   // *************************************************************
