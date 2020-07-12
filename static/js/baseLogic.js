@@ -161,38 +161,7 @@ function createUIElements(baseMaps, overlayMaps){
   // *************************************************************
   let legend = L.control({position: 'bottomright'});
 
-  legend.onAdd = function (map) {
-  
-      // create a div for the legend
-      let div = L.DomUtil.create('div', 'info legend');
-
-      // add some HTML to that div to act as a title
-      div.innerHTML += '<b>Color</b><br>';
-
-      // create a list of grades that we will use for the values in the legend
-      let grades = bikeRouteColorCodesKeys.map((key) => {
-          return bikeRouteColorCodes[key].score;
-      });
-      //let grades = [1.0, 2.0, 3.0, 4.0, 5.0]
-
-      // loop through our density intervals and generate a label with a colored square for each interval
-      for (let i = 0; i < grades.length; i++) {
-          let key = bikeRouteColorCodesKeys[i];
-
-          div.innerHTML +=
-              // '<i style="background:' + getColorNormal(grades[i]) + '"></i> ' +
-              '<span class="legendDots" style="background:' + getColorNormal(grades[i]) + '"></span>' +
-              // grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
-              bikeRouteColorCodes[key].shortDescription + (grades[i + 1] ? '<br>' : '');
-
-      }
-      
-      if(showSignificantColor === true){
-        div.innerHTML += '<hr>' + '<i style="background:' + getColorSignificant(1) + '"></i> ' + "Significant";
-      }
-
-      return div;
-  };
+  legend.onAdd = legendOnAdd;
   
   legend.addTo(myMap);
 

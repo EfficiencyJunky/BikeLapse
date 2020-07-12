@@ -15,19 +15,32 @@ let initialVisibleRideIndex = 0;
 let bikeRidesMetadata = {
     ride0001:  {routName:"SF to SM via Crystal Springs",      geoJSON: bikeRide0001GeoJSON, videoEmbedID: "YN9b3LK1la0", googleMapURL: "https://www.google.com/maps/d/edit?mid=10cQNnnBswOwCTTvcCW36Qsjviech_7ZL&usp=sharing", lineColor: "rgba(62, 146, 204, 1)",  start: "Ritual",      finish: "SM Caltrain"},
     ride0002:  {routName:"SF to Tiburon/Paradise Loop",       geoJSON: bikeRide0002GeoJSON, videoEmbedID: "YN9b3LK1la0", googleMapURL: "https://www.google.com/maps/d/edit?mid=1kbFUwUOR_V6mTTQa0W-lTlp9hsY_Ekkq&usp=sharing", lineColor: "rgba(144, 252, 249, 1)", start: "Velo Rouge",  finish: "Velo Rouge"},
-    ride0003:  {"routName":"SF to Rodeo Beach via Hawk Hill",   geoJSON: bikeRide0003GeoJSON, videoEmbedID: "YN9b3LK1la0", googleMapURL: "https://www.google.com/maps/d/edit?mid=1hD_JODm9txFYwx-jcN_Lk17YExy1cX_c&usp=sharing", lineColor: "rgba(56, 145, 166, 1)",  start: "Velo Rouge",  finish: "Velo Rouge"},  
-    ride0004:  {routName:"Bike Ride 04 Long Name",  lineColor: "rgba(42, 98, 143, 1)"}
+    ride0003:  {routName:"SF to Rodeo Beach via Hawk Hill",   geoJSON: bikeRide0003GeoJSON, videoEmbedID: "YN9b3LK1la0", googleMapURL: "https://www.google.com/maps/d/edit?mid=1hD_JODm9txFYwx-jcN_Lk17YExy1cX_c&usp=sharing", lineColor: "rgba(56, 145, 166, 1)",  start: "Velo Rouge",  finish: "Velo Rouge"},  
+    ride0004:  {routName:"Part 2 Sausage De Dino",            geoJSON: bikeRide0003GeoJSON, videoEmbedID: "YN9b3LK1la0", googleMapURL: "", lineColor: "rgba(42, 98, 143, 1)"}
 };
 
 // CREATE A LIST OF THE BIKE RIDE NUMBERS FROM THE KEYS OF THE 'bikeRidesMetadata' OBJECT ABOVE
 let bikeRideIDsList = Object.keys(bikeRidesMetadata);
 
+// STRAVA SPRITE ICON PROPERTIES:
+    // iconSize: [24, 24]
+        // creates css --> width: 24px; 
+        // creates css --> height: 24px;
+    // iconAnchor: [12, 12]
+        // creates css --> margin-left: -12px;
+        // creates css --> margin-top: -12px;
+// ORIGINAL START ICON PROPERTIES:
+    // iconURLorClass: "https://maps.gstatic.com/mapfiles/ms2/micons/green.png",   iconSize: [32, 32], iconAnchor: [16, 32], popupAnchor: [0, -32]},
+// ORIGINAL FINISH ICON PROPERTIES: 
+    // iconURLorClass: "https://maps.gstatic.com/mapfiles/ms2/micons/red.png",   iconSize: [32, 32], iconAnchor: [16, 32], popupAnchor: [0, -32]},
+
 let mapIcons = {
-  "START":    {markerText: "START",     iconUrl: "https://maps.gstatic.com/mapfiles/ms2/micons/green.png",   iconSize: [38, 38], iconAnchor: [22, 37], popupAnchor: [-3, -38]},
-  "FINISH":   {markerText: "FINISH",    iconUrl: "https://maps.gstatic.com/mapfiles/ms2/micons/red.png",     iconSize: [38, 38], iconAnchor: [22, 37], popupAnchor: [-3, -38]},
-  "DETAILS":  {markerText: "DETAILS",   iconUrl: "https://maps.gstatic.com/mapfiles/ms2/micons/camera.png",  iconSize: [38, 38], iconAnchor: [22, 37], popupAnchor: [-3, -38]},
-  "PHOTO_OP": {markerText: "PHOTO OP",  iconUrl: "https://maps.gstatic.com/mapfiles/ms2/micons/camera.png",  iconSize: [38, 38], iconAnchor: [22, 37], popupAnchor: [-3, -30]},
-  // "POI":      {markerText: "POI",       iconUrl: "https://maps.gstatic.com/mapfiles/ms2/micons/POI.png",     iconSize: [38, 38], iconAnchor: [22, 37], popupAnchor: [-3, -38]}
+  // "START":    {markerText: "START",     iconURLorClass: "https://maps.gstatic.com/mapfiles/ms2/micons/green.png",   iconSize: [32, 32], iconAnchor: [16, 32], popupAnchor: [0, -32]},
+  "START":    {markerText: "START",     iconType: "divIcon",  iconURLorClass: "start-icon",   iconSize: [24, 24], iconAnchor: [12, 12], popupAnchor: [1, -8]},
+  "FINISH":   {markerText: "FINISH",    iconType: "divIcon",  iconURLorClass: "finish-icon",  iconSize: [24, 24], iconAnchor: [12, 12], popupAnchor: [1, -8]},
+  "DETAILS":  {markerText: "DETAILS",   iconType: "icon",     iconURLorClass: "https://maps.gstatic.com/mapfiles/ms2/micons/blue.png",    iconSize: [32, 32], iconAnchor: [16, 32], popupAnchor: [0, -32]},
+  "PHOTO_OP": {markerText: "PHOTO OP",  iconType: "icon",     iconURLorClass: "https://maps.gstatic.com/mapfiles/ms2/micons/camera.png",  iconSize: [38, 38], iconAnchor: [22, 37], popupAnchor: [-3, -30]},
+  // "POI":      {markerText: "POI",       iconURLorClass: "https://maps.gstatic.com/mapfiles/ms2/micons/POI.png",     iconSize: [38, 38], iconAnchor: [22, 37], popupAnchor: [-3, -38]}
 }
 
 let mapIconsKeys = Object.keys(mapIcons);

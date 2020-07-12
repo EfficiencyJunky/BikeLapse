@@ -13,8 +13,6 @@
 // ************************************************************************************************************************************
 
 
-
-
 // A Function that will be used to decide whether to include a feature or not. The default is to include all features:
 // This function allows us to filter out features
 // if the function returns true, the feature will be included
@@ -59,7 +57,7 @@ function pointToLayerFunction(geoJsonPoint, latlng) {
   // console.log("    ###    ");
 
   let markerType = geoJsonPoint.properties.name;
-
+  
   switch (markerType) {
     // case 'DETAILS': 
     //   return L.marker(latlng);
@@ -67,19 +65,10 @@ function pointToLayerFunction(geoJsonPoint, latlng) {
     case 'START':
     case 'FINISH':
     case 'PHOTO_OP':
-    // case 'POI':
-      let iconVals = mapIcons[markerType];
+    case 'POI':
 
-      let myIcon = L.icon({
-        iconUrl: iconVals.iconUrl,
-        iconSize: iconVals.iconSize,
-        iconAnchor: iconVals.iconAnchor,
-        popupAnchor: iconVals.popupAnchor,
-        // shadowUrl: 'my-icon-shadow.png',
-        // shadowSize: [68, 95],
-        // shadowAnchor: [22, 94]
-      });
-    
+      let myIcon = createMarkerIcon(mapIcons[markerType]);
+
       return L.marker(latlng, {icon: myIcon});
       break;
     default:
@@ -112,16 +101,16 @@ function onEachFeatureFunction(feature, layer) {
   switch (feature.geometry.type) {
     case 'LineString': 
 
-      layer.bindPopup(markerContentVideo(properties), bindPopupProperties);
+      layer.bindPopup(createPopupHTMLVideo(properties), bindPopupProperties);
 
       break;
     case 'Point':
 
       if(properties.name === "DETAILS"){
-        layer.bindPopup(markerContentVideo(properties), bindPopupProperties);
+        layer.bindPopup(createPopupHTMLVideo(properties), bindPopupProperties);
       }
       else{
-        layer.bindPopup(markerContentBasic(properties), bindPopupProperties);
+        layer.bindPopup(createPopupHTMLBasic(properties), bindPopupProperties);
       }
       
       break;
@@ -133,7 +122,40 @@ function onEachFeatureFunction(feature, layer) {
 // **************************************************************************************
 // **************** HELPERS FOR ABOVE FUNCTIONS ******************
 // **************************************************************************************
-function markerContentVideo(properties){
+function createMarkerIcon(iconProperties){
+
+  let iconType = iconProperties.iconType;
+  
+  switch (iconType) {
+    case 'divIcon':
+      return L.divIcon({
+                        className: iconProperties.iconURLorClass,
+                        iconSize: iconProperties.iconSize,
+                        iconAnchor: iconProperties.iconAnchor,
+                        popupAnchor: iconProperties.popupAnchor,
+                        // shadowUrl: 'my-icon-shadow.png',
+                        // shadowSize: [68, 95],
+                        // shadowAnchor: [22, 94]
+                      });
+      break;
+    default:
+      return L.icon({
+                      iconUrl: iconProperties.iconURLorClass,
+                      iconSize: iconProperties.iconSize,
+                      iconAnchor: iconProperties.iconAnchor,
+                      popupAnchor: iconProperties.popupAnchor,
+                      // shadowUrl: 'my-icon-shadow.png',
+                      // shadowSize: [68, 95],
+                      // shadowAnchor: [22, 94]
+                    });
+      
+  }
+
+}
+
+
+
+function createPopupHTMLVideo(properties){
   let videoEmbedID = bikeRidesMetadata[currentRideID].videoEmbedID;
   let routeName = bikeRidesMetadata[currentRideID].routName;
   let googleMapURL = bikeRidesMetadata[currentRideID].googleMapURL;
@@ -144,7 +166,7 @@ function markerContentVideo(properties){
 }
 
 
-function markerContentBasic(properties){
+function createPopupHTMLBasic(properties){
   let markerTypeText = mapIcons[properties.name].markerText;
 
   let routeName = bikeRidesMetadata[currentRideID].routName;
@@ -156,9 +178,71 @@ function markerContentBasic(properties){
 
 
 // **************************************************************************************
-//         FUNCTIONS TO GET COLORS FOR CIRCLES USED IN LEGEND 
+//         FUNCTIONS TO CREATE THE LEGEND WHEN IT'S ADDED TO THE MAP
 // **************************************************************************************
 
+// THIS IS THE LEGEND ONADD FUNCTION WE WILL USE. BELOW IS AN EXAMPLE OF A DIFFERENT TYPE
+function legendOnAdd(map) {
+  
+  // create a div for the legend
+  let div = L.DomUtil.create('div', 'info legend');
+
+  labels = ['<strong>LEGEND</strong>'],
+
+  // for (let i = 0; i < mapIconsKeys.length; i++) {
+
+  //   labels.push('<i class="start-icon icon-legend-properties"></i> ' + (mapIconsKeys[i] ? mapIconsKeys[i] : 'undefined'));
+  // }
+
+  labels.push('<i class="start-icon legend-div-icon-padding"></i> <span>' + (mapIconsKeys[0] ? mapIconsKeys[0] : 'undefined')) + '</span>';
+  labels.push('<i class="finish-icon legend-div-icon-padding"></i> <span>' + (mapIconsKeys[1] ? mapIconsKeys[1] : 'undefined')) + '</span>';
+  labels.push('<i class="legend-default-icon"></i> <span class="legend-default-icon-text-padding">' + (mapIconsKeys[2] ? mapIconsKeys[2] : 'undefined')) + '</span>';
+  
+  div.innerHTML = labels.join('<br>');
+
+  div.innerHTML += '<hr>' + '<span class="legend-route-icon"></span> <span>Route</span>';
+  
+  return div;
+}
+
+
+// OLD EXAMPLE FOR A LEGEND CREATION FUNCTION USING THE BELOW COLOR FUNCTIOINS
+// This function uses the functions below to add a simple legend with color grades
+// This is just a reference example and we don't actually use this in the program
+function legendOnAddColorGrades(map) {
+  
+  // create a div for the legend
+  let div = L.DomUtil.create('div', 'info legend');
+
+  // add some HTML to that div to act as a title
+  div.innerHTML += '<b>Color</b><br>';
+
+  // create a list of grades that we will use for the values in the legend
+  let grades = bikeRouteColorCodesKeys.map((key) => {
+      return bikeRouteColorCodes[key].score;
+  });
+  //let grades = [1.0, 2.0, 3.0, 4.0, 5.0]
+
+  // loop through our density intervals and generate a label with a colored square for each interval
+  for (let i = 0; i < grades.length; i++) {
+      let key = bikeRouteColorCodesKeys[i];
+
+      div.innerHTML +=
+          // '<i style="background:' + getColorNormal(grades[i]) + '"></i> ' +
+          '<span class="legendDots" style="background:' + getColorNormal(grades[i]) + '"></span>' +
+          // grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
+          bikeRouteColorCodes[key].shortDescription + (grades[i + 1] ? '<br>' : '');
+
+  }
+  
+  if(showSignificantColor === true){
+    div.innerHTML += '<hr>' + '<i style="background:' + getColorSignificant(1) + '"></i> ' + "Significant";
+  }
+
+  return div;
+}
+
+// FUNCTIONS TO GET COLORS FOR CIRCLES USED IN LEGEND 
 function getColorNormal(d) {
   return d >= 5.0  ? '#FF0000' :
          d >= 4.0  ? '#FFCC00' :
