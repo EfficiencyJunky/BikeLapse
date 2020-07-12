@@ -8,7 +8,6 @@
 // but if we wanted to execute another API call we could update it
 let numAPICalls = 1;
 var myAsyncCounter = new asyncCounter(numAPICalls, createMap);
-
  
 
 /* ##################################################################################
@@ -89,19 +88,21 @@ function createMap(){
     // console.log("index:" + i);
 
     let rideMetadata = bikeRidesMetadata[rideID];
+    currentRideID = rideID;
 
     if (typeof(rideMetadata.geoJSON) !== 'undefined'){
-      // console.log("DATA EXISTS: " + rideMetadata.route_name);
+      // console.log("DATA EXISTS: " + rideMetadata.routName);
 
-      overlayMaps[rideMetadata.route_name] = L.geoJson(rideMetadata.geoJSON, { 
+      overlayMaps[rideMetadata.routName] = L.geoJson(rideMetadata.geoJSON, { 
                                                                                 pane: 'bikeRidesPane', // the "pane" option is inherited from the "Layer" object
-                                                                                style: { fillOpacity: 0.0, weight: 4, opacity: 1, color: rideMetadata.line_color},
+                                                                                filter: filterFunction,
                                                                                 pointToLayer: pointToLayerFunction,
-                                                                                onEachFeature: onEachFeatureFunction
+                                                                                onEachFeature: onEachFeatureFunction,
+                                                                                style: { fillOpacity: 0.0, weight: 4, opacity: 1, color: rideMetadata.lineColor}
                                                                               });
     }
     else{
-      console.log("DATA UNDEFINED: " + rideMetadata.route_name);
+      console.log("DATA UNDEFINED: " + rideMetadata.routName);
     }
 
   });
@@ -126,7 +127,7 @@ function createMap(){
   // and our overlay (bike routes) will come from the overlayMaps objects
   // *************************************************************
   baseMaps[selectedBaseMap].addTo(myMap);
-  overlayMaps[bikeRidesMetadata[bikeRideIDsList[initialVisibleRideIndex]].route_name].addTo(myMap);
+  overlayMaps[bikeRidesMetadata[bikeRideIDsList[initialVisibleRideIndex]].routName].addTo(myMap);
 
   // *************************************************************
   //     ADD ADDITIONAL UI ELEMENTS TO THE MAP
@@ -182,7 +183,7 @@ function createUIElements(baseMaps, overlayMaps){
               // '<i style="background:' + getColorNormal(grades[i]) + '"></i> ' +
               '<span class="legendDots" style="background:' + getColorNormal(grades[i]) + '"></span>' +
               // grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
-              bikeRouteColorCodes[key].short_description + (grades[i + 1] ? '<br>' : '');
+              bikeRouteColorCodes[key].shortDescription + (grades[i + 1] ? '<br>' : '');
 
       }
       

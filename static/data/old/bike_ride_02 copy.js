@@ -16760,6 +16760,8 @@ var bikeRide0002GeoJSON = {
             },
             "properties": {
                 "name": "SF to Tiburon/Paradise Loop",
+                "rideID": "ride0002",
+                "description": "Route from Velo Rouge Cafe in SF to Tiburon/Paradise Loop and back",
                 "styleUrl": "#line-1267FF-5000-nodesc",
                 "styleHash": "4b899179",
                 "styleMapHash": {
@@ -16782,15 +16784,16 @@ var bikeRide0002GeoJSON = {
                 ]
             },
             "properties": {
-                "name": "START",
+                "name": "Velo Rouge Cafe",
+                "rideID": "ride0002",
+                "type": "start",
                 "styleUrl": "#icon-1899-DB4436-nodesc",
                 "styleHash": "39590fa4",
                 "styleMapHash": {
                     "normal": "#icon-1899-DB4436-nodesc-normal",
                     "highlight": "#icon-1899-DB4436-nodesc-highlight"
                 },
-                "icon": "https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png",
-                "description": "Velo Rouge Cafe"
+                "icon": "https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png"
             }
         },
         {
@@ -16804,15 +16807,16 @@ var bikeRide0002GeoJSON = {
                 ]
             },
             "properties": {
-                "name": "DETAILS",
+                "name": "1 Main St, Belvedere Tiburon, CA 94920, USA",
+                "rideID": "ride0002",
+                "type": "details",
                 "styleUrl": "#icon-1899-DB4436-nodesc",
                 "styleHash": "39590fa4",
                 "styleMapHash": {
                     "normal": "#icon-1899-DB4436-nodesc-normal",
                     "highlight": "#icon-1899-DB4436-nodesc-highlight"
                 },
-                "icon": "https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png",
-                "description": "Downtown Tiburon"
+                "icon": "https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png"
             }
         },
         {
@@ -16826,15 +16830,16 @@ var bikeRide0002GeoJSON = {
                 ]
             },
             "properties": {
-                "name": "FINISH",
+                "name": "Velo Rouge Cafe",
+                "rideID": "ride0002",
+                "type": "finish",
                 "styleUrl": "#icon-1899-DB4436-nodesc",
                 "styleHash": "39590fa4",
                 "styleMapHash": {
                     "normal": "#icon-1899-DB4436-nodesc-normal",
                     "highlight": "#icon-1899-DB4436-nodesc-highlight"
                 },
-                "icon": "https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png",
-                "description": "Velo Rouge Cafe"
+                "icon": "https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png"
             }
         }
     ]
