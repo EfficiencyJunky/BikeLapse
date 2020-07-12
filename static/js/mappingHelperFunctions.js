@@ -189,18 +189,19 @@ function legendOnAdd(map) {
 
   labels = ['<strong>LEGEND</strong>'],
 
-  // for (let i = 0; i < mapIconsKeys.length; i++) {
+  mapIconsKeys.map( function (key, i){
 
-  //   labels.push('<i class="start-icon icon-legend-properties"></i> ' + (mapIconsKeys[i] ? mapIconsKeys[i] : 'undefined'));
-  // }
+    labels.push('<i class="' + mapIcons[key].iconURLorClass + '"></i>' + (key ? key : 'undefined'));
 
-  labels.push('<i class="start-icon legend-div-icon-padding"></i> <span>' + (mapIconsKeys[0] ? mapIconsKeys[0] : 'undefined')) + '</span>';
-  labels.push('<i class="finish-icon legend-div-icon-padding"></i> <span>' + (mapIconsKeys[1] ? mapIconsKeys[1] : 'undefined')) + '</span>';
-  labels.push('<i class="legend-default-icon"></i> <span class="legend-default-icon-text-padding">' + (mapIconsKeys[2] ? mapIconsKeys[2] : 'undefined')) + '</span>';
+    // this is how we'd do it if we didn't want to use the <i> (bullet) element
+    // labels.push('<span class="' + mapIcons[key].iconURLorClass + ' legend-icon-positioning"></span>' + (key ? key : 'undefined'));
+
+  });
   
   div.innerHTML = labels.join('<br>');
 
-  div.innerHTML += '<hr>' + '<span class="legend-route-icon"></span> <span>Route</span>';
+  div.innerHTML += '<hr>'
+  div.innerHTML += '<span class="legend-route-icon"></span>' + '<span>Route</span>';
   
   return div;
 }

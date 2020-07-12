@@ -1,3 +1,4 @@
+/* ************************** BASIC STYLING ************************** */
 /* remove default margin and padding from body */
 body {
   padding: 0;
@@ -11,55 +12,9 @@ html {
   height: 100%;
 }
 
-.info {
-  padding: 6px 8px;
-  font: 16px/18px Arial, Helvetica, sans-serif;
-  background: white;
-  background: rgba(255,255,255,0.8);
-  box-shadow: 0 0 15px rgba(0,0,0,0.2);
-  border-radius: 5px;
-}
-
-.info h4 {
-  margin: 0 0 5px;
-  color: #777;
-}
-
-
-.legend {
-  line-height: 25px;
-  color: #555;
-}
-
-.legend i {
-  width: 24px;
-  height: 24px;
-  float: left;
-  margin-right: 8px;
-  /* padding-top: 1px; */
-  /* padding-bottom: 1px; */
-  opacity: 1;
-}
-
-
-.legendDots {
-  width: 16px;
-  height: 16px;
-  /* float: left; */
-  /* margin-top: 8px; */
-  /* padding-top: 10px; */
-  margin-right: 8px;
-  opacity: 0.7;
-  /* background-color: #bbb; */
-  border-radius: 50%;
-  /* color: black; */
-  border:1px solid black; 
-  display: inline-block;
-}
-
-
+/* ************************** MARKER AND LEGEND ICON STYLING AND REFERENCES ************************** */
+/* set up the map icon sprites to reference the strava sprite sheet */
 .start-icon, .finish-icon {
-  /* background-image: url('https://maps.gstatic.com/mapfiles/ms2/micons/green.png'); */
   background-image: url('https://d3nn82uaxijpm6.cloudfront.net/assets/sprites/sprites-map-9edbefa3bd42dbf847ae5421c0fa9b65ec40ea91ec53f5d42555a61f9af64fc6.png');
   background-repeat: no-repeat;
 }
@@ -74,41 +29,94 @@ html {
   background-position: -24px -144px;
 }
 
-.legend-div-icon-padding{
-  /* width: 24px; 
-  height: 24px; */
-  /* margin-left: -5px; */
-  margin-top: -2px;
-  /* padding-left: 10px; */
-}
-
-
+/* reference the URL of the default icon used by leaflet and set its size so we can replace a list bullet with the imag  */
 .legend-default-icon {
   /* background-image: url('https://maps.gstatic.com/mapfiles/ms2/micons/green.png'); */
   background-image: url('https://unpkg.com/leaflet@1.6.0/dist/images/marker-icon.png');
   background-size: 12px;
   background-repeat: no-repeat;
-  margin-left: 5px;
+  background-position: 5px;
 }
 
-.legend-default-icon-text-padding{
-  margin-left: -5px;
-}
-
-
+/* create the line used to represent a "route" in the legend */
 .legend-route-icon{ 
   width: 30px;
   height: 5px;
-  /* float: left; */
-  /* margin-top: 8px; */
-  margin-bottom: 3px;
-  margin-right: 8px;
-  opacity: 1;
-  /* background:#FF0FFF; */
   background:rgba(62, 146, 204, 1);
-  /* background-color: #bbb; */
-  /* border-radius: 50%; */
-  /* color: black; */
-  /* border:1px solid black;  */
+  /* float: left; */
   display: inline-block;
+  /* margin-top: 8px; */
+  margin-right: 8px;
+  margin-bottom: 3px;
+  opacity: 1;
 }
+
+/* ************************** LEGEND STYLING ************************** */
+/* set up the legend, which we are using both the "info" and "legend" class to style */
+.info {
+  padding: 6px 8px;
+  font: 16px/18px Arial, Helvetica, sans-serif;
+  background: white;
+  background: rgba(255,255,255,0.8);
+  box-shadow: 0 0 15px rgba(0,0,0,0.2);
+  border-radius: 5px;
+}
+
+/* not using this one */
+/* example of how to style elements within classed elements */
+/* 
+.info h4 {
+  margin: 0 0 5px;
+  color: #777;
+} 
+*/
+
+
+.legend {
+  line-height: 25px;
+  color: #555;
+}
+
+/* Specific styling for the bullets (which we will use the marker sprites to fill) */
+.legend i {
+  width: 24px;
+  height: 24px;
+  float: left;
+  /* padding-top: 1px; */
+  /* padding-bottom: 1px; */
+  margin-right: 8px;
+  margin-top: -1px;
+  opacity: 1;
+}
+
+/* NOT USING THIS ONE */
+/* if we were to use <span> instead of <i> (bullets) to create the legend icons, 
+we would also need to add this class along with the usual class for each icon */
+.legend-icon-positioning { 
+  width: 24px;
+  height: 24px;
+  float: left;
+  /* padding-top: 1px; */
+  /* padding-bottom: 1px; */
+  margin-right: 8px;
+  margin-top: -1px;
+  opacity: 1;
+}
+
+
+
+/* styling for when we were using dots in the legend */
+/* .legendDots { */
+  /* width: 16px;
+  height: 16px; */
+          /* float: left; */
+          /* margin-top: 8px; */
+          /* padding-top: 10px; */
+  /* margin-right: 8px;
+  opacity: 0.7; */
+          /* background-color: #bbb; */
+  /* border-radius: 50%; */
+          /* color: black; */
+  /* border:1px solid black; 
+  display: inline-block; */
+/* } */
