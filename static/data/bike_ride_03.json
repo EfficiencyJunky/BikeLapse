@@ -1,5 +1,11 @@
-var bikeRide0003GeoJSON = {
+{
     "type": "FeatureCollection",
+    "metadata": {
+        "routName":"SF to Rodeo Beach via Hawk Hill",
+        "videoEmbedID": "YN9b3LK1la0",
+        "googleMapURL": "https://www.google.com/maps/d/edit?mid=1hD_JODm9txFYwx-jcN_Lk17YExy1cX_c&usp=sharing",
+        "lineColor": "rgba(62, 146, 204, 1)"
+    },
     "features": [
         {
             "type": "Feature",

@@ -6,8 +6,9 @@
 // once the counter has been incremented enough times to equal the "numAPICalls" integer
 // currently we are only doing this once so it's sort of not really useful
 // but if we wanted to execute another API call we could update it
-let numAPICalls = 1;
-//let numAPICalls = bikeRideIDsList.length;
+// let numAPICalls = 1;
+// let numAPICalls = bikeRideIDsList.length;
+let numAPICalls = bikeRideJSONFileNames.length;
 
 var myAsyncCounter = new asyncCounter(numAPICalls, createMap);
  
@@ -17,6 +18,11 @@ var myAsyncCounter = new asyncCounter(numAPICalls, createMap);
 ##################################################################################### */
 function createMap(){
 
+  rideIDsList = Object.keys(ridesData);
+  // singleRideID = bikeRideIDsList2[0];
+  // console.log("Ride IDs From List: ", bikeRideIDsList2);
+  // console.log("All Ride Data: ", ridesData2);
+  // console.log("bikeRideIDsList: ", bikeRideIDsList);
 
   // *************************************************************
   //     FIRST DEFINE THE "TILE LAYERS" TO USE AS  
@@ -85,17 +91,18 @@ function createMap(){
   //     ADD THEM AS KEY/VALUE PAIRS IN THE OVERLAYMAPS OBJECT
   // *************************************************************
 
-  bikeRideIDsList.map( (rideID,i) => {
+  rideIDsList.map( (rideID,i) => {
     // console.log("key:" + rideID);
     // console.log("index:" + i);
 
-    let rideMetadata = bikeRidesMetadata[rideID];
     currentRideID = rideID;
 
-    if (typeof(rideMetadata.geoJSON) !== 'undefined'){
-      // console.log("DATA EXISTS: " + rideMetadata.routName);
+    let rideMetadata = ridesData[rideID].metadata;
 
-      overlayMaps[rideMetadata.routName] = L.geoJson(rideMetadata.geoJSON, { 
+    if (typeof(ridesData[rideID]) !== 'undefined'){
+      console.log("DATA EXISTS: " + rideMetadata.routName);
+
+      overlayMaps[rideMetadata.routName] = L.geoJson(ridesData[rideID], { 
                                                                                 pane: 'bikeRidesPane', // the "pane" option is inherited from the "Layer" object
                                                                                 filter: filterFunction,
                                                                                 pointToLayer: pointToLayerFunction,
@@ -129,7 +136,7 @@ function createMap(){
   // and our overlay (bike routes) will come from the overlayMaps objects
   // *************************************************************
   baseMaps[selectedBaseMap].addTo(myMap);
-  overlayMaps[bikeRidesMetadata[bikeRideIDsList[initialVisibleRideIndex]].routName].addTo(myMap);
+  overlayMaps[ridesData[rideIDsList[initialVisibleRideIndex]].metadata.routName].addTo(myMap);
 
   // *************************************************************
   //     ADD ADDITIONAL UI ELEMENTS TO THE MAP
@@ -197,22 +204,39 @@ asyncCounter.prototype.increment = function(){
 };
 
 
-// let bikeRide1 = "/Users/TheTurner/Documents/Github/DistanceLapseWebApp/static/data/bike_ride_01.json"
-// let bikeRide1 = "https://github.com/EfficiencyJunky/DistanceLapseWebApp/blob/master/static/data/bike_ride_01.json"
-let bikeRide1 = "static/data/bike_ride_01.json";
 
-// Perform a GET request to the query URL
-d3.json(bikeRide1, function(data) {
-  // Once we get a response, send the data.features object to the createFeatures function along with color seting function and pane name
 
-  console.log("bike1 object found: ", data);
-  console.log("bike1 created");
+// LOAD THE JSON FILES FOR EACH RIDE AS SPECIFIED IN THE "bikeRideJSONFileNames" VARIABLE IN THE "globals.js" file
+bikeRideJSONFileNames.forEach( (fileName, i) => {
+
+  let filePath = "static/data/" + fileName;
   
-  myAsyncCounter.increment();
+  // Perform a GET request to the query URL
+  d3.json(filePath, function(data) {
+    // Once we get a response, send the data.features object to the createFeatures function along with color seting function and pane name
 
-  // Sending our earthquakes layer to the createMap function
-  // createMap(earthquakes, tectonicPlates);
+    // create a new rideID based on the order in which the file was loaded. This way it's not in order of the file names.
+    let rideID = "ride" + pad(i+1, 4);
+    
+    // rideData2[rideID] = data.metadata;
+    ridesData[rideID] = data;
+    
+    console.log(ridesData);
+
+    // let rideID = data.metadata.rideID;
+    // console.log(data.metadata.testdata, data);
+
+    // ridesData[rideID].geoJSON = data;
+
+    myAsyncCounter.increment();
+
+    // Sending our earthquakes layer to the createMap function
+    // createMap(earthquakes, tectonicPlates);
+  });
+
 });
+
+
 
 
 

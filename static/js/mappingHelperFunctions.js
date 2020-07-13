@@ -156,9 +156,9 @@ function createMarkerIcon(iconProperties){
 
 
 function createPopupHTMLVideo(properties){
-  let videoEmbedID = bikeRidesMetadata[currentRideID].videoEmbedID;
-  let routeName = bikeRidesMetadata[currentRideID].routName;
-  let googleMapURL = bikeRidesMetadata[currentRideID].googleMapURL;
+  let videoEmbedID = ridesData[currentRideID].metadata.videoEmbedID;
+  let routeName = ridesData[currentRideID].metadata.routName;
+  let googleMapURL = ridesData[currentRideID].metadata.googleMapURL;
  
   return  "<h2>ROUTE: " + routeName + "</h2>" +
           "<h3><a href=" + googleMapURL + ">Click here for detailed Google Map</a>" + "</h3>" +
@@ -169,7 +169,7 @@ function createPopupHTMLVideo(properties){
 function createPopupHTMLBasic(properties){
   let markerTypeText = mapIcons[properties.name].markerText;
 
-  let routeName = bikeRidesMetadata[currentRideID].routName;
+  let routeName = ridesData[currentRideID].metadata.routName;
   
   return  "<h3><b>" + markerTypeText + "</b>: " + properties.description + "</h3>" +
           "<b>ROUTE:</b> " + routeName;
@@ -189,7 +189,7 @@ function legendOnAdd(map) {
 
   labels = ['<strong>LEGEND</strong>'],
 
-  mapIconsKeys.map( function (key, i){
+  mapIconsKeys.map( (key, i) => {
 
     labels.push('<i class="' + mapIcons[key].iconURLorClass + '"></i>' + (key ? key : 'undefined'));
 
