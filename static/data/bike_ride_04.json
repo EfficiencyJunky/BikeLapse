@@ -2,8 +2,9 @@
     "type": "FeatureCollection",
     "metadata": {
         "routName":"Sausage De Dino",
-        "videoEmbedID": "YN9b3LK1la0",
+        "videoEmbedID": "",
         "googleMapURL": "https://www.google.com/maps/d/edit?mid=1hD_JODm9txFYwx-jcN_Lk17YExy1cX_c&usp=sharing",
+        "stravaURL": "https://strava.app.link/KvCPHjR047",
         "lineColor": "rgba(62, 146, 204, 1)"
     },
     "features": [

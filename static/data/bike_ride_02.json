@@ -2,8 +2,9 @@
     "type": "FeatureCollection",
     "metadata": {
         "routName":"SF to Tiburon/Paradise Loop",
-        "videoEmbedID": "YN9b3LK1la0",
-        "googleMapURL": "https://www.google.com/maps/d/edit?mid=10cQNnnBswOwCTTvcCW36Qsjviech_7ZL&usp=sharing",
+        "videoEmbedID": "",
+        "googleMapURL": "https://www.google.com/maps/d/edit?mid=1dI-xNFHH0zHTO6jtW2X6a_UYsdQ&usp=sharing",
+        "stravaURL": "need_link",
         "lineColor": "rgba(62, 146, 204, 1)"
     },
     "features": [

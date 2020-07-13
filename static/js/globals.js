@@ -9,34 +9,20 @@
 
 // setting this to "var" becauese it will need to be accessible throughout the program
 var currentRideID = "0001";
-let initialVisibleRideIndex = 1;
+let initialRideIDToDisplay = "ride0001";
 
 let bikeRideJSONFileNames = [
   "bike_ride_01.json",
   "bike_ride_02.json",
   "bike_ride_03.json",
-  "bike_ride_04.json"
+  "ingleside.json"
 ]
-
 
 // DEFINE PARAMETERS FOR THE BIKE RIDES WE WANT TO ADD TO THE MAP
 let ridesData = {};
 
 // CREATE A LIST OF THE BIKE RIDE NUMBERS FROM THE KEYS OF THE 'rideData' OBJECT ABOVE
 let rideIDsList = [];
-
-// DEFINE PARAMETERS FOR THE BIKE RIDES WE WANT TO ADD TO THE MAP
-// let ridesData = {
-//     ride0001:  {routName:"SF to SM via Crystal Springs",      geoJSON: "", videoEmbedID: "YN9b3LK1la0", googleMapURL: "https://www.google.com/maps/d/edit?mid=10cQNnnBswOwCTTvcCW36Qsjviech_7ZL&usp=sharing", lineColor: "rgba(62, 146, 204, 1)", /*lineColor: "rgba(62, 146, 204, 1)",*/ start: "Ritual",      finish: "SM Caltrain"},
-//     ride0002:  {routName:"SF to Tiburon/Paradise Loop",       geoJSON: "", videoEmbedID: "YN9b3LK1la0", googleMapURL: "https://www.google.com/maps/d/edit?mid=1kbFUwUOR_V6mTTQa0W-lTlp9hsY_Ekkq&usp=sharing", lineColor: "rgba(62, 146, 204, 1)", /*lineColor: "rgba(62, 146, 204, 1)",*/ start: "Velo Rouge",  finish: "Velo Rouge"},
-//     ride0003:  {routName:"SF to Rodeo Beach via Hawk Hill",   geoJSON: bikeRide0003GeoJSON, videoEmbedID: "YN9b3LK1la0", googleMapURL: "https://www.google.com/maps/d/edit?mid=1hD_JODm9txFYwx-jcN_Lk17YExy1cX_c&usp=sharing", lineColor: "rgba(62, 146, 204, 1)", /*lineColor: "rgba(62, 146, 204, 1)",*/  start: "Velo Rouge",  finish: "Velo Rouge"},  
-//     // ride0004:  {routName:"Part 2 Sausage De Dino",            geoJSON: bikeRide0003GeoJSON, videoEmbedID: "YN9b3LK1la0", googleMapURL: "", lineColor: "rgba(42, 98, 143, 1)"}
-// };
-
-// // CREATE A LIST OF THE BIKE RIDE NUMBERS FROM THE KEYS OF THE 'rideData' OBJECT ABOVE
-// let rideIDsList = Object.keys(ridesData);
-
-
 
 // STRAVA SPRITE ICON PROPERTIES:
     // iconSize: [24, 24]

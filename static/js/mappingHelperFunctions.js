@@ -157,12 +157,27 @@ function createMarkerIcon(iconProperties){
 
 function createPopupHTMLVideo(properties){
   let videoEmbedID = ridesData[currentRideID].metadata.videoEmbedID;
+  let videoEmbedHTML = (videoEmbedID !== "" ? videoEmbedParams.firstHalf + videoEmbedID + videoEmbedParams.secondHalf : "no video found");
+
   let routeName = ridesData[currentRideID].metadata.routName;
   let googleMapURL = ridesData[currentRideID].metadata.googleMapURL;
+  let stravaURL = ridesData[currentRideID].metadata.stravaURL;
+
+  let lineStringFeature = ridesData[currentRideID].features.find( (element, i) =>{
+    
+    if(element.geometry.type === "LineString" && element.properties.name === "ROUTE"){
+      return true;
+    }
+    return false;
+  });
+
+  let lineStringDescription = (lineStringFeature ? lineStringFeature.properties.description : "no description found");
  
   return  "<h2>ROUTE: " + routeName + "</h2>" +
-          "<h3><a href=" + googleMapURL + ">Click here for detailed Google Map</a>" + "</h3>" +
-          videoEmbedParams.firstHalf + videoEmbedID + videoEmbedParams.secondHalf;
+          lineStringDescription + "<br><br>" +
+          videoEmbedHTML +
+          "<h3><a href=" + stravaURL + ">Click here for Strava Recording and Map</a>" + "</h3>" +
+          "<h3><a href=" + googleMapURL + ">Click here for detailed Google Map</a>" + "</h3>";
 }
 
 

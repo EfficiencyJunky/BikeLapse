@@ -92,8 +92,6 @@ function createMap(){
   // *************************************************************
 
   rideIDsList.map( (rideID,i) => {
-    // console.log("key:" + rideID);
-    // console.log("index:" + i);
 
     currentRideID = rideID;
 
@@ -103,12 +101,12 @@ function createMap(){
       console.log("DATA EXISTS: " + rideMetadata.routName);
 
       overlayMaps[rideMetadata.routName] = L.geoJson(ridesData[rideID], { 
-                                                                                pane: 'bikeRidesPane', // the "pane" option is inherited from the "Layer" object
-                                                                                filter: filterFunction,
-                                                                                pointToLayer: pointToLayerFunction,
-                                                                                onEachFeature: onEachFeatureFunction,
-                                                                                style: { fillOpacity: 0.0, weight: 4, opacity: 1, color: rideMetadata.lineColor}
-                                                                              });
+                                                                          pane: 'bikeRidesPane', // the "pane" option is inherited from the "Layer" object
+                                                                          filter: filterFunction,
+                                                                          pointToLayer: pointToLayerFunction,
+                                                                          onEachFeature: onEachFeatureFunction,
+                                                                          style: { fillOpacity: 0.0, weight: 4, opacity: 1, color: rideMetadata.lineColor}
+                                                                        });
     }
     else{
       console.log("DATA UNDEFINED: " + rideMetadata.routName);
@@ -136,7 +134,7 @@ function createMap(){
   // and our overlay (bike routes) will come from the overlayMaps objects
   // *************************************************************
   baseMaps[selectedBaseMap].addTo(myMap);
-  overlayMaps[ridesData[rideIDsList[initialVisibleRideIndex]].metadata.routName].addTo(myMap);
+  overlayMaps[ridesData[initialRideIDToDisplay].metadata.routName].addTo(myMap);
 
   // *************************************************************
   //     ADD ADDITIONAL UI ELEMENTS TO THE MAP
