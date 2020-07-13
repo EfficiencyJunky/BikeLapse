@@ -39,10 +39,10 @@ html {
 }
 
 /* create the line used to represent a "route" in the legend */
-.legend-route-icon{ 
+.legend-route-icon, .legend-route-suggested-icon, .legend-route-difficult-icon { 
   width: 30px;
   height: 5px;
-  background:rgba(62, 146, 204, 1);
+  /* background:rgba(62, 146, 204, 1); */
   /* float: left; */
   display: inline-block;
   /* margin-top: 8px; */
@@ -50,6 +50,21 @@ html {
   margin-bottom: 3px;
   opacity: 1;
 }
+
+.legend-route-icon { 
+  background: rgba(62, 146, 204, 1);
+}
+
+/* create the line used to represent a "route" in the legend */
+.legend-route-suggested-icon { 
+  background: green;
+}
+
+/* create the line used to represent a "route" in the legend */
+.legend-route-difficult-icon { 
+  background: red;
+}
+
 
 /* ************************** LEGEND STYLING ************************** */
 /* set up the legend, which we are using both the "info" and "legend" class to style */

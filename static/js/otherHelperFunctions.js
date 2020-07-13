@@ -3,7 +3,10 @@
 // **************** NON MAPPING HELPER FUNCTIONS ******************
 
 
-// **************** RETURNS A ZERO PADDED STRING BASED ON THE GIVEN NUMBER "n" AND "width" TOTAL NUMBERS ******************
+// **************** RETURNS A ZERO PADDED STRING ******************
+// "n" -- an input number that we want to zero pad
+// "width" -- the total number of characters we want in the end
+// OPTIONAL "z" -- custom padding character if we don't want to just use "0"
 // Example Usage
 // pad(10, 4);      // 0010
 // pad(9, 4);       // 0009
@@ -14,21 +17,7 @@ function pad(n, width, z) {
   return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
 }
 
-
-
-// **************** GET THE CURRENT TIME AND IF IT'S NIGHT OR NOT ******************
-function getCurrentTime(){
-  let todaysDate = new Date();
-
-  let HH = String(todaysDate.getHours()).padStart(2, '0');
-  let MM = String(todaysDate.getMinutes()).padStart(2, '0');
-  
-  let time = HH + ':' + MM;
-
-  return time;
-}
-
-// **************** GET THE CURRENT TIME AND IF IT'S NIGHT OR NOT ******************
+// **************** RETURN "true" IF IT'S NIGHT OR NOT ******************
 function getIsNight(){
   let todaysDate = new Date();
 
@@ -38,6 +27,27 @@ function getIsNight(){
   let isNight = (HH <= 6 || HH >= 20);
 
   return isNight;
+}
+
+
+
+// -----------------------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------------------
+/* ###########################################################################
+   ****  UNUSED FUNCTIONS - MAYBE USEFUL FOR THE FUTURE ***
+############################################################################## */
+
+// **************** GET THE CURRENT TIME in  ******************
+function getCurrentTime(){
+  let todaysDate = new Date();
+
+  let HH = String(todaysDate.getHours()).padStart(2, '0');
+  let MM = String(todaysDate.getMinutes()).padStart(2, '0');
+  
+  let time = HH + ':' + MM;
+
+  return time;
 }
 
 

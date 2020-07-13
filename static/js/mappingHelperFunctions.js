@@ -67,7 +67,7 @@ function pointToLayerFunction(geoJsonPoint, latlng) {
     case 'PHOTO_OP':
     case 'POI':
 
-      let myIcon = createMarkerIcon(mapIcons[markerType]);
+      let myIcon = createMarkerIcon(markerType);
 
       return L.marker(latlng, {icon: myIcon});
       break;
@@ -164,63 +164,26 @@ function styleFunction (geoJsonFeature) {
 
 
 
-// (feature, layer) {
-
-//   // console.log("Style Function Call");
-//   // console.log("Feature Type: ", feature.geometry.type);
-//   // console.log("Feature Name: ", feature.properties.name);
-//   // // console.log("rideMetadata: ", rideMetadata);
-//   // console.log("currentRideID: ", currentRideID);
-//   // console.log("**********************************");
-
-//   let properties = feature.properties;
-
-//   switch (feature.geometry.type) {
-//     case 'LineString': 
-
-//       layer.bindPopup(createPopupHTMLVideo(properties), bindPopupProperties);
-
-//       break;
-//     case 'Point':
-
-//       if(properties.name === "DETAILS"){
-//         layer.bindPopup(createPopupHTMLVideo(properties), bindPopupProperties);
-//       }
-//       else{
-//         layer.bindPopup(createPopupHTMLBasic(properties), bindPopupProperties);
-//       }
-      
-//       break;
-//   }
-// }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 // **************************************************************************************
 // **************** HELPERS FOR ABOVE FUNCTIONS ******************
 // **************************************************************************************
-function createMarkerIcon(iconProperties){
 
-  let iconType = iconProperties.iconType;
+// creates the correct Marker object
+// depending on if we are supposed to use the "divIcon" or regular "icon"
+// which is designated in the markerProperties (coming from the mapIcons global variable)
+function createMarkerIcon(markerType){
+
+  let markerProperties = mapIcons[markerType];
   
-  switch (iconType) {
+  switch (markerProperties.iconType) {
     case 'divIcon':
       return L.divIcon({
-                        className: iconProperties.iconURLorClass,
-                        iconSize: iconProperties.iconSize,
-                        iconAnchor: iconProperties.iconAnchor,
-                        popupAnchor: iconProperties.popupAnchor,
+                        className: markerProperties.iconURLorClass,
+                        iconSize: markerProperties.iconSize,
+                        iconAnchor: markerProperties.iconAnchor,
+                        popupAnchor: markerProperties.popupAnchor,
                         // shadowUrl: 'my-icon-shadow.png',
                         // shadowSize: [68, 95],
                         // shadowAnchor: [22, 94]
@@ -228,10 +191,10 @@ function createMarkerIcon(iconProperties){
       break;
     default:
       return L.icon({
-                      iconUrl: iconProperties.iconURLorClass,
-                      iconSize: iconProperties.iconSize,
-                      iconAnchor: iconProperties.iconAnchor,
-                      popupAnchor: iconProperties.popupAnchor,
+                      iconUrl: markerProperties.iconURLorClass,
+                      iconSize: markerProperties.iconSize,
+                      iconAnchor: markerProperties.iconAnchor,
+                      popupAnchor: markerProperties.popupAnchor,
                       // shadowUrl: 'my-icon-shadow.png',
                       // shadowSize: [68, 95],
                       // shadowAnchor: [22, 94]
@@ -242,14 +205,19 @@ function createMarkerIcon(iconProperties){
 }
 
 
-
+// creates the HTML code necessary for the "DETAILS" Popup
+// probably need to re-name this function
 function createPopupHTMLVideo(properties){
-  let videoEmbedID = ridesData[currentRideID].metadata.videoEmbedID;
-  let videoEmbedHTML = (videoEmbedID !== "" ? videoEmbedParams.firstHalf + videoEmbedID + videoEmbedParams.secondHalf : "no video found");
+  let videoEmbedID = getTextFromValue(ridesData[currentRideID].metadata.videoEmbedID);
+  let videoEmbedHTML = (videoEmbedID !== "" ? videoEmbedParams.firstHalf + videoEmbedID + videoEmbedParams.secondHalf : "no video URL<br>");
 
-  let routeName = ridesData[currentRideID].metadata.routName;
-  let googleMapURL = ridesData[currentRideID].metadata.googleMapURL;
-  let stravaURL = ridesData[currentRideID].metadata.stravaURL;
+  let routeName = getTextFromValue(ridesData[currentRideID].metadata.routName);
+
+  let stravaURL = getTextFromValue(ridesData[currentRideID].metadata.stravaURL);
+  let stravaHTML = (stravaURL !== "" ? "<h3><a href=" + stravaURL + ">Click here for Strava Recording and Map</a></h3>" : "no strava URL<br>");
+
+  let googleMapURL = getTextFromValue(ridesData[currentRideID].metadata.googleMapURL);
+  let googleMapHTML = (googleMapURL !== "" ? "<h3><a href=" + googleMapURL + ">Click here for detailed Google Map</a></h3>" : "no googlemap URL");
 
   let lineStringFeature = ridesData[currentRideID].features.find( (element, i) =>{
     
@@ -264,11 +232,32 @@ function createPopupHTMLVideo(properties){
   return  "<h2>ROUTE: " + routeName + "</h2>" +
           lineStringDescription + "<br><br>" +
           videoEmbedHTML +
-          "<h3><a href=" + stravaURL + ">Click here for Strava Recording and Map</a>" + "</h3>" +
-          "<h3><a href=" + googleMapURL + ">Click here for detailed Google Map</a>" + "</h3>";
+          stravaHTML +
+          googleMapHTML;
+}
+
+// tests whether the value exists (either undefined or empty string) 
+// and then returns the actual text or an empty string if it's undefined or already an empty string
+function getTextFromValue (value){
+  
+  if(typeof(value) !== 'undefined' && value !== ''){
+    // console.log("value exists: ", value);
+
+    return value;
+
+  }
+
+  // console.log("value does not exist: ", value);
+  return "";
+
 }
 
 
+
+
+
+// creates the HTML code necessary for the "START" and "FINISH" Popups
+// probably need to re-name this function
 function createPopupHTMLBasic(properties){
   let markerTypeText = mapIcons[properties.name].markerText;
 
@@ -301,10 +290,19 @@ function legendOnAdd(map) {
 
   });
   
+  // takes the "labels" list and turns it into a single string with "<br>" appended between each item in the list
+  // basically just a different way to accomplish the same thing as using the "div.innerHTML +=" in the 
+  // above "mapIconsKeys.map" function. Potato Potahtoe
   div.innerHTML = labels.join('<br>');
 
+  // create a horizontal line between the mapIcons section of the legend and the routes section
   div.innerHTML += '<hr>'
-  div.innerHTML += '<span class="legend-route-icon"></span>' + '<span>Route</span>';
+
+  // And this time just using the += because laziness
+  div.innerHTML += '<strong>Route Types</strong>' + '<br>';
+  div.innerHTML += '<span class="legend-route-icon"></span>' + '<span>Typical Route</span>' + '<br>';
+  div.innerHTML += '<span class="legend-route-suggested-icon"></span>' + '<span>Variant - Suggested</span>' + '<br>';
+  div.innerHTML += '<span class="legend-route-difficult-icon"></span>' + '<span>Variant - Difficult</span>';
   
   return div;
 }

@@ -8,7 +8,7 @@
 ################################################################################################## */
 
 // setting this to "var" becauese it will need to be accessible throughout the program
-var currentRideID = "0001";
+var currentRideID = "";
 let initialRideIDToDisplay = "ride0001";
 
 let bikeRideJSONFileNames = [
@@ -18,13 +18,13 @@ let bikeRideJSONFileNames = [
   "2020_07_11--ingleside.json"
 ]
 
-// DEFINE PARAMETERS FOR THE BIKE RIDES WE WANT TO ADD TO THE MAP
+// THIS OBJECT WILL BE UPDATED WITH THE GeoJSON DATA FROM THE LIST OF FILES ABOVE
 let ridesData = {};
 
-// CREATE A LIST OF THE BIKE RIDE NUMBERS FROM THE KEYS OF THE 'rideData' OBJECT ABOVE
+// CREATE A LIST OF THE BIKE RIDE NUMBERS THAT GET GENERATED AS THE FILES ARE INGESTED INTO THE 'rideData' OBJECT ABOVE
 let rideIDsList = [];
 
-// STRAVA SPRITE ICON PROPERTIES:
+// ICON PROPERTIES AND HOW THEY TRANSLATE TO CSS:
     // iconSize: [24, 24]
         // creates css --> width: 24px; 
         // creates css --> height: 24px;
@@ -50,7 +50,6 @@ let mapIconsKeys = Object.keys(mapIcons);
 /* ###################################################################
    ****  VARIOUS INDIVIDUAL VARIABLES
 ###################################################################### */
-let userSelectedTime = getCurrentTime();
 
 // chooses the default basemap to enable depending on if it's night or day
 let isNight = getIsNight();
@@ -72,8 +71,7 @@ let videoEmbedParams = {
 };
 
 
-// boolean that tells the legend to add a divider that shows a different color for "significant delays"
-let showSignificantColor = false;
+
 
 
 /* ###################################################################
@@ -104,3 +102,10 @@ let bikeRouteColorCodes = {
 };
 
 let bikeRouteColorCodesKeys = Object.keys(bikeRouteColorCodes);
+
+// returns a string for the current time in "HH:MM" format
+let currentTime = getCurrentTime();
+
+// boolean that tells the legend to add a divider that shows a different color for "significant delays"
+// this is just a carryover from a previous project and will likely never get used
+let showSignificantColor = false;
