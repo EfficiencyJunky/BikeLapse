@@ -198,8 +198,8 @@ asyncCounter.prototype.increment = function(){
 
 
 // let bikeRide1 = "/Users/TheTurner/Documents/Github/DistanceLapseWebApp/static/data/bike_ride_01.json"
-let bikeRide1 = "https://github.com/EfficiencyJunky/DistanceLapseWebApp/blob/master/static/data/bike_ride_01.json"
-// let bikeRide1 = "../data/bike_ride_01.json";
+// let bikeRide1 = "https://github.com/EfficiencyJunky/DistanceLapseWebApp/blob/master/static/data/bike_ride_01.json"
+let bikeRide1 = "static/data/bike_ride_01.json";
 
 // Perform a GET request to the query URL
 d3.json(bikeRide1, function(data) {
