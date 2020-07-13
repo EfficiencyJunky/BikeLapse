@@ -2,7 +2,7 @@
     "type": "FeatureCollection",
     "metadata": {
         "routName":"Home to Ingleside / Vampire House",
-        "videoEmbedID": "YN9b3LK1la0",
+        "videoEmbedID": "",
         "googleMapURL": "https://www.google.com/maps/d/edit?mid=1dlpcdUq5aCflYEybbwy2btT6hsMpxw71&usp=sharing",
         "stravaURL": "https://strava.app.link/daEVk0K047",
         "lineColor": "rgba(62, 146, 204, 1)"
@@ -27,7 +27,7 @@
                     "highlight": "#icon-61-highlight"
                 },
                 "icon": "https://www.gstatic.com/mapspro/images/stock/61-green-dot.png",
-                "description": "Saturday, July 11, 2020 7:14 PM PDT<br>Elevation: 539 feet"
+                "description": "Sutro - Med Center Way<br>Saturday, July 11, 2020 7:14 PM PDT<br>Elevation: 539 feet"
             }
         },
         {
@@ -49,7 +49,7 @@
                     "highlight": "#icon-123-highlight"
                 },
                 "icon": "https://www.gstatic.com/mapspro/images/stock/123-red-dot.png",
-                "description": "Saturday, July 11, 2020 8:59 PM PDT<br>Elevation: 315 feet"
+                "description": "Home<br>Saturday, July 11, 2020 8:59 PM PDT<br>Elevation: 315 feet"
             }
         },
         {

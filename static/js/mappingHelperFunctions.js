@@ -119,6 +119,93 @@ function onEachFeatureFunction(feature, layer) {
 
 
 
+
+// A Function that will be called once for each created Feature, after it has been created and styled. 
+// Useful for attaching events and popups to features. 
+// The default is to do nothing with the newly created layers:
+// function (feature, layer) {}
+function styleFunction (geoJsonFeature) {
+
+  // console.log("**********************************");
+  // console.log("currentRideID: ", currentRideID);
+  // console.log("Filter Function Call");
+  // console.log("Feature Type: ", geoJsonFeature.geometry.type);
+  // console.log("Feature Name: ", geoJsonFeature.properties.name);
+  // console.log("    ###    ");
+  
+  switch (geoJsonFeature.geometry.type) {
+    case 'LineString':
+      let lineStringName = geoJsonFeature.properties.name;
+      // console.log("LineString name", lineStringName);
+      // console.log("Includes #? ", lineStringName.includes("#"));
+      
+      let lineColor = ridesData[currentRideID].metadata.lineColor;
+
+      // if the name includes a "$" then it's supposed to the easy route option and should be colored accordingly
+      // if the name includes a "#" then it's supposed to the hard route option and should be colored accordingly
+      if(lineStringName.includes("$")){
+        lineColor = ridesData[currentRideID].metadata.lineColorEasy;
+      }
+      else if(lineStringName.includes("#")){
+        lineColor = ridesData[currentRideID].metadata.lineColorHard;
+      }
+
+      //      { fillOpacity: 0.0, weight: 4, opacity: 1, color: rideMetadata.lineColor};
+      return { fillOpacity: 0.0, weight: 4, opacity: 1, color: lineColor};
+      break;
+    case 'Point':
+      return {}; // default behavior
+      break;
+  }
+
+  return {};
+}
+
+
+
+// (feature, layer) {
+
+//   // console.log("Style Function Call");
+//   // console.log("Feature Type: ", feature.geometry.type);
+//   // console.log("Feature Name: ", feature.properties.name);
+//   // // console.log("rideMetadata: ", rideMetadata);
+//   // console.log("currentRideID: ", currentRideID);
+//   // console.log("**********************************");
+
+//   let properties = feature.properties;
+
+//   switch (feature.geometry.type) {
+//     case 'LineString': 
+
+//       layer.bindPopup(createPopupHTMLVideo(properties), bindPopupProperties);
+
+//       break;
+//     case 'Point':
+
+//       if(properties.name === "DETAILS"){
+//         layer.bindPopup(createPopupHTMLVideo(properties), bindPopupProperties);
+//       }
+//       else{
+//         layer.bindPopup(createPopupHTMLBasic(properties), bindPopupProperties);
+//       }
+      
+//       break;
+//   }
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // **************************************************************************************
 // **************** HELPERS FOR ABOVE FUNCTIONS ******************
 // **************************************************************************************

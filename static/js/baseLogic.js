@@ -98,14 +98,15 @@ function createMap(){
     let rideMetadata = ridesData[rideID].metadata;
 
     if (typeof(ridesData[rideID]) !== 'undefined'){
-      console.log("DATA EXISTS: " + rideMetadata.routName);
+      // console.log("DATA EXISTS: " + rideMetadata.routName);
 
       overlayMaps[rideMetadata.routName] = L.geoJson(ridesData[rideID], { 
                                                                           pane: 'bikeRidesPane', // the "pane" option is inherited from the "Layer" object
                                                                           filter: filterFunction,
                                                                           pointToLayer: pointToLayerFunction,
                                                                           onEachFeature: onEachFeatureFunction,
-                                                                          style: { fillOpacity: 0.0, weight: 4, opacity: 1, color: rideMetadata.lineColor}
+                                                                          style: styleFunction
+                                                                          // style: { fillOpacity: 0.0, weight: 4, opacity: 1, color: rideMetadata.lineColor}
                                                                         });
     }
     else{
@@ -219,7 +220,7 @@ bikeRideJSONFileNames.forEach( (fileName, i) => {
     // rideData2[rideID] = data.metadata;
     ridesData[rideID] = data;
     
-    console.log(ridesData);
+    // console.log(ridesData);
 
     // let rideID = data.metadata.rideID;
     // console.log(data.metadata.testdata, data);

@@ -4,7 +4,7 @@
         "routName":"SF to SM via Crystal Springs",
         "videoEmbedID": "YN9b3LK1la0",
         "googleMapURL": "https://www.google.com/maps/d/edit?mid=10cQNnnBswOwCTTvcCW36Qsjviech_7ZL&usp=sharing",
-        "stravaURL": "https://strava.app.link/daEVk0K047",
+        "stravaURL": "https://www.strava.com/activities/3650907808",
         "lineColor": "rgba(62, 146, 204, 1)"
     },
     "features": [
@@ -6831,13 +6831,14 @@
                 ]
             },
             "properties": {
-                "name": "SF to SM via Crystal Springs",
+                "name": "ROUTE",
                 "styleUrl": "#line-1267FF-5000-nodesc",
                 "styleHash": "4b899179",
                 "styleMapHash": {
                     "normal": "#line-1267FF-5000-nodesc-normal",
                     "highlight": "#line-1267FF-5000-nodesc-highlight"
                 },
+                "description": "Sunday, June 21, 2020 9:20 AM PDT<br>Distance: 26.38 miles<br>Duration: 3 hours, 11 minutes, and 11 seconds<br>Average Speed: 10.8 mph<br>Minimum Elevation: 24 feet<br>Maximum Elevation: 599 feet<br>Total climb: 1526 feet<br>Total descent: ??? feet",
                 "stroke": "#1267ff",
                 "stroke-opacity": 1,
                 "stroke-width": 5
