@@ -7,6 +7,8 @@
 // currently we are only doing this once so it's sort of not really useful
 // but if we wanted to execute another API call we could update it
 let numAPICalls = 1;
+//let numAPICalls = bikeRideIDsList.length;
+
 var myAsyncCounter = new asyncCounter(numAPICalls, createMap);
  
 
@@ -195,7 +197,29 @@ asyncCounter.prototype.increment = function(){
 };
 
 
-// THIS IS THE MAIN FUNCTION OF THE JS FILE
-for(i=0; i < numAPICalls; i++){
+// let bikeRide1 = "/Users/TheTurner/Documents/Github/DistanceLapseWebApp/static/data/bike_ride_01.json"
+let bikeRide1 = "https://github.com/EfficiencyJunky/DistanceLapseWebApp/blob/master/static/data/bike_ride_01.json"
+// let bikeRide1 = "../data/bike_ride_01.json";
+
+// Perform a GET request to the query URL
+d3.json(bikeRide1, function(data) {
+  // Once we get a response, send the data.features object to the createFeatures function along with color seting function and pane name
+
+  console.log("bike1 object found: ", data);
+  console.log("bike1 created");
+  
   myAsyncCounter.increment();
-}
+
+  // Sending our earthquakes layer to the createMap function
+  // createMap(earthquakes, tectonicPlates);
+});
+
+
+
+
+
+// // THIS IS THE MAIN FUNCTION OF THE JS FILE
+// for(i=0; i < bikeRideIDsList.length; i++){
+//   console.log("increment");
+//   myAsyncCounter.increment();
+// }
