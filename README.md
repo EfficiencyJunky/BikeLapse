@@ -1,5 +1,5 @@
 # DistanceLapseWebApp
-A webapp built with mapbox where I can catalog my bike rides that I've recorded with the DistanceLapse Video Creation System
+A webapp built with leaflet.js and mapbox meant to make it easy to catalog bike rides that have been recorded with the DistanceLapse Video Creation System and Strava
 
 
 
