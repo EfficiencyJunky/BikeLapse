@@ -5,7 +5,9 @@
         "videoEmbedID": "",
         "googleMapURL": "https://www.google.com/maps/d/edit?mid=1dlpcdUq5aCflYEybbwy2btT6hsMpxw71&usp=sharing",
         "stravaURL": "https://strava.app.link/daEVk0K047",
-        "lineColor": "rgba(62, 146, 204, 1)"
+        "lineColor": "rgba(62, 146, 204, 1)",
+        "lineColorEasy": "green",
+        "lineColorHard": "red"
     },
     "features": [
         {

@@ -157,7 +157,8 @@ function styleFunction (geoJsonFeature) {
       return {}; // default behavior
       break;
   }
-
+  
+  // default behavior
   return {};
 }
 
