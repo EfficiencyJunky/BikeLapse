@@ -11,12 +11,18 @@
 var currentRideID = "";
 let initialRideIDToDisplay = "ride0001";
 
-let bikeRideJSONFileNames = [
-  "2020_06_21--crystalsprings.json",
-  "2020_07_05--rodeobeach.json",
-  "2020_07_15--paradiseloop.json",
-  "2020_07_11--ingleside.json"
-]
+
+// var fs = require('fs');
+// var files = fs.readdirSync('/static/data/');
+// console.log("filenames: ", files);
+
+
+// let bikeRideJSONFileNames = [
+//   "2020_06_21--crystalsprings.json",
+//   "2020_07_05--rodeobeach.json",
+//   "2020_07_15--paradiseloop.json",
+//   "2020_07_11--ingleside.json"
+// ]
 
 // THIS OBJECT WILL BE UPDATED WITH THE GeoJSON DATA FROM THE LIST OF FILES ABOVE
 let ridesData = {};

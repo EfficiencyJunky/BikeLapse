@@ -1,0 +1,84 @@
+# This is a basic workflow to help you get started with Actions
+
+name: create js file with list of all JSON filenames in the 'static/data/' folder
+
+# Controls when the action will run. Triggers the workflow on push or pull request 
+# events but only for the master branch
+on:
+  push:
+    branches:
+      - master
+    # file paths to consider in the event. Optional; defaults to all.
+    paths:
+      - 'static/data/*.json'
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    name: parse json filenames and add to list file then commit changes
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+    # Print the name of the directory we're working in
+    - name: Hello world
+      run: echo my github workspace dir $GITHUB_WORKSPACE
+
+    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    # Print the name of the directory we're working in again to show the files
+    # - name: Hello world
+    #   run: echo my github workspace dir $GITHUB_WORKSPACE
+
+    # Runs commands using the runners shell
+    - name: Run the python script
+      run: |
+        python ${GITHUB_WORKSPACE}/.github/workflows/create_all_ride_file_names_js.py
+        
+    # - name: Commit files using some guy's action
+    #   id: git_commit
+    #   uses: zwaldowski/git-commit-action@v1
+    #   with:
+    #     commit_message: "Updating the all_ride_file_names.js file in the /static/config folder"
+    # - name: print the outputs of the commit
+    #   run: echo "${{ steps.git_commit.outputs.sha }}"
+
+    # Commit files using resource found online
+    # - name: Commit files  # transfer the new files back into the repository
+    #   run: |
+    #     git config --local user.name  ${{ github.actor }}
+    #     git add ./static/config/all_ride_file_names.js
+    #     git commit -m "Updating the all_ride_file_names.js file in the /static/config folder"
+
+    # # Commit files using another resource found online
+    # - name: Commit files
+    #   run: |
+    #     git config --global user.name ${GITHUB_ACTOR}
+    #     git config --global user.email ${GITHUB_ACTOR}@efficiencyjunky.io
+    #     git add ${GITHUB_WORKSPACE}/my-docs
+    #     git commit -m "committing my-docs"
+
+
+    # Commit files using example from ad-m/github-push-action@master
+    # - name: Commit files
+    #   run: |
+    #     git config --local user.email "action@github.com"
+    #     git config --local user.name "GitHub Action"
+    #     git commit -m "Add changes" -a
+
+
+    # Doing it my own way
+    - name: Commit files  # transfer the new files back into the repository
+      run: |
+        git add ${GITHUB_WORKSPACE}/static/config/all_ride_file_names.js
+        git commit -m "Updating the all_ride_file_names.js file in the /static/config folder"
+
+
+    - name: Push changes  # push the output folder to your repo
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        # force: true
