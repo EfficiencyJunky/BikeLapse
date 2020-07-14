@@ -36,7 +36,7 @@ jobs:
     # Runs commands using the runners shell
     - name: Run the python script
       run: |
-        python ${GITHUB_WORKSPACE}/.github/workflows/create_all_ride_file_names_js.py
+        python ${GITHUB_WORKSPACE}/build/create_all_ride_file_names_js.py
         
     # - name: Commit files using some guy's action
     #   id: git_commit
