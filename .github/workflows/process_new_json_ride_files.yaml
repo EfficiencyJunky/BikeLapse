@@ -73,6 +73,7 @@ jobs:
     # Doing it my own way
     - name: Commit files  # transfer the new files back into the repository
       run: |
+        git config --local user.name  ${{ github.actor }}
         git add ${GITHUB_WORKSPACE}/static/config/all_ride_file_names.js
         git commit -m "Updating the all_ride_file_names.js file in the /static/config folder"
 
