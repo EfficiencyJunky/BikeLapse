@@ -46,18 +46,11 @@ jobs:
     # - name: print the outputs of the commit
     #   run: echo "${{ steps.git_commit.outputs.sha }}"
 
-    # Commit files using resource found online
-    # - name: Commit files  # transfer the new files back into the repository
-    #   run: |
-    #     git config --local user.name  ${{ github.actor }}
-    #     git add ./static/config/all_ride_file_names.js
-    #     git commit -m "Updating the all_ride_file_names.js file in the /static/config folder"
-
     # # Commit files using another resource found online
     # - name: Commit files
     #   run: |
     #     git config --global user.name ${GITHUB_ACTOR}
-    #     git config --global user.email ${GITHUB_ACTOR}@efficiencyjunky.io
+    #     git config --global user.email ${GITHUB_ACTOR}@my-domain.io
     #     git add ${GITHUB_WORKSPACE}/my-docs
     #     git commit -m "committing my-docs"
 
@@ -70,7 +63,15 @@ jobs:
     #     git commit -m "Add changes" -a
 
 
-    # Doing it my own way
+    # Commit files using resource found online
+    # - name: Commit files  # transfer the new files back into the repository
+    #   run: |
+    #     git config --local user.name  ${{ github.actor }}
+    #     git add ./static/config/all_ride_file_names.js
+    #     git commit -m "Updating the all_ride_file_names.js file in the /static/config folder"
+
+
+    # similar to the above example but using the ${GITHUB_WORKSPACE} environment variable 
     - name: Commit files  # transfer the new files back into the repository
       run: |
         git config --local user.name  ${{ github.actor }}
