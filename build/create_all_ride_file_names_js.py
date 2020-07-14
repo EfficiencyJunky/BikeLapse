@@ -22,8 +22,8 @@ file_path_list = glob(filePathsToSearchFor)
 file_name_list = [basename(filepath) for filepath in file_path_list]
 file_name_list.sort()
 
-print("List of file names to write out")
-[print(filename) for filename in file_name_list]
+# print("List of file names to write out")
+# [print(filename) for filename in file_name_list]
 
 f = open(outputFilepath, "w")
 f.write("let bikeRideJSONFileNames = " + str(file_name_list))
