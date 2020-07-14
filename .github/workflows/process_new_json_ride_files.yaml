@@ -75,7 +75,7 @@ jobs:
       run: |
         git config --local user.name  ${{ github.actor }}
         git add ${GITHUB_WORKSPACE}/static/config/all_ride_file_names.js
-        git commit -m "Updating the all_ride_file_names.js file in the /static/config folder"
+        git commit -m "Automated commit - update all_ride_file_names.js in the /static/config folder"
 
 
     - name: Push changes  # push the output folder to your repo
