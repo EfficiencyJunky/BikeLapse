@@ -57,6 +57,19 @@ function createMap(){
       // id: "mapbox.streets-satellite",
       accessToken: API_KEY
   });  
+
+  // replace "toner" here with "terrain" or "watercolor"
+  let tonerlitemap = new L.StamenTileLayer("toner-lite");
+  let terrainmap =  new L.StamenTileLayer("terrain");
+
+  // stolen from MonkeyBrains website
+  // let tonerlitemap_manual = L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}.png', {
+  //   attribution: 'Map tiles by <a target="_blank" href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0" target="_blank">CC BY 3.0</a>. Data by <a target="_blank" href="http://openstreetmap.org">OpenStreetMap</a> under <a target="_blank" href="http://www.openstreetmap.org/copyright">ODbL</a>, and <a target="_blank" href="http://whosonfirst.mapzen.com#License">Who\'s On First</a>.',  
+  //   maxZoom: maximumZoom,
+  //   minZoom: minimumZoom
+    
+  // });
+  
   
   // // let streetmap = L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}", {
   // let outdoors = L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
@@ -73,9 +86,10 @@ function createMap(){
   // *************************************************************
   let baseMaps = {
       "Street Map": streetmap,
-      // "Outdoors": outdoors,
+      "Terrain": terrainmap,
       "Satellite": satellite,
-      "Dark Map": darkmap
+      "Dark Map": darkmap,
+      "Light Map": tonerlitemap
   };
 
   
