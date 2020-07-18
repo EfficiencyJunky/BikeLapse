@@ -219,18 +219,18 @@ function createPopupHTMLVideo(properties){
   let googleMapURL = getTextFromValue(ridesData[currentRideID].metadata.googleMapURL);
   let googleMapHTML = (googleMapURL !== "" ? "<h3><a href=" + googleMapURL + ">Click here for detailed Google Map</a></h3>" : "no googlemap URL");
 
-  let lineStringFeature = ridesData[currentRideID].features.find( (element, i) =>{
+  let detailsPointFeature = ridesData[currentRideID].features.find( (element, i) =>{
     
-    if(element.geometry.type === "LineString" && element.properties.name === "ROUTE"){
+    if(element.geometry.type === "Point" && element.properties.name === "DETAILS"){
       return true;
     }
     return false;
   });
 
-  let lineStringDescription = (lineStringFeature ? lineStringFeature.properties.description : "no description found");
+  let detailsPointDescription = (detailsPointFeature ? detailsPointFeature.properties.description : "no description found");
  
   return  "<h2>ROUTE: " + routeName + "</h2>" +
-          lineStringDescription + "<br><br>" +
+          detailsPointDescription + "<br><br>" +
           videoEmbedHTML +
           stravaHTML +
           googleMapHTML;

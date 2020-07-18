@@ -70,16 +70,6 @@ function createMap(){
     
   // });
   
-  
-  // // let streetmap = L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}", {
-  // let outdoors = L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
-  //     attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",
-  //     maxZoom: maximumZoom,
-  //     minZoom: minimumZoom,
-  //     id: "mapbox/outdoors-v11",
-  //     // id: "mapbox.outdoors",
-  //     accessToken: API_KEY
-  // });
 
   // *************************************************************
   // Define a baseMaps object to hold our base layers
