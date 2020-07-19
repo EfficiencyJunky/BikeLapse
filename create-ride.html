@@ -11,6 +11,8 @@
 
   <!-- Bootstrap styles -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <!-- Newest version but doesn't work? -->
+  <!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous"> -->
 
   <!-- Date Range Picker -- UNUSED -->
   <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
@@ -36,6 +38,14 @@
       height: 300px;
       width: 100%;
       max-width:none;
+    }
+
+    .form-top-extra-margin{
+      margin-top: 10px;
+    }
+
+    .form-element-extra-padding{
+      margin-top: 30px;
     }
 
     .file-chooser-button-subtext{
@@ -95,7 +105,40 @@
             </div>
           </div>
               
-          <div class="row">
+          <form class="form-top-extra-margin">
+            <div class="form-group">
+              <label for="routeName">Route Name:</label>
+              <input type="text" id="routeName" class="form-control" placeholder="Name your route">
+            </div>
+            <h5 style='font-weight: bold;' class="form-element-extra-padding">Ride Type:</h5>
+            <div class="radio">
+              <label>
+                <input type="radio" name="routeType" id="routeTypeRadioCompleted" value="completed" checked>
+                Completed
+              </label>
+            </div>
+            <div class="radio">
+              <label>
+                <input type="radio" name="routeType" id="routeTypeRadioSuggestion" value="suggestion">
+                Suggestion
+              </label>
+            </div>
+            <div class="form-group form-element-extra-padding">
+              <label for="videoEmbedID">YouTube Video ID:</label>
+              <input type="text" id="videoEmbedID" class="form-control" placeholder="YouTube Video ID">
+            </div>
+            <div class="form-group form-element-extra-padding">
+              <label for="stravaURL">Strava URL:</label>
+              <input type="text" id="stravaURL" class="form-control" placeholder="Strava URL">
+            </div>
+            <div class="form-group form-element-extra-padding">
+              <label for="googleMapURL">Google Map URL:</label>
+              <input type="text" id="googleMapURL" class="form-control" placeholder="Google Map URL">
+            </div>
+          </form>
+
+
+          <!-- <div class="row">
             <div class="col-xs-12">
                 <h5>Route Name</h5>
                 <input type="text" name="routeName" class="route-metadata-input">
@@ -105,7 +148,7 @@
           <div class="row">
             <div class="col-xs-12">
               <h5>Ride Type:</h5>
-              <input type="radio" name="routeType" class="route-metadata-input" value="completed"> Completed</br>
+              <input type="radio" name="routeType" class="route-metadata-input" value="completed" checked> Completed</br>
               <input type="radio" name="routeType" class="route-metadata-input" value="suggestion"> Suggestion
             </div>
           </div>
@@ -129,7 +172,7 @@
                 <h5>Google Map URL</h5>
                 <input type="text" name="googleMapURL" class="route-metadata-input">
             </div>           
-          </div>
+          </div> -->
 
         </div>
       </div>
@@ -146,12 +189,11 @@
 
           <div class="row">
             <div class="col-sm-12">
-              <!-- <h5>Import GPX file</h5> -->
-              <form>
-                <div>
+              <form class="form-top-extra-margin">
+                <div class="form-group">
                     <input type="file" id="filein" name="file-input" accept=".gpx" class="hidden"/>
                     <label for="filein" class="btn btn-primary">Choose file</label>
-                    <span id='file-name-disp-text'></span>
+                    <span id='file-name-disp-text' class="help-block" style="word-wrap: break-word;"></span>
                 </div>
               </form>
             </div>
@@ -169,8 +211,19 @@
               <h4 style="text-align: center;">ADJUSTMENTS</h4>
             </div>
           </div>
-          
-          <div class="row">
+
+          <form class="form-top-extra-margin">
+            <div class="form-group">
+              <label for="startLocationName">START: Location Name</label>
+              <input type="text" id="startLocationName" class="form-control" placeholder="Name of Start Location">
+            </div>
+            <div class="form-group form-element-extra-padding">
+              <label for="finishLocationName">FINISH: Location Name</label>
+              <input type="text" id="finishLocationName" class="form-control" placeholder="Name of Finish Location">
+            </div>
+          </form>
+
+          <!-- <div class="row">
             <div class="col-xs-12">
                 <h5>START: Location Name</h5>
                 <input type="text" name="locationName" class="start-point-metadata-input">
@@ -182,7 +235,8 @@
                 <h5>FINISH: Location Name</h5>
                 <input type="text" name="locationName" class="finish-point-metadata-input">
             </div>           
-          </div>
+          </div> -->
+
         </div>
 
       </div>
@@ -201,7 +255,7 @@
             <div class="col-sm-12">
               <!-- <h5>Export file</h5> -->
               <div>
-                <button type="button" class="btn btn-success">Export</button>
+                <button type="button" id="export-button" class="btn btn-success form-top-extra-margin">Export</button>
               </div>
             </div>
           </div>
@@ -224,7 +278,7 @@
         <!-- <div id="output-text">This is where the output text goes</div> -->
         <div>
           <h4>GeoJSON Text Output</h4>
-          <textarea id='output'></textarea>
+          <textarea id='output-textarea'></textarea>
         </div>
       </div>
     </div>
@@ -237,16 +291,22 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.5.0/d3.js"></script>
   <!-- <script src="https://d3js.org/d3.v5.min.js"></script> -->
 
+
+  <!-- JS, Popper.js, and jQuery FOR BOOTSTRAP -->
+  <!-- <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>   -->
+
   <!-- Jquery, Moment, and Daterangepicker - UNUSED -->
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
+  <!-- <script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
   <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script> -->
   
   <!-- ########### toGeoJSON Library Javascript ############ -->
   <script src='lib/togeojson.js'></script>
 
   <!-- ########### MAIN JAVASCRIPT FILES WE'VE CREATED THAT PERFORM ALL THE EVENT HANDLING AND MAPPING FUNCTIONS ############ -->
-  <!-- <script type="text/javascript" src="static/js/create-ride/createRideLogic.js"></script> -->
+  <script type="text/javascript" src="static/js/create-ride/createRideLogic.js"></script>
   
 
 </body>
