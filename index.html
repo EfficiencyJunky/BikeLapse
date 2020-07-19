@@ -48,5 +48,19 @@
   <script type="text/javascript" src="static/js/mappingHelperFunctions.js"></script>
   <script type="text/javascript" src="static/js/globals.js"></script>
   <script type="text/javascript" src="static/js/baseLogic.js"></script>
+
+  <script type="module">
+    import { gpx } from "https://unpkg.com/@tmcw/togeojson?module";
+  
+    fetch("static/data/gpx/ingleside.gpx")
+      .then(function(response) {
+        return response.text();
+      })
+      .then(function(xml) {
+        console.log(gpx(new DOMParser().parseFromString(xml, "text/xml")));
+      });
+  </script>
+
+
 </body>
 </html>
