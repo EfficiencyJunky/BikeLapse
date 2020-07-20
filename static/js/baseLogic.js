@@ -101,10 +101,10 @@ function createMap(){
 
     let rideMetadata = ridesData[rideID].metadata;
 
-    if (typeof(ridesData[rideID]) !== 'undefined'){
-      // console.log("DATA EXISTS: " + rideMetadata.routName);
+    if (typeof(ridesData[rideID]) !== undefined){
+      // console.log("DATA EXISTS: " + rideMetadata.rideName);
 
-      overlayMaps[rideMetadata.routName] = L.geoJson(ridesData[rideID], { 
+      overlayMaps[rideMetadata.rideName] = L.geoJson(ridesData[rideID], { 
                                                                           pane: 'bikeRidesPane', // the "pane" option is inherited from the "Layer" object
                                                                           filter: filterFunction,
                                                                           pointToLayer: pointToLayerFunction,
@@ -114,7 +114,7 @@ function createMap(){
                                                                         });
     }
     else{
-      console.log("DATA UNDEFINED: " + rideMetadata.routName);
+      console.log("DATA UNDEFINED: " + rideMetadata.rideName);
     }
 
   });
@@ -139,7 +139,7 @@ function createMap(){
   // and our overlay (bike routes) will come from the overlayMaps objects
   // *************************************************************
   baseMaps[selectedBaseMap].addTo(myMap);
-  overlayMaps[ridesData[initialRideIDToDisplay].metadata.routName].addTo(myMap);
+  overlayMaps[ridesData[initialRideIDToDisplay].metadata.rideName].addTo(myMap);
 
   // *************************************************************
   //     ADD ADDITIONAL UI ELEMENTS TO THE MAP

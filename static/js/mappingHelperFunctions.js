@@ -211,7 +211,7 @@ function createPopupHTMLVideo(properties){
   let videoEmbedID = getTextFromValue(ridesData[currentRideID].metadata.videoEmbedID);
   let videoEmbedHTML = (videoEmbedID !== "" ? videoEmbedParams.firstHalf + videoEmbedID + videoEmbedParams.secondHalf : "no video URL<br>");
 
-  let routeName = getTextFromValue(ridesData[currentRideID].metadata.routName);
+  let rideName = getTextFromValue(ridesData[currentRideID].metadata.rideName);
 
   let stravaURL = getTextFromValue(ridesData[currentRideID].metadata.stravaURL);
   let stravaHTML = (stravaURL !== "" ? "<h3><a href=" + stravaURL + ">Click here for Strava Recording and Map</a></h3>" : "no strava URL<br>");
@@ -229,7 +229,7 @@ function createPopupHTMLVideo(properties){
 
   let detailsPointDescription = (detailsPointFeature ? detailsPointFeature.properties.description : "no description found");
  
-  return  "<h2>ROUTE: " + routeName + "</h2>" +
+  return  "<h2>ROUTE: " + rideName + "</h2>" +
           detailsPointDescription + "<br><br>" +
           videoEmbedHTML +
           stravaHTML +
@@ -240,7 +240,7 @@ function createPopupHTMLVideo(properties){
 // and then returns the actual text or an empty string if it's undefined or already an empty string
 function getTextFromValue (value){
   
-  if(typeof(value) !== 'undefined' && value !== ''){
+  if(typeof(value) !== undefined && value !== ''){
     // console.log("value exists: ", value);
 
     return value;
@@ -261,10 +261,10 @@ function getTextFromValue (value){
 function createPopupHTMLBasic(properties){
   let markerTypeText = mapIcons[properties.name].markerText;
 
-  let routeName = ridesData[currentRideID].metadata.routName;
+  let rideName = ridesData[currentRideID].metadata.rideName;
   
   return  "<h3><b>" + markerTypeText + "</b>: " + properties.description + "</h3>" +
-          "<b>ROUTE:</b> " + routeName;
+          "<b>ROUTE:</b> " + rideName;
 
 }
 
@@ -283,7 +283,7 @@ function legendOnAdd(map) {
 
   mapIconsKeys.map( (key, i) => {
 
-    labels.push('<i class="' + mapIcons[key].iconURLorClass + '"></i>' + (key ? key : 'undefined'));
+    labels.push('<i class="' + mapIcons[key].iconURLorClass + '"></i>' + (key ? key : undefined));
 
     // this is how we'd do it if we didn't want to use the <i> (bullet) element
     // labels.push('<span class="' + mapIcons[key].iconURLorClass + ' legend-icon-positioning"></span>' + (key ? key : 'undefined'));
