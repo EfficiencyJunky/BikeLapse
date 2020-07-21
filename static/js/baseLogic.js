@@ -65,11 +65,26 @@ function createMap(){
       id: "mapbox/satellite-v9",
       // id: "mapbox.streets-satellite",
       accessToken: API_KEY
-  });  
+  });
 
+  // THIS WAY OF DOING IT I FOUND FROM LOOKING AT THE CODE ON MonkeyBrains website
+  let tonerlitemap = L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}.png', {
+    attribution: 'Map tiles by <a target="_blank" href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0" target="_blank">CC BY 3.0</a>. Data by <a target="_blank" href="http://openstreetmap.org">OpenStreetMap</a> under <a target="_blank" href="http://www.openstreetmap.org/copyright">ODbL</a>, and <a target="_blank" href="http://whosonfirst.mapzen.com#License">Who\'s On First</a>.',  
+    maxZoom: maximumZoom,
+    minZoom: minimumZoom
+  });
+
+  // THIS WAY OF DOING IT I FOUND FROM LOOKING AT THE CODE ON MonkeyBrains website
+  let terrainmap = L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}.png', {
+    attribution: 'Map tiles by <a target="_blank" href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0" target="_blank">CC BY 3.0</a>. Data by <a target="_blank" href="http://openstreetmap.org">OpenStreetMap</a> under <a target="_blank" href="http://www.openstreetmap.org/copyright">ODbL</a>, and <a target="_blank" href="http://whosonfirst.mapzen.com#License">Who\'s On First</a>.',  
+    maxZoom: maximumZoom,
+    minZoom: minimumZoom
+  });
+
+  // THIS WAY OF DOING IT REQUIRES A LIBRARY THAT DOESN'T HAVE THE "s" in "https" SO DOESN'T WORK AS A SECURE SITE
   // replace "toner" here with "terrain" or "watercolor"
-  let tonerlitemap = new L.StamenTileLayer("toner-lite");
-  let terrainmap =  new L.StamenTileLayer("terrain");
+  // let tonerlitemap = new L.StamenTileLayer("toner-lite");
+  // let terrainmap =  new L.StamenTileLayer("terrain");
 
   // stolen from MonkeyBrains website
   // let tonerlitemap_manual = L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}.png', {
