@@ -23,7 +23,7 @@
 
 
   <!-- Date Range Picker -- UNUSED -->
-  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+  <!-- <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" /> -->
 
   <!-- Leaflet CSS & JS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
@@ -35,7 +35,7 @@
 
   <!-- Stamen Map Tiles -  -->
   <!-- Leaflet Map TileSets from Stamen.com -- Doesn't have secure SSL Certificate so don't use this -->
-  <script type="text/javascript" src="https://maps.stamen.com/js/tile.stamen.js?v1.3.0"></script>
+  <!-- <script type="text/javascript" src="http://maps.stamen.com/js/tile.stamen.js?v1.3.0"></script> -->
 
   <!-- Our CSS -->
   <link rel="stylesheet" type="text/css" href="static/css/style.css">
@@ -81,11 +81,15 @@
     input[type="text"].route-metadata-input, input[type="text"].start-point-metadata-input, input[type="text"].finish-point-metadata-input {
       width: 100%;
     }
-    
+
     textarea {
       height: 300px;
       width: 100%;
-      max-width:none;
+      max-width:100%;
+    }
+
+    .textarea-size-styles {
+      height: 300px;
     }
 
     .form-top-extra-margin{
@@ -335,8 +339,10 @@
       <div class="row">
         <div class="col-md-12 jumbotron">
           <!-- <div id="output-text">This is where the output text goes</div> -->
+          <!-- <div class="form-group textarea-size-styles"> -->
           <div>
             <h4>GeoJSON Text Output</h4>
+            <!-- <textarea id='output-textarea' class="form-control" style="height: 100%;"></textarea> -->
             <textarea id='output-textarea'></textarea>
           </div>
         </div>
