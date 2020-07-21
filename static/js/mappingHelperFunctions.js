@@ -138,23 +138,36 @@ function styleFunction (geoJsonFeature) {
       let lineStringName = geoJsonFeature.properties.name;
       // console.log("LineString name", lineStringName);
       // console.log("Includes #? ", lineStringName.includes("#"));
-      
-      let lineColor = ridesData[currentRideID].metadata.lineColor;
+
+      // pull out the metadata object for the ride to use later
+      metadata = ridesData[currentRideID].metadata;
+
+      // create the lineColor variable to use for the color of the Feature's line
+      // let lineColor = metadata.lineColor;
+      let lineColor = bikeRouteLineColors["default"].lineColor;
+
+      // if the metadata object has a "rideType" (not undefined),
+      // and the "rideType" itself is not undefined,
+      // use the value stored there as the key
+      // into the global line options object to get the corresponding lineColor
+      if(typeof(metadata.rideType) !== undefined && metadata.rideType !== undefined){
+        // console.log("metadata rideType: ", metadata.rideType);
+        lineColor = bikeRouteLineColors[metadata.rideType].lineColor;
+      }
 
       // if the name includes a "$" then it's supposed to the easy route option and should be colored accordingly
       // if the name includes a "#" then it's supposed to the hard route option and should be colored accordingly
       if(lineStringName.includes("$")){
-        lineColor = ridesData[currentRideID].metadata.lineColorEasy;
+        lineColor = metadata.lineColorEasy;
       }
       else if(lineStringName.includes("#")){
-        lineColor = ridesData[currentRideID].metadata.lineColorHard;
+        lineColor = metadata.lineColorHard;
       }
 
-      //      { fillOpacity: 0.0, weight: 4, opacity: 1, color: rideMetadata.lineColor};
       return { fillOpacity: 0.0, weight: 4, opacity: 1, color: lineColor};
       break;
     case 'Point':
-      return {}; // default behavior
+      return {}; // default behavior to do nothing for Point features
       break;
   }
   
@@ -263,8 +276,8 @@ function createPopupHTMLBasic(properties){
 
   let rideName = ridesData[currentRideID].metadata.rideName;
   
-  return  "<h3><b>" + markerTypeText + "</b>: " + properties.description + "</h3>" +
-          "<b>ROUTE:</b> " + rideName;
+  return  "<h3><b>" + markerTypeText + "</b>: " + rideName + "</h3>" + properties.description;
+          // "<b>Location Details:</b><br>" + properties.description;
 
 }
 
@@ -300,9 +313,10 @@ function legendOnAdd(map) {
 
   // And this time just using the += because laziness
   div.innerHTML += '<strong>Route Types</strong>' + '<br>';
-  div.innerHTML += '<span class="legend-route-icon"></span>' + '<span>Typical Route</span>' + '<br>';
-  div.innerHTML += '<span class="legend-route-suggested-icon"></span>' + '<span>Variant - Suggested</span>' + '<br>';
-  div.innerHTML += '<span class="legend-route-difficult-icon"></span>' + '<span>Variant - Difficult</span>';
+  div.innerHTML += '<span class="legend-route-completed-icon"></span>' + '<span>Completed Route</span>' + '<br>';
+  div.innerHTML += '<span class="legend-route-suggested-icon"></span>' + '<span>Suggested Route</span>' + '<br>';
+  div.innerHTML += '<span class="legend-route-variant-normal-icon"></span>' + '<span>Variant - Normal</span>' + '<br>';
+  div.innerHTML += '<span class="legend-route-variant-difficult-icon"></span>' + '<span>Variant - Difficult</span>';
   
   return div;
 }

@@ -2,6 +2,7 @@
     "type": "FeatureCollection",
     "metadata": {
         "rideName":"SF to Tiburon/Paradise Loop",
+        "rideType": "completed",
         "videoEmbedID": "",
         "googleMapURL": "https://www.google.com/maps/d/edit?mid=1dI-xNFHH0zHTO6jtW2X6a_UYsdQ&usp=sharing",
         "stravaURL": "",

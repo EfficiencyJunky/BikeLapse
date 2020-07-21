@@ -11,7 +11,16 @@
 let numAPICalls = bikeRideJSONFileNames.length;
 
 var myAsyncCounter = new asyncCounter(numAPICalls, createMap);
- 
+
+/* ###################################################################
+   ****  THE MAIN MAP OBJECT NEEDS TO BE GLOBALY ACCESSIBLE
+###################################################################### */
+// Create our map using the div with id="map"
+let myMap = L.map("map", {
+  center: [37.77, -122.42], // san francisco
+  zoom: 10
+});
+
 
 /* ##################################################################################
    ****  CREATE INITIAL MAP STATE

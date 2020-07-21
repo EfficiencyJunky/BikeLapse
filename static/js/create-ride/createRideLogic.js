@@ -81,27 +81,34 @@ function createPointFeature(tempGeoJson, pointName){
 
     // create placeholders for the information we want to show on the pin
     let locationName = "";
-    let pointCoordTime = "";
+    let pointTime = "";
     let pointCoords = [];
 
     // fill in the information based on if it's a START or FINISH point feature
     switch (pointName) {
         case 'START':
             locationName = document.getElementById('startLocationName').value
-            pointCoordTime = routeCoordTimes[0];
+            pointTime = routeCoordTimes[0];
             pointCoords = routeCoordinates[0];
           break;
         case 'FINISH':
             locationName = document.getElementById('finishLocationName').value
-            pointCoordTime = routeCoordTimes[routeCoordTimes.length - 1];
+            pointTime = routeCoordTimes[routeCoordTimes.length - 1];
             pointCoords = routeCoordinates[routeCoordinates.length - 1];
           break;
         case 'DETAILS':
             pointCoords = routeCoordinates[Math.round(routeCoordinates.length/2)];
+            pointTime = routeLineString.properties.time;
           break;
         default:
             console.log("Point Name not recognized");
       }
+
+    // format the pointTime to look like this -> 1:32 PM on Saturday, November 16, 2019
+    let formattedDateTimeString = moment(pointTime).format("h:mm A [on] dddd, MMMM Do, YYYY");
+
+    // console.log("moment formatted time string: ", formattedDateTimeString);
+
 
     // the HTML description should look like this: 
     //      Location Name: <pulled from form input>
@@ -115,13 +122,13 @@ function createPointFeature(tempGeoJson, pointName){
             },
             "properties": {
               "name": pointName,
-              "description": (pointName === "DETAILS") ? createDetailsDescription(routeLineString) : "<b>Location Name:</b> " + locationName + "<br>" +
-                                                                                      "<b>Time:</b> " + pointCoordTime + "<br>" +
+              "description": (pointName === "DETAILS") ? createDetailsDescription(routeLineString, formattedDateTimeString) : "<b>Location Name:</b> " + locationName + "<br>" +
+                                                                                      "<b>Time:</b> " + formattedDateTimeString + "<br>" +
                                                                                       "<b>Elevation:</b> " + pointCoords[2]
             }
           }
 
-    console.log(pointName, " Point Feature: ", pointFeature);
+    // console.log(pointName, " Point Feature: ", pointFeature);
 
     return pointFeature;
 
@@ -137,8 +144,9 @@ function createPointFeature(tempGeoJson, pointName){
 //      Maximum Elevation: 599 feet<br>
 //      Total climb: 1526 feet<br>
 //      Total descent: 100 feet
-function createDetailsDescription(routeLineString){
-    return "<b>Time:</b> " + routeLineString.properties.time + "<br>" +
+function createDetailsDescription(routeLineString, formattedDateTimeString){
+
+    return "<b>Start Time:</b> " + formattedDateTimeString + "<br>" +
            "<b>Distance:</b> " + "<br>" +
            "<b>Duration:</b> " + "<br>" +
            "<b>Average Speed:</b> " + "<br>" +
@@ -172,6 +180,8 @@ function addSupplementalGeoJSONFeatures(tempGeoJson){
     tempGeoJson.features.push(finishPoint);
     tempGeoJson.features.push(detailsPoint);
 
+
+
 }
 
 
@@ -200,6 +210,10 @@ function convertFileToGeoJSON(gpxXMLFileText, fileName) {
 
     // write output to textarea
     outputTextarea.value = JSON.stringify(tempGeoJson, null, 4);
+    
+    // load the ridesData Object with a single ride who's key is "currentRideID" and value is the GeoJSON
+    ridesData[createRideInterfaceRideID] = tempGeoJson;
+
 
 }
 
@@ -247,11 +261,27 @@ function handleFileSelection() {
 }
 
 
+function convertButtonHandler(){
+
+    addRideToMap();
+
+}
+
+
+function exportButtonHandler(){
+
+    // addRideToMap();
+    alert("clicked the export button");
+
+}
+
+
 // SETUP THE FILE INPUT SELECTION EVENT HANDLER
 // d3.select("#filein").on("change", handleFileSelection);
 // document.getElementById('filein').addEventListener("change", handleFileSelection);
 document.getElementById('filein').onchange = handleFileSelection;
-document.getElementById('export-button').onclick = getMetadataFromInputs;
+document.getElementById('convert-button').onclick = convertButtonHandler;
+document.getElementById('export-button').onclick = exportButtonHandler;
 
 
 
