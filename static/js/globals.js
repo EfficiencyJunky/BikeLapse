@@ -9,7 +9,7 @@
 
 // setting this to "var" becauese it will need to be accessible throughout the program
 var currentRideID = "";
-let initialRideIDToDisplay = "ride0001";
+let initialRideIDsToDisplay = ["ride0001", "ride0003"];
 
 // the rideID we will use for the create-ride.html map
 let createRideInterfaceRideID = "single_ride_ID";

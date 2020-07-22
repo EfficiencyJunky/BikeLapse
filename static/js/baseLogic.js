@@ -163,7 +163,11 @@ function createMap(){
   // and our overlay (bike routes) will come from the overlayMaps objects
   // *************************************************************
   baseMaps[selectedBaseMap].addTo(myMap);
-  overlayMaps[ridesData[initialRideIDToDisplay].metadata.rideName].addTo(myMap);
+
+  initialRideIDsToDisplay.forEach((rideID,i) => {
+    overlayMaps[ridesData[rideID].metadata.rideName].addTo(myMap);
+  });
+
 
   // *************************************************************
   //     ADD ADDITIONAL UI ELEMENTS TO THE MAP
