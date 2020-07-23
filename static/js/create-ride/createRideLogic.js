@@ -191,7 +191,7 @@ function addSupplementalGeoJSONFeatures(tempGeoJson){
 function convertFileToGeoJSON(gpxXMLFileText, fileName) {
     
     // update the label below the GPX file import button to indicate file is loading
-    gpxImportButtonFileNameLabel.innerHTML = gpxImportButtonFileNameLabel.innerHTML + "<br>loading...";
+    // gpxImportButtonFileNameLabel.innerHTML = gpxImportButtonFileNameLabel.innerHTML + "<br>loading...";
 
     // create a DOMParser to parse the GPX file in XML format
     let dom = new DOMParser().parseFromString(gpxXMLFileText, "application/xml");
@@ -203,7 +203,7 @@ function convertFileToGeoJSON(gpxXMLFileText, fileName) {
     let tempGeoJson = toGeoJSON.gpx(dom);
 
     // update the label below the GPX file import button to indicate the name of the file that was imported
-    gpxImportButtonFileNameLabel.innerHTML = gpxImportButtonFileNameLabel.innerHTML + "<br><b>File Imported:</b><br>" + fileName;
+    gpxImportButtonFileNameLabel.innerHTML = gpxImportButtonFileNameLabel.innerHTML + "<br><br><b>SUCCESS!!!<br>File Imported:</b><br>" + fileName;
     
     geoJSON = undefined;
     addSupplementalGeoJSONFeatures(tempGeoJson);
@@ -238,7 +238,7 @@ function handleFileSelection() {
     if(selectedFile){
 
         // update the "choose file" button subtext to indicate file is being loaded
-        gpxImportButtonFileNameLabel.innerHTML = "<b>Importing file...</b>";
+        gpxImportButtonFileNameLabel.innerHTML = "<br><b>Importing file...</b>";
 
         // create a new FileReader
         const reader = new FileReader();
