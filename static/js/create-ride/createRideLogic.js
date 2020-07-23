@@ -215,7 +215,80 @@ function convertFileToGeoJSON(gpxXMLFileText, fileName) {
     ridesData[createRideInterfaceRideID] = tempGeoJson;
 
 
+    // calculate the distance of the ride
+    let routeLinestringFeature = tempGeoJson.features.find( (feature) => feature.properties.name === "ROUTE");
+    
+    let reversedLineString = reversePointsInLineString(routeLinestringFeature.geometry.coordinates);
+
+    let linestringDistance = getDistance(reversedLineString, 5);
+    let distanceInMiles = linestringDistance * 0.621371;
+    
+    
+    console.log("distance km == ", linestringDistance);
+    console.log("distance mi == ", distanceInMiles);
+
+
+    // testing calculations
+    
+    // let points = [
+    //     [37.778290, -122.466265],
+    //     [37.740467, -122.493011]
+    // ];
+
+    // let points = [
+    //     [-122.466265, 37.778290],
+    //     [-122.493011, 37.740467]
+    // ];
+
+    // let linestringDistance = getDistance(points, 6);
+    // console.log("distance 1 == ", linestringDistance);
+
+    // let myDist = calcDistance(points[0], points[1]);
+    // console.log("distance 2 == ", myDist/1000);
+
+
+
 }
+
+function reversePointsInLineString(lineString){
+
+    let reversedLineString = lineString.map((point,i) => {
+
+        return point.slice(0, 2).reverse();
+    });
+
+    return reversedLineString;
+}
+
+
+
+
+
+
+function calcDistance(coord1, coord2){
+
+let lat1 = coord1[0];
+let lat2 = coord2[0];
+let lon1 = coord1[1];
+let lon2 = coord2[1];
+
+const R = 6371e3; // metres
+const φ1 = lat1 * Math.PI/180; // φ, λ in radians
+const φ2 = lat2 * Math.PI/180;
+const Δφ = (lat2-lat1) * Math.PI/180;
+const Δλ = (lon2-lon1) * Math.PI/180;
+
+const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
+          Math.cos(φ1) * Math.cos(φ2) *
+          Math.sin(Δλ/2) * Math.sin(Δλ/2);
+const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+
+const d = R * c; // in metres
+
+return d;
+}
+
+
 
 // ****************************************************************
 //     IMPORT THE SELECTED GPX FILE AND READ IT IN AS TEXT
