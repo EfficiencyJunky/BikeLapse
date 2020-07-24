@@ -65,8 +65,12 @@ function getMetadataFromInputs(){
 //      Location Elevation: <pulled from from first/last coordinates of LineString feature>
 function createPointFeature(tempGeoJson, pointName){
 
-    // get the LineString Feature with name "ROUTE" from the Features array in the GeoJSON object
-    let routeLineString = tempGeoJson.features.find( (feature) => feature.properties.name === "ROUTE");
+    // get the LineString Feature from the Features array in the GeoJSON object
+    // who's properties.name "ROUTE" and geometry.type is "LineString" 
+    let routeLineString = tempGeoJson.features.find( (feature) => 
+                                                            feature.properties.name === "ROUTE"
+                                                            && feature.geometry.type === "LineString"
+                                                    );
     
     // get the coordTimes and coordinates arrays from the ROUTE LineString
     let routeCoordTimes = routeLineString.properties.coordTimes;
@@ -144,20 +148,24 @@ function createPointFeature(tempGeoJson, pointName){
 //      Maximum Elevation: 599 feet<br>
 //      Total climb: 1526 feet<br>
 //      Total descent: 100 feet
-function createDetailsDescription(routeLineString, formattedDateTimeString){
+function createDetailsDescription(routeLineString, formattedStartTimeString){
 
-    return "<b>Start Time:</b> " + formattedDateTimeString + "<br>" +
-           "<b>Distance:</b> " + "<br>" +
-           "<b>Duration:</b> " + "<br>" +
-           "<b>Average Speed:</b> " + "<br>" +
-           "<b>Minimum Elevation:</b> " + "<br>" +
-           "<b>Maximum Elevation:</b> " + "<br>" +
-           "<b>Total climb:</b> " + "<br>" +
-           "<b>Total descent:</b> ";
+    let linestringDistance = getDistance(routeLineString.geometry.coordinates, 6, latLonReversed = true);
+    let linestringDuration = getDuration(routeLineString.properties.coordTimes);
+    let avgSpeed = getAvgSpeed(linestringDuration, linestringDistance);
+    let elevationStats = getElevationStats(routeLineString.geometry.coordinates);
+
+    // console.log(linestringDuration.hours);
+
+    return "<b>Start Time:</b> " + formattedStartTimeString + "<br>" +
+           "<b>Distance:</b> " + linestringDistance.mi + " miles &nbsp (" + linestringDistance.km + " km)<br>" +
+           "<b>Duration:</b> " + linestringDuration.string + "<br>" +
+           "<b>Average Speed:</b> " + avgSpeed.mph + " mph &nbsp (" + avgSpeed.kph + " kph)<br>" +
+           "<b>Minimum Elevation:</b> " + elevationStats.min_ft + " feet &nbsp (" + elevationStats.min_m + " meters)<br>" +
+           "<b>Maximum Elevation:</b> " + elevationStats.max_ft + " feet &nbsp (" + elevationStats.max_m + " meters)<br>" +
+           "<b>Total Climb:</b> " + elevationStats.gain_ft + " feet &nbsp (" + elevationStats.gain_m + " meters)<br>" +
+           "<b>Total Descent:</b> " + elevationStats.descent_ft + " feet &nbsp (" + elevationStats.descent_m + " meters)";
 }
-
-
-
 
 
 // THIS IS THE FUNCTION THAT TAKES THE GEOJSON (THAT WAS CREATED BY CONVERTING THE GPX FILE)
@@ -214,78 +222,18 @@ function convertFileToGeoJSON(gpxXMLFileText, fileName) {
     // load the ridesData Object with a single ride who's key is "currentRideID" and value is the GeoJSON
     ridesData[createRideInterfaceRideID] = tempGeoJson;
 
+    // find the Feature who's geometry.type is "LineString" and properties.name is "ROUTE"
+    // then grab it's coordinates array from geometry.coordinates
+    // let routeLinestringCoordsArray = (tempGeoJson.features.find( (feature) => 
+    //                                                                 feature.geometry.type === "LineString"
+    //                                                                 && feature.properties.name === "ROUTE" 
+    //                                                             )).geometry.coordinates;
 
-    // calculate the distance of the ride
-    let routeLinestringFeature = tempGeoJson.features.find( (feature) => feature.properties.name === "ROUTE");
+    // let linestringDistance = getDistance(routeLinestringCoordsArray, 6, latLonReversed = true);
     
-    let reversedLineString = reversePointsInLineString(routeLinestringFeature.geometry.coordinates);
+    // console.log("distance mi == ", linestringDistance.km);
+    // console.log("distance km == ", linestringDistance.mi);
 
-    let linestringDistance = getDistance(reversedLineString, 5);
-    let distanceInMiles = linestringDistance * 0.621371;
-    
-    
-    console.log("distance km == ", linestringDistance);
-    console.log("distance mi == ", distanceInMiles);
-
-
-    // testing calculations
-    
-    // let points = [
-    //     [37.778290, -122.466265],
-    //     [37.740467, -122.493011]
-    // ];
-
-    // let points = [
-    //     [-122.466265, 37.778290],
-    //     [-122.493011, 37.740467]
-    // ];
-
-    // let linestringDistance = getDistance(points, 6);
-    // console.log("distance 1 == ", linestringDistance);
-
-    // let myDist = calcDistance(points[0], points[1]);
-    // console.log("distance 2 == ", myDist/1000);
-
-
-
-}
-
-function reversePointsInLineString(lineString){
-
-    let reversedLineString = lineString.map((point,i) => {
-
-        return point.slice(0, 2).reverse();
-    });
-
-    return reversedLineString;
-}
-
-
-
-
-
-
-function calcDistance(coord1, coord2){
-
-let lat1 = coord1[0];
-let lat2 = coord2[0];
-let lon1 = coord1[1];
-let lon2 = coord2[1];
-
-const R = 6371e3; // metres
-const φ1 = lat1 * Math.PI/180; // φ, λ in radians
-const φ2 = lat2 * Math.PI/180;
-const Δφ = (lat2-lat1) * Math.PI/180;
-const Δλ = (lon2-lon1) * Math.PI/180;
-
-const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
-          Math.cos(φ1) * Math.cos(φ2) *
-          Math.sin(Δλ/2) * Math.sin(Δλ/2);
-const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-
-const d = R * c; // in metres
-
-return d;
 }
 
 
