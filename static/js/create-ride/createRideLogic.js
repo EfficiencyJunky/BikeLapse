@@ -3,6 +3,9 @@ let outputTextarea = document.getElementById('output-textarea');
 
 let geoJSON = undefined;
 let rideMetadata = undefined;
+let combinedGPX;
+
+// let selectedFiles;
 
 // **************************************************************************
 //     CONVERT THE GPX FILE TEXT OBJECT TO GEOJSON USING "toGeoJSON" LIBRARY
@@ -128,7 +131,7 @@ function createPointFeature(tempGeoJson, pointName){
               "name": pointName,
               "description": (pointName === "DETAILS") ? createDetailsDescription(routeLineString, formattedDateTimeString) : "<b>Location Name:</b> " + locationName + "<br>" +
                                                                                       "<b>Time:</b> " + formattedDateTimeString + "<br>" +
-                                                                                      "<b>Elevation:</b> " + pointCoords[2]
+                                                                                      "<b>Elevation:</b> " + Math.round(pointCoords[2]*3.28084) + " feet &nbsp (" + Math.round(pointCoords[2]) + " meters)"
             }
           }
 
@@ -196,7 +199,7 @@ function addSupplementalGeoJSONFeatures(tempGeoJson){
 // **************************************************************************
 //     CONVERT THE GPX FILE TEXT OBJECT TO GEOJSON USING "toGeoJSON" LIBRARY
 // **************************************************************************
-function convertFileToGeoJSON(gpxXMLFileText, fileName) {
+function convertFileToGeoJSON(gpxXMLFileText) {
     
     // update the label below the GPX file import button to indicate file is loading
     // gpxImportButtonFileNameLabel.innerHTML = gpxImportButtonFileNameLabel.innerHTML + "<br>loading...";
@@ -209,18 +212,12 @@ function convertFileToGeoJSON(gpxXMLFileText, fileName) {
 
     // convert GPX to GeoJSON with "toGeoJSON" library
     let tempGeoJson = toGeoJSON.gpx(dom);
-
-    // update the label below the GPX file import button to indicate the name of the file that was imported
-    gpxImportButtonFileNameLabel.innerHTML = gpxImportButtonFileNameLabel.innerHTML + "<br><br><b>SUCCESS!!!<br>File Imported:</b><br>" + fileName;
     
     geoJSON = undefined;
     addSupplementalGeoJSONFeatures(tempGeoJson);
-
-    // write output to textarea
-    outputTextarea.value = JSON.stringify(tempGeoJson, null, 4);
     
     // load the ridesData Object with a single ride who's key is "currentRideID" and value is the GeoJSON
-    ridesData[createRideInterfaceRideID] = tempGeoJson;
+    return tempGeoJson;
 
     // find the Feature who's geometry.type is "LineString" and properties.name is "ROUTE"
     // then grab it's coordinates array from geometry.coordinates
@@ -254,6 +251,13 @@ function handleFileSelection() {
 
     // Get reference to the Selected File from the event
     const selectedFile = event.target.files[0];
+    
+    console.log("num files selected ", event.target.files.length);
+
+    selectedFiles = event.target.files;
+
+    selectedFile1 = event.target.files[0];
+    selectedFile2 = event.target.files[1];
 
     // check to see if the file exists
     if(selectedFile){
@@ -266,7 +270,14 @@ function handleFileSelection() {
 
         // attach an "onload" event listener function
         reader.onload = function(event) {
-            convertFileToGeoJSON(event.target.result, selectedFile.name);
+            // console.log(selectedFile.name);
+            // console.log(event.target);
+
+            convertFileToGeoJSON(event.target.result);
+
+            // update the label below the GPX file import button to indicate the name of the file that was imported
+            gpxImportButtonFileNameLabel.innerHTML = gpxImportButtonFileNameLabel.innerHTML + "<br><br><b>SUCCESS!!!<br>File Imported:</b><br>" + selectedFile.name;
+            
         };
 
         // Read in the file as text
@@ -282,6 +293,111 @@ function handleFileSelection() {
 }
 
 
+
+// ****************************************************************
+//     IMPORT THE SELECTED GPX FILE AND READ IT IN AS TEXT
+//     CALL THE "convertFileToGeoJSON" FUNCTION TO CONVERT IT
+// ****************************************************************
+function handleMultipleFileSelections() {
+
+    // Check for the various File API support.
+    if (window.File && window.FileReader && window.FileList && window.Blob) {
+    // Great success! All the File APIs are supported.
+    } 
+    else {
+        alert('The File APIs are not fully supported in this browser.');
+    }
+
+    // Get reference to the Selected File from the event
+    // const selectedFile = event.target.files[0];
+    
+    console.log("num files selected ", event.target.files.length);
+
+    const selectedFiles = event.target.files;
+
+    // selectedFile1 = event.target.files[0];
+    // selectedFile2 = event.target.files[1];
+    // console.log(typeof(selectedFiles));
+    // console.log(selectedFiles);
+
+// *********************************************************************
+    var myAsyncCounter = new asyncCounter(selectedFiles.length, combineXMLFilesAndConvertToGeoJSON);
+
+    let selectedFilesText = [];
+    let selectedFilesNames = [];
+
+    for(let i=0; i < selectedFiles.length; i++){
+
+        const file = selectedFiles[i];
+
+        // check to see if the file exists
+        if(file){
+
+            gpxImportButtonFileNameLabel.innerHTML = gpxImportButtonFileNameLabel.innerHTML + "<br><b>Importing file " + String(i+1) + "</b>";
+
+            // create a new FileReader
+            const reader = new FileReader();
+
+            // attach an "onload" event listener function
+            reader.onload = function(event) {
+                // console.log(selectedFile.name);
+                // console.log(event.target);
+                // selectedFilesTextArray.push(event.target.result);
+                selectedFilesText.push(event.target.result);
+                selectedFilesNames.push(file.name);
+                myAsyncCounter.increment();
+
+                // let fileName = selectedFile.name;
+            };
+
+            // Read in the file as text
+            reader.readAsText(file);
+
+        }
+        else{
+            console.log("file doesn't exist?");
+    
+            // update the "choose file" button subtext to indicate something went wrong with file loading
+            gpxImportButtonFileNameLabel.innerHTML = "<b>Error loading file</b>";
+        }
+    }
+
+    
+    function combineXMLFilesAndConvertToGeoJSON(){
+
+        // combine all selected XML files together
+        let xmlFileOutput = combineXMLFiles(selectedFilesText);
+        
+        // do the conversion
+        ridesData[createRideInterfaceRideID] = convertFileToGeoJSON(xmlFileOutput);
+
+        // print out the XML file in the outputTextarea
+        outputTextarea.value = xmlFileOutput;
+        
+        if(outputTextarea.value === ""){
+            // if we haven't already printed the XML file (like if it's commented out above)
+            // print out the GeoJSON file to the outputTextarea instead
+            outputTextarea.value = JSON.stringify(ridesData[createRideInterfaceRideID], null, 4);
+        }
+
+        // update the GPX Import button label text to show that the files have been imported
+        gpxImportButtonFileNameLabel.innerHTML = gpxImportButtonFileNameLabel.innerHTML + "<br><br><b>SUCCESS!!!<br>File(s) Imported:</b><br>"
+        selectedFilesNames.forEach((fileName, i) => {
+            // update the label below the GPX file import button to indicate the name of the file that was imported
+            gpxImportButtonFileNameLabel.innerHTML = gpxImportButtonFileNameLabel.innerHTML + String(i+1) + ") " + fileName + "<br>";
+        });
+
+    }
+
+
+}
+
+
+
+
+
+
+
 function convertButtonHandler(){
 
     addRideToMap();
@@ -289,10 +405,46 @@ function convertButtonHandler(){
 }
 
 
+
+
+
+
+
 function exportButtonHandler(){
 
-    // addRideToMap();
-    alert("clicked the export button");
+    var myAsyncCounter = new asyncCounter(selectedFiles.length, combineFiles);
+
+    let selectedFilesText = [];
+    // console.log(typeof(selectedFiles));
+    // console.log(selectedFiles);
+
+    for(let i=0; i < selectedFiles.length; i++){
+
+        // create a new FileReader
+        const reader = new FileReader();
+
+        // attach an "onload" event listener function
+        reader.onload = function(event) {
+            // console.log(selectedFile.name);
+            // console.log(event.target);
+            // selectedFilesTextArray.push(event.target.result);
+            selectedFilesText.push(event.target.result);
+            myAsyncCounter.increment();
+
+            // let fileName = selectedFile.name;
+        };
+
+        // Read in the file as text
+        reader.readAsText(selectedFiles[String(i)]);
+
+    }
+
+    function combineFiles(){
+
+        let xmlFileOutput = combineXMLFiles(selectedFilesText);
+    
+        outputTextarea.value = xmlFileOutput;
+    }
 
 }
 
@@ -300,7 +452,10 @@ function exportButtonHandler(){
 // SETUP THE FILE INPUT SELECTION EVENT HANDLER
 // d3.select("#filein").on("change", handleFileSelection);
 // document.getElementById('filein').addEventListener("change", handleFileSelection);
-document.getElementById('filein').onchange = handleFileSelection;
+
+
+// document.getElementById('filein').onchange = handleFileSelection;
+document.getElementById('filein').onchange = handleMultipleFileSelections;
 document.getElementById('convert-button').onclick = convertButtonHandler;
 document.getElementById('export-button').onclick = exportButtonHandler;
 

@@ -214,25 +214,6 @@ function createUIElements(baseMaps, overlayMaps){
 
 
 
-/* ############################################################################################################################
-// **************** ASYNCRONOUS COUNTER FUNCTIONS TO CONTROL WHEN WE CALL THE "createMap()" FUNCTION ******************
-// **************** BECAUSE WE ONLY WANT TO CALL THIS FUNCTION AFTER ALL THE API CALLS HAVE COMPLETED *****************
-############################################################################################################################### */
-function asyncCounter(numCalls, callback){
-  this.callback = callback;
-  this.numCalls = numCalls;
-  this.calls = 0;
-};
-
-
-asyncCounter.prototype.increment = function(){
-
-  this.calls += 1;
-
-  if(this.calls === this.numCalls){
-      this.callback();
-  }
-};
 
 
 
