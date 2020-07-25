@@ -419,12 +419,103 @@ function convertButtonHandler(){
 
 function exportButtonHandler(){
 
-    // need to make the export actually export a file
-    // outputTextarea.value = JSON.stringify(ridesData[createRideInterfaceRideID], null, 4);
 
-    // outputTextarea.value = "exporting file";
+    // abracadabra // elevation control -- REMOVE THIS
+    currentRideID = createRideInterfaceRideID;
+    
+    let routeLineString = ridesData[currentRideID].features.find( (feature) => 
+                                                                    feature.properties.name === "ROUTE"
+                                                                    && feature.geometry.type === "LineString"
+                                                                );
+    
+    let coordinates = routeLineString.geometry.coordinates;
+
+
+    let newGeoJSON = {
+                        "name":"NewFeatureType",
+                        "type":"FeatureCollection",
+                        "features":[
+                            {
+                                "type":"Feature",
+                                "geometry": {
+                                    "type":"LineString",
+                                    "coordinates":coordinates
+                                },
+                                "properties":null
+                            }
+                        ]
+                    };
+    
+    // abracadabra // elevation control -- REMOVE THIS
+    // find out more about elevation control and options here: https://github.com/MrMufflon/Leaflet.Elevation
+    let options = {
+                    position: "topright",
+                    theme: "steelblue-theme", //default: lime-theme
+                    width: 600,
+                    height: 125,
+                    margins: {
+                        top: 10,
+                        right: 20,
+                        bottom: 30,
+                        left: 50
+                    },
+                    useHeightIndicator: true, //if false a marker is drawn at map position
+                    interpolation: d3.curveLinear, //see https://github.com/d3/d3-shape/blob/master/README.md#area_curve
+                    hoverNumber: {
+                        decimalsX: 3, //decimals on distance (always in km)
+                        decimalsY: 0, //deciamls on hehttps://www.npmjs.com/package/leaflet.coordinatesight (always in m)
+                        formatter: undefined //custom formatter function may be injected
+                    },
+                    xTicks: undefined, //number of ticks in x axis, calculated by default according to width
+                    yTicks: undefined, //number of ticks on y axis, calculated by default according to height
+                    collapsed: false,  //collapsed mode, show chart on click or mouseover
+                    imperial: true    //display imperial units instead of metric
+                }
+
+    // abracadabra // elevation control -- REMOVE THIS
+    var el = L.control.elevation(options);
+
+    // abracadabra // elevation control -- REMOVE THIS
+    el.addTo(map);                    
+
+
+
+    // abracadabra // elevation control -- REMOVE THIS
+    var gjl = L.geoJson(newGeoJSON,{
+        // pane: 'elevationPane', // panes don't seem to work
+        onEachFeature: el.addData.bind(el),
+        // filter: function(feature, layer) {  // the filter function doesn't seem to work either
+        //     // return feature.geometry.type !== "LineString";
+        // },
+        // style: { fillOpacity: 0.0, weight: 4, opacity: 1, color: "rgba(155, 155, 155, 1)"}
+        style: { fillOpacity: 0.0, weight: 0, opacity: 1, color: "green"}
+    });
+    
+    // map.createPane('elevationPane');
+    // map.getPane('elevationPane').style.zIndex = 401;
+
+
+    gjl.addTo(map);
+
+    // *****************************************************************
+    //     RE-CENTER/ZOOM THE MAP WITH THE DETAILS POINT AS THE CENTER
+    // *****************************************************************
+    // find the DETAILS pin in the Features array for the GeoJSON
+    let detailsPoint = ridesData[currentRideID].features.find( (feature) => feature.properties.name === "DETAILS");
+
+    // grab the lat/lon of the DETAILS point
+    // since the coordinates array for a Point is in the format [lon, lat, elevation]
+    // we have to get rid of the elevation with slice and then reverse the array
+    // so we swap the positions of the lon, lat
+    let centerLatLon = detailsPoint.geometry.coordinates.slice(0, 2).reverse();
+
+    // now we can re-center the map
+    // map.panTo(centerLatLon, {animate: true, duration: 1.0});
+    map.flyTo(centerLatLon, typicalZoom, {animate: true, duration: 1.0});
+
 
 }
+
 
 function showGPXInTextArea(){
 

@@ -5,13 +5,14 @@
 //     FIRST DEFINE THE MAP OBJECT
 // *************************************************************
 // Create our map using the div with id="map"
-let myMap = L.map("map", {
+let map = L.map("map", {
   // center: [37.77, -122.42], // san francisco
   center: [30, 0], // san francisco
   zoom: 2
 });
 
 let mapLayerControl = undefined;
+
 
 // // map zoom parameters
 maximumZoom = 18;
@@ -93,7 +94,7 @@ function createMap(){
   // add the initial layers we want to display on the map
   // our basemap (the canvas we'll draw on) will come from the basemaps object 
   // *************************************************************
-  baseMaps[selectedBaseMap].addTo(myMap);
+  baseMaps[selectedBaseMap].addTo(map);
   
 
   /* ##################################################################################
@@ -107,7 +108,7 @@ function createMap(){
   mapLayerControl = L.control.layers(baseMaps, undefined, {
       collapsed: false,
       position: 'bottomleft'
-  }).addTo(myMap);
+  }).addTo(map);
 
   // *************************************************************
   //  ADD CONTROL ELEMENT TO ACT AS A LEGEND - Bottom right
@@ -117,7 +118,11 @@ function createMap(){
 
   legend.onAdd = legendOnAdd;
   
-  legend.addTo(myMap);
+  legend.addTo(map);
+
+
+
+
 
 }
 
@@ -172,11 +177,11 @@ function addRideToMap(){
   // the zIndex number will make sure they stack on eachother 
   // in the order we want them to
   // *************************************************************    
-  myMap.createPane('bikeRidesPane');
-  myMap.getPane('bikeRidesPane').style.zIndex = 400;
+  map.createPane('bikeRidesPane');
+  map.getPane('bikeRidesPane').style.zIndex = 399;
 
-  overlayMaps[rideMetadata.rideName].addTo(myMap);
-  // overlayMaps[ridesData[currentRideID].metadata.rideName].addTo(myMap); // this is the way we do it in the index.html file
+  overlayMaps[rideMetadata.rideName].addTo(map);
+  // overlayMaps[ridesData[currentRideID].metadata.rideName].addTo(map); // this is the way we do it in the index.html file
 
   // *****************************************************************
   //     RE-CENTER/ZOOM THE MAP WITH THE DETAILS POINT AS THE CENTER
@@ -191,9 +196,9 @@ function addRideToMap(){
   let centerLatLon = detailsPoint.geometry.coordinates.slice(0, 2).reverse();
 
   // now we can re-center the map
-  // myMap.panTo(centerLatLon, {animate: true, duration: 1.0});
-  myMap.flyTo(centerLatLon, typicalZoom, {animate: true, duration: 1.0});
-  // myMap.setView(centerLatLon, typicalZoom, {animate: true, duration: 1.0});
+  // map.panTo(centerLatLon, {animate: true, duration: 1.0});
+  map.flyTo(centerLatLon, typicalZoom, {animate: true, duration: 1.0});
+  // map.setView(centerLatLon, typicalZoom, {animate: true, duration: 1.0});
 
 }
 

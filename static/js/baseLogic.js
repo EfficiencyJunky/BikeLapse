@@ -16,7 +16,7 @@ var myAsyncCounter = new asyncCounter(numAPICalls, createMap);
    ****  THE MAIN MAP OBJECT NEEDS TO BE GLOBALY ACCESSIBLE
 ###################################################################### */
 // Create our map using the div with id="map"
-let myMap = L.map("map", {
+let map = L.map("map", {
   center: [37.77, -122.42], // san francisco
   zoom: 10
 });
@@ -153,8 +153,8 @@ function createMap(){
   // the zIndex number will make sure they stack on eachother 
   // in the order we want them to
   // *************************************************************    
-  myMap.createPane('bikeRidesPane');
-  myMap.getPane('bikeRidesPane').style.zIndex = 400;
+  map.createPane('bikeRidesPane');
+  map.getPane('bikeRidesPane').style.zIndex = 400;
 
   // *************************************************************
   // ADD THE INITIALLY CHOSEN MAP LAYERS TO THE MAP
@@ -162,10 +162,10 @@ function createMap(){
   // our basemap (the canvas we'll draw on) will come from the basemaps object 
   // and our overlay (bike routes) will come from the overlayMaps objects
   // *************************************************************
-  baseMaps[selectedBaseMap].addTo(myMap);
+  baseMaps[selectedBaseMap].addTo(map);
 
   initialRideIDsToDisplay.forEach((rideID,i) => {
-    overlayMaps[ridesData[rideID].metadata.rideName].addTo(myMap);
+    overlayMaps[ridesData[rideID].metadata.rideName].addTo(map);
   });
 
 
@@ -191,7 +191,7 @@ function createUIElements(baseMaps, overlayMaps){
   let mapLayerControl = L.control.layers(baseMaps, overlayMaps, {
       collapsed: false,
       position: 'bottomleft'
-  }).addTo(myMap);
+  }).addTo(map);
 
   // console.log("layer control", mapLayerControl.getContainer());
 
@@ -203,7 +203,7 @@ function createUIElements(baseMaps, overlayMaps){
 
   legend.onAdd = legendOnAdd;
   
-  legend.addTo(myMap);
+  legend.addTo(map);
 
 
   //createEventHandlers();
