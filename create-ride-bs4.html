@@ -290,7 +290,7 @@
             <h5 class="card-title">GPX IMPORT</h5>
             <form>
               <div class="form-group">
-                  <input type="file" id="filein" name="file-input" accept=".gpx" class="HiddenElement"/>
+                  <input type="file" id="filein" name="file-input" accept=".gpx" multiple="true" class="HiddenElement"/>
                   <label for="filein" class="btn btn-primary">Choose file</label>
                   <span id='file-name-disp-text' class="help-block" style="word-wrap: break-word;"></span>
               </div>
@@ -341,12 +341,20 @@
     <!-- <div class="container"> -->
       <div class="row">
         <div class="col-md-12 jumbotron">
-          <!-- <div id="output-text">This is where the output text goes</div> -->
-          <!-- <div class="form-group textarea-size-styles"> -->
-          <div>
-            <h4>GeoJSON Text Output</h4>
-            <!-- <textarea id='output-textarea' class="form-control" style="height: 100%;"></textarea> -->
-            <textarea id='output-textarea'></textarea>
+          <div class="row">
+            <div class="col-md-6">
+              <h4>Output File Contents Display</h4>
+            </div>
+            <div class="col-md-6">
+              <h4 id="show-gpx-in-textarea">Show GPX</h4>
+              <h4 id="show-geojson-in-textarea">Show GeoJSON</h4>
+            </div>              
+          </div>
+          <div class="row form-element-extra-padding">
+            <div class="col-md-12">
+                <!-- <textarea id='output-textarea' class="form-control" style="height: 100%;"></textarea> -->
+                <textarea id='output-textarea'></textarea>
+            </div>
           </div>
         </div>
       </div>
@@ -373,12 +381,14 @@
   
   <!-- ########### toGeoJSON Library Javascript ############ -->
   <script src='lib/togeojson.js'></script>
+  <script src='lib/geojson-tools.js'></script>
 
   <!-- API key -->
   <script type="text/javascript" src="static/config/config.js"></script>
   <!-- <script type="text/javascript" src="static/config/config_testing.js"></script> -->
 
   <!-- ########### JAVASCRIPT FILES WE'RE RE-USING FROM THE MAIN MAP DISPLAYING APP USED IN "index.html" ############ -->
+  <script type="text/javascript" src='static/js/create-ride/xml-parse-tools.js'></script>
   <script type="text/javascript" src="static/js/otherHelperFunctions.js"></script>
   <script type="text/javascript" src="static/js/mappingHelperFunctions.js"></script>
   <script type="text/javascript" src="static/js/globals.js"></script>

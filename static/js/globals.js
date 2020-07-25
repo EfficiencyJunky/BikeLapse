@@ -33,6 +33,9 @@ let ridesData = {};
 // CREATE A LIST OF THE BIKE RIDE NUMBERS THAT GET GENERATED AS THE FILES ARE INGESTED INTO THE 'rideData' OBJECT ABOVE
 let rideIDsList = [];
 
+// initialize a global variable to hold the serialized GPX (XML) output file
+let gpxFileXmlDocDom;
+
 // let currentRideMetadata;
 
 // ICON PROPERTIES AND HOW THEY TRANSLATE TO CSS:

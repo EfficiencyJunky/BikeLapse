@@ -340,12 +340,20 @@
     <!-- <div class="container"> -->
       <div class="row">
         <div class="col-md-12 jumbotron">
-          <!-- <div id="output-text">This is where the output text goes</div> -->
-          <!-- <div class="form-group textarea-size-styles"> -->
-          <div>
-            <h4>GeoJSON Text Output</h4>
-            <!-- <textarea id='output-textarea' class="form-control" style="height: 100%;"></textarea> -->
-            <textarea id='output-textarea'></textarea>
+          <div class="row">
+            <div class="col-md-6">
+              <h4>Output File Contents Display</h4>
+            </div>
+            <div class="col-md-6">
+              <h4 id="show-gpx-in-textarea">Show GPX</h4>
+              <h4 id="show-geojson-in-textarea">Show GeoJSON</h4>
+            </div>              
+          </div>
+          <div class="row form-element-extra-padding">
+            <div class="col-md-12">
+                <!-- <textarea id='output-textarea' class="form-control" style="height: 100%;"></textarea> -->
+                <textarea id='output-textarea'></textarea>
+            </div>
           </div>
         </div>
       </div>

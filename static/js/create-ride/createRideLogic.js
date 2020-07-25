@@ -306,10 +306,10 @@ function handleMultipleFileSelections() {
     function combineXMLFilesAndConvertToGeoJSON(){
 
         //**************************** Combine XML Files and Convert to GeoJSON **********************************************************                    
-        let xmlDocDom = combineXMLFiles(selectedFilesText);
+        gpxFileXmlDocDom = combineXMLFiles(selectedFilesText);
 
         // convert GPX to GeoJSON with "toGeoJSON" library
-        let tempGeoJson = toGeoJSON.gpx(xmlDocDom);
+        let tempGeoJson = toGeoJSON.gpx(gpxFileXmlDocDom);
         let finalGeoJson = addSupplementalGeoJSONFeatures(tempGeoJson);
         
         // load the ridesData Object with a single ride who's key is "currentRideID" and value is the GeoJSON
@@ -323,7 +323,7 @@ function handleMultipleFileSelections() {
         // let textOutputToShow = "GeoJSON";
         
         if(textOutputToShow === "gpx"){
-            let xmlFileOutput = new XMLSerializer().serializeToString(xmlDocDom);
+            let xmlFileOutput = new XMLSerializer().serializeToString(gpxFileXmlDocDom);
             outputTextarea.value = xmlFileOutput;
         }
         else if(textOutputToShow === "GeoJSON"){
@@ -419,8 +419,26 @@ function convertButtonHandler(){
 
 function exportButtonHandler(){
 
-    // need to make this work
-    outputTextarea.value = "exporting file";
+    // need to make the export actually export a file
+    // outputTextarea.value = JSON.stringify(ridesData[createRideInterfaceRideID], null, 4);
+
+    // outputTextarea.value = "exporting file";
+
+}
+
+function showGPXInTextArea(){
+
+    let xmlFileOutput = new XMLSerializer().serializeToString(gpxFileXmlDocDom);
+    outputTextarea.value = xmlFileOutput;
+
+}
+
+function showGeoJSONInTextArea(){
+
+    // need to make the export actually export a file
+    outputTextarea.value = JSON.stringify(ridesData[createRideInterfaceRideID], null, 4);
+
+    // outputTextarea.value = "exporting file";
 
 }
 
@@ -434,6 +452,10 @@ function exportButtonHandler(){
 document.getElementById('filein').onchange = handleMultipleFileSelections;
 document.getElementById('convert-button').onclick = convertButtonHandler;
 document.getElementById('export-button').onclick = exportButtonHandler;
+
+
+document.getElementById('show-gpx-in-textarea').onclick = showGPXInTextArea;
+document.getElementById('show-geojson-in-textarea').onclick = showGeoJSONInTextArea;
 
 
 
