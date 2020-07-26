@@ -1,5 +1,6 @@
 # BikeLapse -- Open source web app / framework for cataloging bike rides or other activities (works with Strava GPX files)
 Check out the website here: https://bikelapse.com
+
 The website at the link above is directly hosted from this repository through the magic of Github Pages. So any changes made to the files in this repo will immediately be reflected on the website.
 
 
