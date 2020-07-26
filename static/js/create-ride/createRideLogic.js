@@ -1,5 +1,6 @@
 let gpxImportButtonFileNameLabel = document.getElementById('file-name-disp-text');
-let outputTextarea = document.getElementById('output-textarea');
+let gpxTextarea = document.getElementById('gpx-textarea');
+let geoJsonTextarea = document.getElementById('geojson-textarea');
 
 let rideMetadata = undefined;
 
@@ -316,21 +317,10 @@ function handleMultipleFileSelections() {
         ridesData[createRideInterfaceRideID] = finalGeoJson;
 
 
-        //**************************** Print File Contents to Textarea **********************************************************
-        // print out the file contents of either the final "gpx" OR "GeoJSON"
-        // depending on how this variable is set
-        let textOutputToShow = "gpx";
-        // let textOutputToShow = "GeoJSON";
-        
-        if(textOutputToShow === "gpx"){
-            let xmlFileOutput = new XMLSerializer().serializeToString(gpxFileXmlDocDom);
-            outputTextarea.value = xmlFileOutput;
-        }
-        else if(textOutputToShow === "GeoJSON"){
-            // if we haven't already printed the XML file (like if it's commented out above)
-            // print out the GeoJSON file to the outputTextarea instead
-            outputTextarea.value = JSON.stringify(ridesData[createRideInterfaceRideID], null, 4);
-        }
+        //**************************** Print File Contents to Textareas **********************************************************
+        // print out the contents of the final "gpx" AND "GeoJSON" files
+        gpxTextarea.value = new XMLSerializer().serializeToString(gpxFileXmlDocDom);
+        geoJsonTextarea.value = JSON.stringify(ridesData[createRideInterfaceRideID], null, 4);
 
 
         //**************************** Let the user know it all worked out **********************************************************
@@ -420,16 +410,18 @@ function convertButtonHandler(){
 function showGPXInTextArea(){
 
     let xmlFileOutput = new XMLSerializer().serializeToString(gpxFileXmlDocDom);
-    outputTextarea.value = xmlFileOutput;
+    
+    gpxTextarea.value = xmlFileOutput;
+    
 
 }
 
 function showGeoJSONInTextArea(){
 
     // need to make the export actually export a file
-    outputTextarea.value = JSON.stringify(ridesData[createRideInterfaceRideID], null, 4);
+    let geoJsonOutput = JSON.stringify(ridesData[createRideInterfaceRideID], null, 4);
 
-    // outputTextarea.value = "exporting file";
+    geoJsonTextarea.value = geoJsonOutput;
 
 }
 
@@ -466,12 +458,15 @@ document.getElementById('filein').onchange = handleMultipleFileSelections;
 document.getElementById('convert-button').onclick = convertButtonHandler;
 document.getElementById('export-button').onclick = exportButtonHandler;
 
-document.getElementById('fun-button-1').onclick = clearButton;
-document.getElementById('fun-button-2').onclick = funButton2Handler;
+
+if(document.getElementById('fun-button-1')){
+    document.getElementById('fun-button-1').onclick = clearButton;
+    document.getElementById('fun-button-2').onclick = funButton2Handler;
+}
 
 
-document.getElementById('show-gpx-in-textarea').onclick = showGPXInTextArea;
-document.getElementById('show-geojson-in-textarea').onclick = showGeoJSONInTextArea;
+
+
 
 
 

@@ -337,25 +337,27 @@
       </div>
     </div>
 
-    <!-- ########### GEOJSON TEXT OUTPUT ROW ############ -->
+    <!-- ########### GPX/XML AND GEOJSON TEXT OUTPUT ROW ############ -->
     <!-- <div class="container"> -->
       <div class="row">
         <div class="col-md-12 jumbotron">
-          <div class="row">
-            <div class="col-md-6">
-              <h4>Output File Contents Display</h4>
-            </div>
-            <div class="col-md-6">
-              <h4 id="show-gpx-in-textarea">Show GPX</h4>
-              <h4 id="show-geojson-in-textarea">Show GeoJSON</h4>
-            </div>              
+          
+          <h4 class="text-center">Input/Output File Contents Display</h4>
+
+          <ul class="nav nav-tabs form-element-extra-padding" id="textarea-toggle-tabs" role="tablist">
+            <li class="active" role="presentation">
+              <a id="gpx-tab" href="#gpx-textarea" data-toggle="tab" role="tab" aria-controls="gpx-textarea">GPX/XML</a>
+            </li>
+            <li role="presentation">
+              <a id="geojson-tab" href="#geojson-textarea" data-toggle="tab" role="tab" aria-controls="geojson-textarea">GeoJSON</a>
+            </li>
+          </ul>          
+
+          <div class="tab-content" id="myTabContent">
+            <textarea class="tab-pane fade in active" id="gpx-textarea" role="tabpanel">Import GPX to display here</textarea>
+            <textarea class="tab-pane fade" id="geojson-textarea" role="tabpanel">Convert GPX file to display GeoJSON here</textarea>
           </div>
-          <div class="row form-element-extra-padding">
-            <div class="col-md-12">
-                <!-- <textarea id='output-textarea' class="form-control" style="height: 100%;"></textarea> -->
-                <textarea id='output-textarea'></textarea>
-            </div>
-          </div>
+
         </div>
       </div>
     <!-- </div> -->
@@ -379,6 +381,13 @@
   <!-- <script type="text/javascript" src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" 
   integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" 
   crossorigin="anonymous"></script> -->
+  <!-- Latest compiled and minified JavaScript -->
+  <script src="https://code.jquery.com/jquery-1.12.4.min.js" 
+  integrity="sha384-nvAa0+6Qg9clwYCGGPpDQLVpLNn0fRaROjHqs13t4Ggj3Ez50XnGQqc/r8MhnRDZ" 
+  crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js" 
+  integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd" 
+  crossorigin="anonymous"></script>
 
   <!-- Latest jQuery, Daterangepicker (requires jQuery), Moment (only requires jQuery for stuff we likely don't need) -->
   <!-- <script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script> -->
