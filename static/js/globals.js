@@ -60,15 +60,54 @@ let mapIcons = {
 
 let mapIconsKeys = Object.keys(mapIcons);
 
-let bikeRouteLineColors = {
-  "completed":          {"lineColor": "rgba(62, 146, 204, 1)",  "legendText": "Completed Route"},
-  "suggested":          {"lineColor": "rgba(251, 255, 0, 1)",   "legendText": "Suggested Route"},
-  "variantNormal":      {"lineColor": "green",                  "legendText": "Variant - Normal"},
-  "variantDifficult":   {"lineColor": "red",                    "legendText": "Variant - Difficult"},
-  "default":            {"lineColor": "rgba(155, 155, 155, 1)",   "legendText": "Default Route Color"}
+// white -- "rgba(255, 255, 255, 1)"
+let routeLineProperties = {
+  "completed":          {"legendText": "Completed Route",        "lineFillOpacity": 1, "lineWeight": 4.0, "lineOpacity": 1, "lineColor": "rgba(62, 146, 204, 1)"    },
+  "suggested":          {"legendText": "Suggested Route",        "lineFillOpacity": 1, "lineWeight": 4.0, "lineOpacity": 1, "lineColor": "rgba(251, 255, 0, 1)"     },
+  "variantNormal":      {"legendText": "Variant - Normal",       "lineFillOpacity": 1, "lineWeight": 4.0, "lineOpacity": 1, "lineColor": "green"                    },
+  "variantDifficult":   {"legendText": "Variant - Difficult",    "lineFillOpacity": 1, "lineWeight": 4.0, "lineOpacity": 1, "lineColor": "red"                      },
+  "rabbitLayer":        {"legendText": "Selected Route",         "lineFillOpacity": 1, "lineWeight": 0.5, "lineOpacity": 1, "lineColor": "black"                    },
+  "default":            {"legendText": "Default Route Color",    "lineFillOpacity": 1, "lineWeight": 4.0, "lineOpacity": 1, "lineColor": "rgba(155, 155, 155, 1)"   }
 };
 
-let bikeRouteColorCodesKeys = Object.keys(bikeRouteLineColors);
+// this isn't ever used
+let bikeRouteColorCodesKeys = Object.keys(routeLineProperties);
+
+// settings for map UI elements
+let mapUISettings = {
+  "legend": {"position": "bottomright"},
+  "layerCtl": {"position": "topright"},
+  "ele": {"position": "bottomleft"}
+};
+
+
+// abracadabra // elevation control -- REMOVE THIS
+// find out more about elevation control and options here: https://github.com/MrMufflon/Leaflet.Elevation
+let elevationControlOptions = {
+  position: mapUISettings.ele.position,
+  theme: "steelblue-theme", //default: lime-theme
+  width: 600,
+  height: 125,
+  margins: {
+      top: 10,
+      right: 20,
+      bottom: 30,
+      left: 50
+  },
+  useHeightIndicator: true, //if false a marker is drawn at map position
+  interpolation: d3.curveLinear, //see https://github.com/d3/d3-shape/blob/master/README.md#area_curve
+  hoverNumber: {
+      decimalsX: 3, //decimals on distance (always in km)
+      decimalsY: 0, //deciamls on hehttps://www.npmjs.com/package/leaflet.coordinatesight (always in m)
+      formatter: undefined //custom formatter function may be injected
+  },
+  xTicks: undefined, //number of ticks in x axis, calculated by default according to width
+  yTicks: undefined, //number of ticks on y axis, calculated by default according to height
+  collapsed: false,  //collapsed mode, show chart on click or mouseover
+  imperial: true    //display imperial units instead of metric
+}
+
+let elevationRideID = "";
 
 
 /* ###################################################################
@@ -82,6 +121,7 @@ let selectedBaseMap = isNight ? "Dark Map" : "Street Map";
 // map zoom parameters
 let maximumZoom = 18;
 let minimumZoom = 10;
+let typicalZoom = 10;
 
 // youtube video embed size variables
 let videoHeight = 200;

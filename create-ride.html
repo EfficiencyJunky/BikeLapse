@@ -6,22 +6,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   
-  <title>BikeLapse.com/create-ride</title>
+  <title>Create a Ride!</title>
+  
+  <!-- FAVICON -->
   <link rel='icon' href='static/favicon.ico' type='image/x-icon'/>
 
-  <!-- Bootstrap styles -->
+  <!-- CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS -->
 
-  <!-- Latest compiled and minified Bootstrap 3 CSS -->
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
-  <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"> -->
-
-  <!-- <style>
-    h2, h3 {
-      font-weight: initial;
-      font-size: initial;
-    }
-  </style> -->
-
+  <!-- Bootstrap 3 CSS - Stable 3.4.1 compiled and minified -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" 
+  integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" 
+  crossorigin="anonymous">
 
   <!-- Date Range Picker -- UNUSED -->
   <!-- <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" /> -->
@@ -31,7 +26,7 @@
   integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
   crossorigin=""/>
   
-  <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
+  <script type="text/javascript" src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
   integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
   crossorigin=""></script>
 
@@ -39,11 +34,14 @@
   <!-- Leaflet Map TileSets from Stamen.com -- Doesn't have secure SSL Certificate so don't use this -->
   <!-- <script type="text/javascript" src="http://maps.stamen.com/js/tile.stamen.js?v1.3.0"></script> -->
 
-  <!--D3 cdn-->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.5.0/d3.min.js"></script>
-
   <!-- Our CSS -->
   <link rel="stylesheet" type="text/css" href="static/css/style.css">
+
+  <!-- ELEVATION PLUGIN CSS -->
+  <link rel="stylesheet" href="lib/elevation/leaflet.elevation-0.0.4.css" />
+  
+  <!-- CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS -->
+
 
   <!-- additional styling for elements on the page -->
   <style>
@@ -367,23 +365,31 @@
 
 
   <!-- D3 library -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.5.0/d3.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.5.0/d3.js"></script>
   <!-- <script src="https://d3js.org/d3.v5.min.js"></script> -->
 
-
-  <!-- JS, Popper.js, and jQuery FOR BOOTSTRAP -->
-  <!-- <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>   -->
-
-  <!-- Jquery, Moment, and Daterangepicker - UNUSED -->
-  <!-- <script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script> -->
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
-  <!-- <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script> -->
   
-  <!-- ########### toGeoJSON Library Javascript ############ -->
-  <script src='lib/togeojson.js'></script>
-  <script src='lib/geojson-tools.js'></script>
+  <!-- jQuery, Popper.js, and Bootstrap.js - FOR BOOTSTRAP 4 -->
+  <!-- <script type="text/javascript" src="https://code.jquery.com/jquery-3.5.1.slim.min.js" 
+  integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" 
+  crossorigin="anonymous"></script> -->
+  <!-- <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" 
+  integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" 
+  crossorigin="anonymous"></script> -->
+  <!-- <script type="text/javascript" src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" 
+  integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" 
+  crossorigin="anonymous"></script> -->
+
+  <!-- Latest jQuery, Daterangepicker (requires jQuery), Moment (only requires jQuery for stuff we likely don't need) -->
+  <!-- <script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script> -->
+  <!-- <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script> -->
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+  
+  
+  <!-- ########### OTHER PEOPLE'S MAPING RELATED LIBRARIES WE'RE USING ############ -->
+  <script type="text/javascript" src='lib/togeojson.js'></script>
+  <script type="text/javascript" src='lib/geojson-tools.js'></script>
+  <script type="text/javascript" src="lib/elevation/leaflet.elevation-0.0.4.min.js"></script>
 
   <!-- API key -->
   <script type="text/javascript" src="static/config/config.js"></script>
@@ -395,9 +401,9 @@
   <script type="text/javascript" src="static/js/mappingHelperFunctions.js"></script>
   <script type="text/javascript" src="static/js/globals.js"></script>
 
-<!-- ########### JAVASCRIPT FILES FOR THE "create-ride.html" APP THAT PERFORM ALL THE EVENT HANDLING AND MAPPING FUNCTIONS ############ -->
-<script type="text/javascript" src="static/js/create-ride/createRideLogic.js"></script>
-<script type="text/javascript" src="static/js/create-ride/mapLogic.js"></script>
+  <!-- ########### JAVASCRIPT FILES FOR THE "create-ride.html" APP THAT PERFORM ALL THE EVENT HANDLING AND MAPPING FUNCTIONS ############ -->
+  <script type="text/javascript" src="static/js/create-ride/createRideLogic.js"></script>
+  <script type="text/javascript" src="static/js/create-ride/mapLogic.js"></script>
   
 
 </body>

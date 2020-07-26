@@ -115,6 +115,17 @@ function onEachFeatureFunction(feature, layer) {
       
       break;
   }
+
+  // if we want to set the elevation to appear only when we click
+  // certain parts of the feature group, we can add the below code
+  // to any of the above "cases"
+  // layer.on('click dblclick', function(e) {
+  //   let 
+  //   showElevationForRideID(e, e.target.feature.properties.rideID);
+  //   // console.log(e);
+  // });
+
+
 }
 
 
@@ -144,7 +155,7 @@ function styleFunction (geoJsonFeature) {
 
       // create the lineColor variable to use for the color of the Feature's line
       // let lineColor = metadata.lineColor;
-      let lineColor = bikeRouteLineColors["default"].lineColor;
+      let lineColor = routeLineProperties["default"].lineColor;
 
       // if the metadata object has a "rideType" (not undefined),
       // and the "rideType" itself is not undefined,
@@ -152,7 +163,7 @@ function styleFunction (geoJsonFeature) {
       // into the global line options object to get the corresponding lineColor
       if(typeof(metadata.rideType) !== undefined && metadata.rideType !== undefined){
         // console.log("metadata rideType: ", metadata.rideType);
-        lineColor = bikeRouteLineColors[metadata.rideType].lineColor;
+        lineColor = routeLineProperties[metadata.rideType].lineColor;
       }
 
       // if the name includes a "$" then it's supposed to the easy route option and should be colored accordingly
@@ -313,61 +324,132 @@ function legendOnAdd(map) {
 
   // And this time just using the += because laziness
   div.innerHTML += '<strong>Route Types</strong>' + '<br>';
-  div.innerHTML += '<span class="legend-route-completed-icon"></span>' + '<span>Completed Route</span>' + '<br>';
-  div.innerHTML += '<span class="legend-route-suggested-icon"></span>' + '<span>Suggested Route</span>' + '<br>';
-  div.innerHTML += '<span class="legend-route-variant-normal-icon"></span>' + '<span>Variant - Normal</span>' + '<br>';
-  div.innerHTML += '<span class="legend-route-variant-difficult-icon"></span>' + '<span>Variant - Difficult</span>';
+  div.innerHTML += '<span class="legend-route-completed-icon"></span>' +          '<span>' + routeLineProperties.completed.legendText + '</span>' + '<br>';
+  div.innerHTML += '<span class="legend-route-suggested-icon"></span>' +          '<span>' + routeLineProperties.suggested.legendText + '</span>' + '<br>';
+  div.innerHTML += '<span class="legend-route-variant-normal-icon"></span>' +     '<span>' + routeLineProperties.variantNormal.legendText + '</span>' + '<br>';
+  div.innerHTML += '<span class="legend-route-variant-difficult-icon"></span>' +  '<span>' + routeLineProperties.variantDifficult.legendText + '</span>';
   
   return div;
 }
 
 
-// OLD EXAMPLE FOR A LEGEND CREATION FUNCTION USING THE BELOW COLOR FUNCTIOINS
-// This function uses the functions below to add a simple legend with color grades
-// This is just a reference example and we don't actually use this in the program
-function legendOnAddColorGrades(map) {
-  
-  // create a div for the legend
-  let div = L.DomUtil.create('div', 'info legend');
 
-  // add some HTML to that div to act as a title
-  div.innerHTML += '<b>Color</b><br>';
+// FUNCTION THAT MANAGES THE ADDING AND REMOVING OF THE ELEVATION CONTROL LAYER AND RABBIT DISPLAY LAYER
+function showElevationForRideID(clickedRideID){
 
-  // create a list of grades that we will use for the values in the legend
-  let grades = bikeRouteColorCodesKeys.map((key) => {
-      return bikeRouteColorCodes[key].score;
-  });
-  //let grades = [1.0, 2.0, 3.0, 4.0, 5.0]
+  if(elevationRideID !== clickedRideID && clickedRideID !== undefined){
+    
+    elevationRideID = clickedRideID;
+    // clear the display on the elevationControl
+    elevationControl.clear();
 
-  // loop through our density intervals and generate a label with a colored square for each interval
-  for (let i = 0; i < grades.length; i++) {
-      let key = bikeRouteColorCodesKeys[i];
+    // if a rabbit layer already exists, we need to remove it, otherwise it will stay on the map forever
+    if(elevationRabbitLayer !== undefined){
+      elevationRabbitLayer.clearLayers();
+      // elevationRabbitLayer.remove();
+    }
 
-      div.innerHTML +=
-          // '<i style="background:' + getColorNormal(grades[i]) + '"></i> ' +
-          '<span class="legendDots" style="background:' + getColorNormal(grades[i]) + '"></span>' +
-          // grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
-          bikeRouteColorCodes[key].shortDescription + (grades[i + 1] ? '<br>' : '');
+    // get the feature who's name is ROUTE and who's type is "LineString"
+    // so we can use its coordinates for the newGeoJSON we'll use to create the RabbitLayer
+    let routeLineString = ridesData[elevationRideID].features.find( (feature) => 
+                                                                    feature.properties.name === "ROUTE"
+                                                                    && feature.geometry.type === "LineString"
+                                                                );
 
+    let newGeoJSON = {
+      "name":"RabbitLayerOverlay",
+      "type":"FeatureCollection",
+      "features":[
+          {
+              "name": "RABBIT_ROUTE",
+              "type":"Feature",
+              "geometry": {
+                  "type":"LineString",
+                  "coordinates": routeLineString.geometry.coordinates
+              },
+              "properties":null
+          }
+      ]
+    };        
+
+    // assign the rabbitLayer to a new geoJSON
+    elevationRabbitLayer = L.geoJson(newGeoJSON,{
+      // pane: 'elevationPane', // panes don't seem to work
+      onEachFeature: elevationControl.addData.bind(elevationControl),
+      // filter: function(feature, layer) {  // the filter function doesn't seem to work either
+      //     // return feature.geometry.type !== "LineString";
+      // },
+      style: { fillOpacity: 0.0, weight: routeLineProperties.rabbitLayer.lineWeight, opacity: 1, color: routeLineProperties.rabbitLayer.lineColor}
+    });
+
+    // map.createPane('elevationPane');
+    // map.getPane('elevationPane').style.zIndex = 401;
+
+    // if the elevationControl Layer's container is null, 
+    // then that means it has previously been removed from the map
+    // so we need to add it back before we add the rabbit layer
+    if(elevationControl.getContainer() === null){
+        elevationControl.addTo(map);
+    }
+
+    elevationRabbitLayer.addTo(map);
+      
   }
-  
-  if(showSignificantColor === true){
-    div.innerHTML += '<hr>' + '<i style="background:' + getColorSignificant(1) + '"></i> ' + "Significant";
+  else{
+      console.log("same elevation layer RideID as before: ", elevationRideID); 
   }
 
-  return div;
 }
 
-// FUNCTIONS TO GET COLORS FOR CIRCLES USED IN LEGEND 
-function getColorNormal(d) {
-  return d >= 5.0  ? '#FF0000' :
-         d >= 4.0  ? '#FFCC00' :
-         d >= 3.0   ? '#ccff00' :
-         d >= 2.0   ? '#66ff00' :
-         d >= 1.0   ? '#00FF00' :
-                    '#00FF00';
+
+
+
+function clearElevationDisplay(removedRideID){
+
+  if(elevationControl.getContainer() !== null){
+      elevationRabbitLayer.remove();
+      elevationRabbitLayer = undefined;
+      elevationRideID = "";
+      elevationControl.clear();
+      elevationControl.remove();
+  }
+  else{
+    console.log("rideIDs are equal? ", removedRideID === elevationRideID);
+    console.log("elevationControl container exists? ", elevationControl.getContainer() !== null);
+  }
+
 }
 
-function getColorSignificant(d) {
-  return '#000000';
+
+
+
+// *****************************************************************
+//     RE-CENTER/ZOOM THE MAP WITH THE DETAILS POINT AS THE CENTER
+// *****************************************************************
+
+function reCenterMap(rideIDtoCenterOn){
+  // find the DETAILS pin in the Features array for the GeoJSON
+  let detailsPoint = ridesData[rideIDtoCenterOn].features.find( (feature) => feature.properties.name === "DETAILS");
+  let centerLatLon = detailsPoint.geometry.coordinates.slice(0, 2).reverse();
+  map.flyTo(centerLatLon, typicalZoom + 2, {animate: true, duration: 0.5});
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

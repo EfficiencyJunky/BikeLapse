@@ -22,6 +22,19 @@ let map = L.map("map", {
 });
 
 
+// ELEVATION DISPLAY GLOBAL VARIABLES
+let elevationControl = L.control.elevation(elevationControlOptions);
+
+// the layer that holds the information for the rabit display for the elevation control
+// this is the layer that will be added and removed as data is added and removed from the elevationControl layer
+let elevationRabbitLayer = undefined;
+// ELEVATION DISPLAY GLOBAL VARIABLES
+
+
+
+
+
+
 /* ##################################################################################
    ****  CREATE INITIAL MAP STATE
 ##################################################################################### */
@@ -128,14 +141,40 @@ function createMap(){
     if (typeof(ridesData[rideID]) !== undefined){
       // console.log("DATA EXISTS: " + rideMetadata.rideName);
 
-      overlayMaps[rideMetadata.rideName] = L.geoJson(ridesData[rideID], { 
-                                                                          pane: 'bikeRidesPane', // the "pane" option is inherited from the "Layer" object
-                                                                          filter: filterFunction,
-                                                                          pointToLayer: pointToLayerFunction,
-                                                                          onEachFeature: onEachFeatureFunction,
-                                                                          style: styleFunction
-                                                                          // style: { fillOpacity: 0.0, weight: 4, opacity: 1, color: rideMetadata.lineColor}
-                                                                        });
+      // overlayMaps[rideMetadata.rideName] = L.geoJson(ridesData[rideID], { 
+      let newGeoJsonLayer = L.geoJson(ridesData[rideID], { 
+                                                            pane: 'bikeRidesPane', // the "pane" option is inherited from the "Layer" object
+                                                            filter: filterFunction,
+                                                            pointToLayer: pointToLayerFunction,
+                                                            onEachFeature: onEachFeatureFunction,
+                                                            style: styleFunction
+                                                            // style: { fillOpacity: 0.0, weight: 4, opacity: 1, color: rideMetadata.lineColor}
+                                                          });
+
+      // when we click on the layer, we want to add the elevation data
+      // to the elevation control layer                                                  
+      newGeoJsonLayer.on('click dblclick', function(e) {
+
+        let clickedRideID = e.target.getLayers()[0].feature.properties.rideID;
+        // let clickedRideID = e.layer.feature.properties.rideID; // does the same thing as the one above
+        showElevationForRideID(clickedRideID);
+      });
+
+      // when we remove a layer that is currently being used to display the elevation
+      // we want to clear and remove the elevation display as well
+      newGeoJsonLayer.on('remove',function(e){
+        // the target is the GeoJSON LayerGroup 
+        // so we just grab the first layer in the group with [0]
+        // and then get its rideID
+        let removedRideID = e.target.getLayers()[0].feature.properties.rideID;
+        
+        if(removedRideID === elevationRideID) {
+          clearElevationDisplay(removedRideID);
+        }
+      });
+
+      overlayMaps[rideMetadata.rideName] = newGeoJsonLayer;
+
     }
     else{
       console.log("DATA UNDEFINED: " + rideMetadata.rideName);
@@ -154,7 +193,7 @@ function createMap(){
   // in the order we want them to
   // *************************************************************    
   map.createPane('bikeRidesPane');
-  map.getPane('bikeRidesPane').style.zIndex = 400;
+  map.getPane('bikeRidesPane').style.zIndex = 399;
 
   // *************************************************************
   // ADD THE INITIALLY CHOSEN MAP LAYERS TO THE MAP
@@ -184,33 +223,34 @@ function createMap(){
 function createUIElements(baseMaps, overlayMaps){
   
   // *************************************************************
-  //  ADD GENERIC LAYER CONTROL  - Bottom Left
+  //  ADD GENERIC LAYER CONTROL  - mapUISettings.layerCtl.position
   //      Pass in our baseMaps and overlayMaps
-  //      Add the layer control to the map on bottom left
+  //      Add the layer control to the map on mapUISettings.layerCtl.position
   // *************************************************************
   let mapLayerControl = L.control.layers(baseMaps, overlayMaps, {
       collapsed: false,
-      position: 'bottomleft'
+      position: mapUISettings.layerCtl.position
   }).addTo(map);
 
   // console.log("layer control", mapLayerControl.getContainer());
 
   // *************************************************************
-  //  ADD CONTROL ELEMENT TO ACT AS A LEGEND - Bottom right
+  //  ADD CONTROL ELEMENT TO ACT AS A LEGEND - mapUISettings.legend.position
   //      set the "onAdd" function to create some HTML to display
   // *************************************************************
-  let legend = L.control({position: 'bottomright'});
+  let legend = L.control({position: mapUISettings.legend.position});
 
   legend.onAdd = legendOnAdd;
   
   legend.addTo(map);
 
+  // abracadabra // elevation control -- REMOVE THIS
+  elevationControl.addTo(map);
+  elevationControl.remove();
+
 
   //createEventHandlers();
 }
-
-
-
 
 
 
@@ -224,16 +264,23 @@ bikeRideJSONFileNames.forEach( (fileName, i) => {
   let filePath = "static/data/" + fileName;
   
   // Perform a GET request to the query URL
-  d3.json(filePath, function(data) {
+  d3.json(filePath, function(rideGeoJSON) {
     // Once we get a response, send the data.features object to the createFeatures function along with color seting function and pane name
 
     // create a new rideID based on the order in which the file was loaded. This way it's not in order of the file names.
     let rideID = "ride" + pad(i+1, 4);
     
+    // save the rideID in the "metadata" of the ride and "properties" of each feature
+    // this is used as a reference for events that occur on each feature later
+    rideGeoJSON.metadata["rideID"] = rideID;
+    rideGeoJSON.features.forEach((feature) => {
+      feature.properties["rideID"] = rideID;
+    });
+
     // rideData2[rideID] = data.metadata;
-    ridesData[rideID] = data;
+    ridesData[rideID] = rideGeoJSON;
     
-    // console.log(ridesData);
+    // console.log(ridesData[rideID]);
 
     // let rideID = data.metadata.rideID;
     // console.log(data.metadata.testdata, data);

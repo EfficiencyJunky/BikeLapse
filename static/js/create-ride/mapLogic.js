@@ -2,7 +2,7 @@
    ****  GLOBAL VARIABLES -- GLOBAL VARIABLES -- GLOBAL VARIABLES ****
 ###################################################################### */
 // *************************************************************
-//     FIRST DEFINE THE MAP OBJECT
+//     FIRST DEFINE THE MAP OBJECT, CONTROL LAYERS AND SETTINGS
 // *************************************************************
 // Create our map using the div with id="map"
 let map = L.map("map", {
@@ -13,11 +13,19 @@ let map = L.map("map", {
 
 let mapLayerControl = undefined;
 
+// ELEVATION DISPLAY GLOBAL VARIABLES
+let elevationControl = L.control.elevation(elevationControlOptions);
 
-// // map zoom parameters
+// the layer that holds the information for the rabit display for the elevation control
+// this is the layer that will be added and removed as data is added and removed from the elevationControl layer
+let elevationRabbitLayer;
+// ELEVATION DISPLAY GLOBAL VARIABLES
+
+
+// override global map zoom parameters
 maximumZoom = 18;
 minimumZoom = 2;
-let typicalZoom = 10;
+
 
 
 /* ##################################################################################
@@ -101,27 +109,29 @@ function createMap(){
     ****  BUILD LAYER CONTROL UI ELEMENTS AND LEGEND - ADD THEM TO MAP
   ##################################################################################### */  
   // *************************************************************
-  //  ADD GENERIC LAYER CONTROL  - Bottom Left
+  //  ADD GENERIC LAYER CONTROL  - mapUISettings.layerCtl.position
   //      Pass in our baseMaps
-  //      Add the layer control to the map on bottom left
+  //      Add the layer control to the map on mapUISettings.layerCtl.position
   // *************************************************************
   mapLayerControl = L.control.layers(baseMaps, undefined, {
       collapsed: false,
-      position: 'bottomleft'
+      position: mapUISettings.layerCtl.position
   }).addTo(map);
 
   // *************************************************************
-  //  ADD CONTROL ELEMENT TO ACT AS A LEGEND - Bottom right
+  //  ADD CONTROL ELEMENT TO ACT AS A LEGEND - mapUISettings.legend.position
   //      set the "onAdd" function to create some HTML to display
   // *************************************************************
-  let legend = L.control({position: 'bottomright'});
+  let legend = L.control({position: mapUISettings.legend.position});
 
   legend.onAdd = legendOnAdd;
   
   legend.addTo(map);
 
 
-
+  // abracadabra // elevation control -- REMOVE THIS
+  elevationControl.addTo(map);
+  elevationControl.remove();  
 
 
 }
@@ -183,25 +193,12 @@ function addRideToMap(){
   overlayMaps[rideMetadata.rideName].addTo(map);
   // overlayMaps[ridesData[currentRideID].metadata.rideName].addTo(map); // this is the way we do it in the index.html file
 
-  // *****************************************************************
-  //     RE-CENTER/ZOOM THE MAP WITH THE DETAILS POINT AS THE CENTER
-  // *****************************************************************
-  // find the DETAILS pin in the Features array for the GeoJSON
-  let detailsPoint = ridesData[currentRideID].features.find( (feature) => feature.properties.name === "DETAILS");
+  showElevationForRideID(currentRideID);
 
-  // grab the lat/lon of the DETAILS point
-  // since the coordinates array for a Point is in the format [lon, lat, elevation]
-  // we have to get rid of the elevation with slice and then reverse the array
-  // so we swap the positions of the lon, lat
-  let centerLatLon = detailsPoint.geometry.coordinates.slice(0, 2).reverse();
-
-  // now we can re-center the map
-  // map.panTo(centerLatLon, {animate: true, duration: 1.0});
-  map.flyTo(centerLatLon, typicalZoom, {animate: true, duration: 1.0});
-  // map.setView(centerLatLon, typicalZoom, {animate: true, duration: 1.0});
+  // re-center the map on the location of the ride
+  reCenterMap(currentRideID);
 
 }
-
 
 
 
