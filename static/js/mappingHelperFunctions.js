@@ -101,7 +101,7 @@ function onEachFeatureFunction(feature, layer) {
   switch (feature.geometry.type) {
     case 'LineString': 
 
-      layer.bindPopup(createPopupHTMLVideo(properties), bindPopupProperties);
+      // layer.bindPopup(createPopupHTMLVideo(properties), bindPopupProperties);
 
       break;
     case 'Point':
@@ -238,10 +238,10 @@ function createPopupHTMLVideo(properties){
   let rideName = getTextFromValue(ridesData[currentRideID].metadata.rideName);
 
   let stravaURL = getTextFromValue(ridesData[currentRideID].metadata.stravaURL);
-  let stravaHTML = (stravaURL !== "" ? "<h3><a href=" + stravaURL + ">Click here for Strava Recording and Map</a></h3>" : "no strava URL<br>");
+  let stravaHTML = (stravaURL !== "" ? "<h3><a href=" + stravaURL + '" target="_blank">Click here for Strava Recording and Map</a></h3>' : "no strava URL<br>");
 
   let googleMapURL = getTextFromValue(ridesData[currentRideID].metadata.googleMapURL);
-  let googleMapHTML = (googleMapURL !== "" ? "<h3><a href=" + googleMapURL + ">Click here for detailed Google Map</a></h3>" : "no googlemap URL");
+  let googleMapHTML = (googleMapURL !== "" ? "<h3><a href=" + googleMapURL + '" target="_blank">Click here for detailed Google Map</a></h3>' : "no googlemap URL");
 
   let detailsPointFeature = ridesData[currentRideID].features.find( (element, i) =>{
     
@@ -303,7 +303,7 @@ function legendOnAdd(map) {
   // create a div for the legend
   let div = L.DomUtil.create('div', 'info legend');
 
-  labels = ['<strong>LEGEND</strong>'],
+  labels = ['<strong>Markers</strong>'],
 
   mapIconsKeys.map( (key, i) => {
 
@@ -320,14 +320,14 @@ function legendOnAdd(map) {
   div.innerHTML = labels.join('<br>');
 
   // create a horizontal line between the mapIcons section of the legend and the routes section
-  div.innerHTML += '<hr>'
+  div.innerHTML += '<hr>';
 
   // And this time just using the += because laziness
   div.innerHTML += '<strong>Route Types</strong>' + '<br>';
   div.innerHTML += '<span class="legend-route-completed-icon"></span>' +          '<span>' + routeLineProperties.completed.legendText + '</span>' + '<br>';
-  div.innerHTML += '<span class="legend-route-suggested-icon"></span>' +          '<span>' + routeLineProperties.suggested.legendText + '</span>' + '<br>';
-  div.innerHTML += '<span class="legend-route-variant-normal-icon"></span>' +     '<span>' + routeLineProperties.variantNormal.legendText + '</span>' + '<br>';
-  div.innerHTML += '<span class="legend-route-variant-difficult-icon"></span>' +  '<span>' + routeLineProperties.variantDifficult.legendText + '</span>';
+  div.innerHTML += '<span class="legend-route-suggested-icon"></span>' +          '<span>' + routeLineProperties.suggested.legendText + '</span>';// + '<br>';
+  // div.innerHTML += '<span class="legend-route-variant-normal-icon"></span>' +     '<span>' + routeLineProperties.variantNormal.legendText + '</span>' + '<br>';
+  // div.innerHTML += '<span class="legend-route-variant-difficult-icon"></span>' +  '<span>' + routeLineProperties.variantDifficult.legendText + '</span>';
   
   return div;
 }

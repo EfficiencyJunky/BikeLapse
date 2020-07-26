@@ -50,6 +50,7 @@ let gpxFileXmlDocDom;
 // ORIGINAL FINISH ICON PROPERTIES: 
     // iconURLorClass: "https://maps.gstatic.com/mapfiles/ms2/micons/red.png",   iconSize: [32, 32], iconAnchor: [16, 32], popupAnchor: [0, -32]},
 
+// any map icon that appears in the below object will appear in the legend and also be added to each ride if applicable
 let mapIcons = {
   "START":    {markerText: "START",     iconType: "divIcon",  iconURLorClass: "start-icon",             iconSize: [24, 24], iconAnchor: [12, 12], popupAnchor: [1, -8]},
   "FINISH":   {markerText: "FINISH",    iconType: "divIcon",  iconURLorClass: "finish-icon",            iconSize: [24, 24], iconAnchor: [12, 12], popupAnchor: [1, -8]},
