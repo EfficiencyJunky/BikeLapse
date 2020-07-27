@@ -226,7 +226,7 @@
 
             <h5 class="card-title text-center">RIDE INFO</h5>
 
-            <form>
+            <form id="ride-info-form">
               <div class="form-group">
                 <label for="rideName">Ride Name:</label>
                 <input type="text" id="rideName" class="form-control" placeholder="Name your route">
@@ -301,9 +301,11 @@
 
         <!-- ########### COLUMN 2.3 - Download the GeoJSON or GPX File ############ -->
         <div class="card bg-light mb-4 HiddenElement" id="download-button-container">
+        <!-- <div class="card bg-light mb-4 " id="download-button-container">   -->
           <div class="card-body text-center">
 
             <h5 class="card-title">DOWNLOAD FILE</h5>
+            <span id="geojson-notification-text" style="font-style: italic;"></span>
             <div>
               <button type="button" id="geojson-download-button" class="btn btn-success form-top-extra-margin">GeoJSON</button>
               <button type="button" id="gpx-download-button" class="btn btn-success form-top-extra-margin">GPX</button>
@@ -323,13 +325,14 @@
           <div class="card-body text-center">
 
             <h5 class="card-title">GPX IMPORT</h5>
-            <form>
-              <div class="form-group">
+            <!-- <form>
+              <div class="form-group"> -->
                   <input type="file" id="filein" name="file-input" accept=".gpx" multiple="true" class="HiddenElement"/>
-                  <label for="filein" class="btn btn-primary">Choose file</label>
+                  <!-- <label for="filein" id="gpx-import-button" class="btn btn-primary">Choose file</label> -->
+                  <button id="gpx-import-button" class="btn btn-primary mb-4">Choose file</button>
                   <span id='file-name-disp-text' class="help-block" style="word-wrap: break-word;"></span>
-              </div>
-            </form>
+              <!-- </div>
+            </form> -->
 
           </div>
         </div>
@@ -363,8 +366,8 @@
             </li>
           </ul>
           <div class="tab-content" id="myTabContent">
-            <textarea class="tab-pane fade show active" id="gpx-textarea" role="tabpanel" aria-labelledby="gpx-textarea-tab">Import GPX to display here</textarea>
-            <textarea class="tab-pane fade" id="geojson-textarea" role="tabpanel" aria-labelledby="geojson-textarea-tab">Convert GPX file to display GeoJSON here</textarea>
+            <textarea class="tab-pane fade show active" id="gpx-textarea" role="tabpanel" aria-labelledby="gpx-textarea-tab" readonly>Import GPX to display here</textarea>
+            <textarea class="tab-pane fade" id="geojson-textarea" role="tabpanel" aria-labelledby="geojson-textarea-tab" readonly>Convert GPX file to display GeoJSON here</textarea>
           </div>
           
         </div>

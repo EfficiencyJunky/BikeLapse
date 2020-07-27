@@ -4,6 +4,7 @@ let geoJsonTextarea = document.getElementById('geojson-textarea');
 
 // initialize a global variable to hold the serialized GPX (XML) output file
 let gpxFileXmlDocDom;
+let canExportGeoJson = true;
 
 // **************************************************************************
 //     CONVERT THE GPX FILE TEXT OBJECT TO GEOJSON USING "toGeoJSON" LIBRARY
@@ -315,7 +316,12 @@ function handleGpxFileSelectionCombineAndConvertToGeoJson(e) {
         //******** Display ride GeoJson on the map *************************************
         addRideToMap();
 
-        unhideButtons();
+        //******* Let the user know the adding to map worked **********************************
+        gpxImportButtonFileNameLabel.innerHTML = gpxImportButtonFileNameLabel.innerHTML + '<br><b>DONE</b><br><br>(Reload page to import again)'
+
+        //******** unhide download buttons and disable Import *********************************
+        updateButtonStates();
+
     }
 
 
@@ -346,13 +352,16 @@ function showGeoJSONInTextArea(geoJson){
 
 // unhides the "Update" and "Download" button containers
 // after we've imported a GPX file
-function unhideButtons(){
+function updateButtonStates(){
 
     let updateButtonContainer = document.getElementById('update-button-container');
     updateButtonContainer.classList.remove("HiddenElement");
 
     let downloadButtonContainer = document.getElementById('download-button-container');
     downloadButtonContainer.classList.remove("HiddenElement");
+
+    document.getElementById('gpx-import-button').disabled = true;
+
 }
 
 
@@ -403,6 +412,8 @@ function updateButtonHandler(e){
         showGeoJSONInTextArea(ridesData[currentRideID]);
         
         addRideToMap("update");
+        
+        enableGeoJsonExportButton(true);
     }
     else{
         alert('Please import a GPX file first');
@@ -463,7 +474,7 @@ function downloadButtonHandler(e){
     
 }
 
-
+// a hacky way that the internet taught me to be able to download text files
 function download(filename, text) {
     var element = document.createElement('a');
     element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
@@ -477,9 +488,47 @@ function download(filename, text) {
     document.body.removeChild(element);
 }
 
+// a hacky way to deal with the fact that File input buttons can't be styled
+// so we create a file input in the HTML file, make it hidden
+// then put a nice looking button in its place
+// when that button is clicked we just send a click message to the file input
+function handleGPXButtonClick(e){
+    document.getElementById('filein').click();
+}
+
+// if the user has changed one of the form fields
+// we need to disable the GeoJson download button until they press "update"
+// otherwise they may forget to press update
+// we could avoid this all together by just automatically updating the map
+// everytime the user modifies a form field
+function handleFormChanges(e){
+
+    // let gpxImportButtonDisabled = document.getElementById('gpx-import-button').disabled;
+    
+    // if we've imported data and are therefore displaying it in the map
+    // then we want to disable the GeoJson export button everytime form fields change
+    if(ridesData[currentRideID] !== undefined){
+        enableGeoJsonExportButton(false);
+    }
+    else{
+        // console.log("gpx import still enabled");
+    }
+
+}
 
 
+// this function enables or disables the GeoJsonExport button
+// if the user changes form inputs we want them to click "Update"
+// before exporting
+function enableGeoJsonExportButton(enable){
 
+    let geoJsonNotificationText = (enable) ? '' : 'Click Update to enable GeoJson Download';
+
+    document.getElementById('geojson-notification-text').innerHTML = geoJsonNotificationText;
+
+    document.getElementById('geojson-download-button').disabled = !enable;
+
+}
 
 // SETUP THE FILE INPUT SELECTION EVENT HANDLER
 // d3.select("#filein").on("change", handleFileSelection);
@@ -487,7 +536,12 @@ function download(filename, text) {
 
 
 // document.getElementById('filein').onchange = handleFileSelection;
+document.getElementById('ride-info-form').onchange = handleFormChanges;
+document.getElementById('startLocationName').onchange = handleFormChanges;
+document.getElementById('finishLocationName').onchange = handleFormChanges;
+
 document.getElementById('filein').onchange = handleGpxFileSelectionCombineAndConvertToGeoJson;
+document.getElementById('gpx-import-button').onclick = handleGPXButtonClick;
 document.getElementById('update-button').onclick = updateButtonHandler;
 document.getElementById('geojson-download-button').onclick = downloadButtonHandler;
 document.getElementById('gpx-download-button').onclick = downloadButtonHandler;
