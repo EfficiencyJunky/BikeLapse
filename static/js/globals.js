@@ -7,34 +7,16 @@
    ****  VARIOUS OBJECTS THAT DEFINE THE MAJORITY OF THE APP'S FUNCTIONALITY
 ################################################################################################## */
 
+
+// THIS OBJECT WILL BE UPDATED WITH THE GeoJSON DATA 
+// FROM THE LIST OF ".json" FILES IN THE "/static/data/" folder
+let ridesData = {};
+
 // setting this to "var" becauese it will need to be accessible throughout the program
 var currentRideID = "";
 let initialRideIDsToDisplay = ["ride0001", "ride0003"];
 
-// the rideID we will use for the create-ride.html map
-let createRideInterfaceRideID = "single_ride_ID";
 
-
-// var fs = require('fs');
-// var files = fs.readdirSync('/static/data/');
-// console.log("filenames: ", files);
-
-
-// let bikeRideJSONFileNames = [
-//   "2020_06_21--crystalsprings.json",
-//   "2020_07_05--rodeobeach.json",
-//   "2020_07_15--paradiseloop.json",
-//   "2020_07_11--ingleside.json"
-// ]
-
-// THIS OBJECT WILL BE UPDATED WITH THE GeoJSON DATA FROM THE LIST OF FILES ABOVE
-let ridesData = {};
-
-// CREATE A LIST OF THE BIKE RIDE NUMBERS THAT GET GENERATED AS THE FILES ARE INGESTED INTO THE 'rideData' OBJECT ABOVE
-let rideIDsList = [];
-
-// initialize a global variable to hold the serialized GPX (XML) output file
-let gpxFileXmlDocDom;
 
 // let currentRideMetadata;
 
@@ -81,8 +63,8 @@ let mapUISettings = {
   "ele": {"position": "bottomleft"}
 };
 
-
-// abracadabra // elevation control -- REMOVE THIS
+// *************  ELEVATION DISPLAY GLOBAL VARIABLES *****************************************************************
+// *************  ELEVATION DISPLAY GLOBAL VARIABLES *****************************************************************
 // find out more about elevation control and options here: https://github.com/MrMufflon/Leaflet.Elevation
 let elevationControlOptions = {
   position: mapUISettings.ele.position,
@@ -108,7 +90,16 @@ let elevationControlOptions = {
   imperial: true    //display imperial units instead of metric
 }
 
+let elevationControl = L.control.elevation(elevationControlOptions);
+
+// the layer that holds the information for the rabit display for the elevation control
+// this is the layer that will be added and removed as data is added and removed from the elevationControl layer
+let elevationRabbitLayer;
+
 let elevationRideID = "";
+
+// *************  ELEVATION DISPLAY GLOBAL VARIABLES *****************************************************************
+// *************  ELEVATION DISPLAY GLOBAL VARIABLES *****************************************************************
 
 
 /* ###################################################################
@@ -161,22 +152,11 @@ asyncCounter.prototype.increment = function(){
 
 
 
-
-
-
-
-
 // -----------------------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------------------
 /* ###########################################################################
    ****  UNUSED OBJECTS - ORIGINALLY FOR A LEGEND THAT USED COLOR CODES ***  rgba(62, 146, 204, 1)
 ############################################################################## */
-
-
 // returns a string for the current time in "HH:MM" format
 let currentTime = getCurrentTime();
-
-// boolean that tells the legend to add a divider that shows a different color for "significant delays"
-// this is just a carryover from a previous project and will likely never get used
-let showSignificantColor = false;

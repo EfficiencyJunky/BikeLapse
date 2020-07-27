@@ -11,21 +11,16 @@ let map = L.map("map", {
   zoom: 2
 });
 
-let mapLayerControl = undefined;
-
-// ELEVATION DISPLAY GLOBAL VARIABLES
-let elevationControl = L.control.elevation(elevationControlOptions);
-
-// the layer that holds the information for the rabit display for the elevation control
-// this is the layer that will be added and removed as data is added and removed from the elevationControl layer
-let elevationRabbitLayer;
-// ELEVATION DISPLAY GLOBAL VARIABLES
-
+// THE GEOJSON LAYER WITH OUR RIDE DATA THAT WE WILL ADD/REMOVE FROM THE MAP
+let geoJsonLayer = undefined;
 
 // override global map zoom parameters
 maximumZoom = 18;
 minimumZoom = 2;
 
+// since we're only dealing with one single ride in this version of the map
+// we can set the rideID to be anything we want
+currentRideID = "single_ride_ID";
 
 
 /* ##################################################################################
@@ -38,7 +33,7 @@ function createMap(){
   // *************************************************************
   // let streetmap = L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}", {
   let streetmap = L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
-      attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",
+      attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\" target=\"_blank\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\" target=\"_blank\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\" target=\"_blank\">Mapbox</a>",
       maxZoom: maximumZoom,
       minZoom: minimumZoom,
       id: "mapbox/streets-v11",
@@ -48,7 +43,7 @@ function createMap(){
 
   // let streetmap = L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}", {
   let darkmap = L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
-      attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",
+      attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\" target=\"_blank\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\" target=\"_blank\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\" target=\"_blank\">Mapbox</a>",
       maxZoom: maximumZoom,
       minZoom: minimumZoom,
       id: "mapbox/dark-v9",      
@@ -58,7 +53,7 @@ function createMap(){
 
   // let streetmap = L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}", {
   let satellite = L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
-      attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",
+      attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\" target=\"_blank\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\" target=\"_blank\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\" target=\"_blank\">Mapbox</a>",
       maxZoom: maximumZoom,
       minZoom: minimumZoom,
       id: "mapbox/satellite-v9",
@@ -113,7 +108,7 @@ function createMap(){
   //      Pass in our baseMaps
   //      Add the layer control to the map on mapUISettings.layerCtl.position
   // *************************************************************
-  mapLayerControl = L.control.layers(baseMaps, undefined, {
+  L.control.layers(baseMaps, undefined, {
       collapsed: false,
       position: mapUISettings.layerCtl.position
   }).addTo(map);
@@ -129,8 +124,10 @@ function createMap(){
   legend.addTo(map);
 
 
-  // abracadabra // elevation control -- REMOVE THIS
+  // add the elevationControl to the map to initialize it
   elevationControl.addTo(map);
+
+  // then immediately remove it so it doesn't show up on the map until we create a ride
   elevationControl.remove();  
 
 
@@ -139,42 +136,44 @@ function createMap(){
 
 
 
-function addRideToMap(){
-
-  // since we're only dealing with one single ride in this version of the map
-  // we can set the rideID to be anything we want
-  // set the current rideID to the createRideInterfaceRideID variable
-  // this way, no matter what the createRideInterfaceRideID variable is set to
-  // the currentRideID will always be referencing that 
-  currentRideID = createRideInterfaceRideID;
+function addRideToMap(operation = undefined){
+  
+  // if we're updating the map, then first clear the layers on it
+  if(operation === "update"){
+    clearElevationDisplay();
+    geoJsonLayer.remove();
+  }
+  // otherwise assume we're adding a ride to the map for the first time
+  // in this case, create the "bikeRidesPane" and set it's Z index
+  else{
+    map.createPane('bikeRidesPane');
+    map.getPane('bikeRidesPane').style.zIndex = 399;
+  }
+ 
   
   // *************************************************************
   // Define the overlayMaps object to hold our overlay layers
   // *************************************************************
-  let overlayMaps = {};
-
+  
   // *************************************************************
-  //     SECOND DEFINE THE "DATA LAYERS" TO USE AS THE VISUAL 
+  //     SECOND DEFINE THE "DATA LAYER" TO USE AS THE VISUAL 
   //     INFORMATION/DATA WE WILL DRAW ON TOP OF THE TILE LAYER 
-  //     ADD THEM AS KEY/VALUE PAIRS IN THE overlayMaps OBJECT
-  //      IN THIS CASE WE ONLY ADD ONE LAYER
   // *************************************************************
-  let rideMetadata = ridesData[currentRideID].metadata;
+  
+  if (ridesData[currentRideID] !== undefined){
 
-  if (typeof(ridesData[currentRideID]) !== undefined){
-    // console.log("DATA EXISTS: " + rideMetadata.rideName);
-
-    overlayMaps[rideMetadata.rideName] = L.geoJson(ridesData[currentRideID], { 
-                                                                            pane: 'bikeRidesPane', // the "pane" option is inherited from the "Layer" object
-                                                                            filter: filterFunction,
-                                                                            pointToLayer: pointToLayerFunction,
-                                                                            onEachFeature: onEachFeatureFunction,
-                                                                            style: styleFunction
-                                                                            // style: { fillOpacity: 0.0, weight: 4, opacity: 1, color: rideMetadata.lineColor}
-                                                                          });
+    geoJsonLayer = L.geoJson(ridesData[currentRideID], { 
+                                                          pane: 'bikeRidesPane', // the "pane" option is inherited from the "Layer" object
+                                                          filter: filterFunction,
+                                                          pointToLayer: pointToLayerFunction,
+                                                          onEachFeature: onEachFeatureFunction,
+                                                          style: styleFunction
+                                                          // style: { fillOpacity: 0.0, weight: 4, opacity: 1, color: ridesData[currentRideID].metadata.lineColor}
+                                                        });
   }
   else{
-    console.log("DATA UNDEFINED: " + rideMetadata.rideName);
+    console.log("RIDE DATA UNDEFINED");
+    return;
   }
 
 
@@ -187,10 +186,7 @@ function addRideToMap(){
   // the zIndex number will make sure they stack on eachother 
   // in the order we want them to
   // *************************************************************    
-  map.createPane('bikeRidesPane');
-  map.getPane('bikeRidesPane').style.zIndex = 399;
-
-  overlayMaps[rideMetadata.rideName].addTo(map);
+  geoJsonLayer.addTo(map);
   // overlayMaps[ridesData[currentRideID].metadata.rideName].addTo(map); // this is the way we do it in the index.html file
 
   showElevationForRideID(currentRideID);

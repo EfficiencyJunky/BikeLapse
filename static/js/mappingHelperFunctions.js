@@ -233,15 +233,15 @@ function createMarkerIcon(markerType){
 // probably need to re-name this function
 function createPopupHTMLVideo(properties){
   let videoEmbedID = getTextFromValue(ridesData[currentRideID].metadata.videoEmbedID);
-  let videoEmbedHTML = (videoEmbedID !== "" ? videoEmbedParams.firstHalf + videoEmbedID + videoEmbedParams.secondHalf : "no video URL<br>");
+  let videoEmbedHTML = (videoEmbedID !== '' ? videoEmbedParams.firstHalf + videoEmbedID + videoEmbedParams.secondHalf : 'no video URL<br>');
 
   let rideName = getTextFromValue(ridesData[currentRideID].metadata.rideName);
 
   let stravaURL = getTextFromValue(ridesData[currentRideID].metadata.stravaURL);
-  let stravaHTML = (stravaURL !== "" ? "<h3><a href=" + stravaURL + '" target="_blank">Click here for Strava Recording and Map</a></h3>' : "no strava URL<br>");
+  let stravaHTML = (stravaURL !== '' ? '<h3><a href="' + stravaURL + '" target="_blank">Click here for Strava Recording and Map</a></h3>' : 'no strava URL<br>');
 
   let googleMapURL = getTextFromValue(ridesData[currentRideID].metadata.googleMapURL);
-  let googleMapHTML = (googleMapURL !== "" ? "<h3><a href=" + googleMapURL + '" target="_blank">Click here for detailed Google Map</a></h3>' : "no googlemap URL");
+  let googleMapHTML = (googleMapURL !== '' ? '<h3><a href="' + googleMapURL + '" target="_blank">Click here for detailed Google Map</a></h3>' : 'no googlemap URL');
 
   let detailsPointFeature = ridesData[currentRideID].features.find( (element, i) =>{
     
@@ -251,10 +251,10 @@ function createPopupHTMLVideo(properties){
     return false;
   });
 
-  let detailsPointDescription = (detailsPointFeature ? detailsPointFeature.properties.description : "no description found");
+  let detailsPointDescription = (detailsPointFeature ? detailsPointFeature.properties.description : 'no description found');
  
-  return  "<h2>ROUTE: " + rideName + "</h2>" +
-          detailsPointDescription + "<br><br>" +
+  return  '<h2>ROUTE: ' + rideName + '</h2>' +
+          detailsPointDescription + '<br><br>' +
           videoEmbedHTML +
           stravaHTML +
           googleMapHTML;
@@ -396,7 +396,7 @@ function showElevationForRideID(clickedRideID){
       
   }
   else{
-      console.log("same elevation layer RideID as before: ", elevationRideID); 
+      console.log('clicked on ride with same "elevationRideID" as before: ', elevationRideID); 
   }
 
 }
@@ -414,7 +414,7 @@ function clearElevationDisplay(removedRideID){
       elevationControl.remove();
   }
   else{
-    console.log("rideIDs are equal? ", removedRideID === elevationRideID);
+    // console.log("rideIDs are equal? ", removedRideID === elevationRideID);
     console.log("elevationControl container exists? ", elevationControl.getContainer() !== null);
   }
 

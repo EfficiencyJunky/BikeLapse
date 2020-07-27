@@ -6,8 +6,6 @@
 // once the counter has been incremented enough times to equal the "numAPICalls" integer
 // currently we are only doing this once so it's sort of not really useful
 // but if we wanted to execute another API call we could update it
-// let numAPICalls = 1;
-// let numAPICalls = bikeRideIDsList.length;
 let numAPICalls = bikeRideJSONFileNames.length;
 
 var myAsyncCounter = new asyncCounter(numAPICalls, createMap);
@@ -22,17 +20,6 @@ let map = L.map("map", {
 });
 
 
-// ELEVATION DISPLAY GLOBAL VARIABLES
-let elevationControl = L.control.elevation(elevationControlOptions);
-
-// the layer that holds the information for the rabit display for the elevation control
-// this is the layer that will be added and removed as data is added and removed from the elevationControl layer
-let elevationRabbitLayer = undefined;
-// ELEVATION DISPLAY GLOBAL VARIABLES
-
-
-
-
 
 
 /* ##################################################################################
@@ -40,19 +27,13 @@ let elevationRabbitLayer = undefined;
 ##################################################################################### */
 function createMap(){
 
-  rideIDsList = Object.keys(ridesData);
-  // singleRideID = bikeRideIDsList2[0];
-  // console.log("Ride IDs From List: ", bikeRideIDsList2);
-  // console.log("All Ride Data: ", ridesData2);
-  // console.log("bikeRideIDsList: ", bikeRideIDsList);
-
   // *************************************************************
   //     FIRST DEFINE THE "TILE LAYERS" TO USE AS  
   //     THE ACTUAL MAPS WE WILL DRAW FEATURES ON TOP OF 
   // *************************************************************
   // let streetmap = L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}", {
   let streetmap = L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
-      attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",
+      attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\" target=\"_blank\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\" target=\"_blank\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\" target=\"_blank\">Mapbox</a>",
       maxZoom: maximumZoom,
       minZoom: minimumZoom,
       id: "mapbox/streets-v11",
@@ -62,7 +43,7 @@ function createMap(){
 
   // let streetmap = L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}", {
   let darkmap = L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
-      attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",
+      attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\" target=\"_blank\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\" target=\"_blank\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\" target=\"_blank\">Mapbox</a>",
       maxZoom: maximumZoom,
       minZoom: minimumZoom,
       id: "mapbox/dark-v9",      
@@ -72,7 +53,7 @@ function createMap(){
 
   // let streetmap = L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}", {
   let satellite = L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
-      attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",
+      attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\" target=\"_blank\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\" target=\"_blank\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\" target=\"_blank\">Mapbox</a>",
       maxZoom: maximumZoom,
       minZoom: minimumZoom,
       id: "mapbox/satellite-v9",
@@ -133,6 +114,10 @@ function createMap(){
   //     INFORMATION/DATA WE WILL DRAW ON TOP OF THE TILE LAYER 
   //     ADD THEM AS KEY/VALUE PAIRS IN THE OVERLAYMAPS OBJECT
   // *************************************************************
+
+  // CREATE A LIST OF THE BIKE RIDE "ridIDs" THAT GET GENERATED 
+  // AS THE GEOJSON FILES ARE INGESTED INTO THE 'rideData' OBJECT
+  let rideIDsList = Object.keys(ridesData);
 
   rideIDsList.map( (rideID,i) => {
 
@@ -259,22 +244,26 @@ function createUIElements(baseMaps, overlayMaps){
 
 
 
-
+// ******************************************************************************************
+// ******************* MAIN FUNCTION -- MAIN FUNCTION ***************************************
+// ******************************************************************************************
 // LOAD THE JSON FILES FOR EACH RIDE AS SPECIFIED IN THE "bikeRideJSONFileNames" VARIABLE IN THE "globals.js" file
-bikeRideJSONFileNames.forEach( (fileName, i) => {
+bikeRideJSONFileNames.forEach( (geoJsonFileName, i) => {
 
-  let filePath = "static/data/" + fileName;
+  let geoJsonFilePath = "static/data/" + geoJsonFileName;
   
   // Perform a GET request to the query URL
-  d3.json(filePath, function(rideGeoJSON) {
+  d3.json(geoJsonFilePath, function(rideGeoJSON) {
     // Once we get a response, send the data.features object to the createFeatures function along with color seting function and pane name
 
     // create a new rideID based on the order in which the file was loaded. This way it's not in order of the file names.
     let rideID = "ride" + pad(i+1, 4);
     
-    // save the rideID in the "metadata" of the ride and "properties" of each feature
-    // this is used as a reference for events that occur on each feature later
+    // save the rideID in the "metadata" of the ride 
     rideGeoJSON.metadata["rideID"] = rideID;
+
+    // also save the rideID in the "properties" of each feature
+    // this is used as a reference for events that occur on each feature later
     rideGeoJSON.features.forEach((feature) => {
       feature.properties["rideID"] = rideID;
     });
@@ -296,15 +285,3 @@ bikeRideJSONFileNames.forEach( (fileName, i) => {
   });
 
 });
-
-
-
-
-
-
-
-// // THIS IS THE MAIN FUNCTION OF THE JS FILE
-// for(i=0; i < bikeRideIDsList.length; i++){
-//   console.log("increment");
-//   myAsyncCounter.increment();
-// }
