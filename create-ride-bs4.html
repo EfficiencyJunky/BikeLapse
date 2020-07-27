@@ -209,7 +209,7 @@
             <li><b>Start/Finish Markers: </b>Name the locations where the ride started and finished (cafe, landmark, address, whatever!)</li>
             <li><b>Import GPX: </b>Import a GPX file to convert to the BikeLapse GeoJSON based format</li>
             <li><b>Convert and Preview: </b>Convert to GeoJSON that is ready to use on Bikelapse.com and show preview on map as well as the text output of the file</li>
-            <li><b>Export: </b>Export to a file that will be downloaded to your computer and is ready for use on Bikelapse.com</li>
+            <li><b>Download: </b>Download to a file that will be downloaded to your computer and is ready for use on Bikelapse.com</li>
           </ul>
         </div>
       </div>
@@ -264,7 +264,7 @@
         </div>
       </div>
 
-      <!-- ########### COLUMN 2 - Marker Location Names and GPX Import ############ -->
+      <!-- ########### COLUMN 2 - Marker Location Names and Update Button ############ -->
       <div class="col-md-3">
         <!-- ########### COLUMN 2.1 - Marker Location Names ############ -->
         <div class="card bg-light mb-4">
@@ -286,10 +286,11 @@
         </div>
 
         <!-- ########### COLUMN 2.2 - Allow the user to update the details or location names for the ride ############ -->
-        <div class="card bg-light mb-4">
+        <div class="card bg-light mb-4 HiddenElement" id="update-button-container">
           <div class="card-body text-center">
 
-            <h5 class="card-title">Update Ride Info</h5>
+            <h5 class="card-title">Update Ride Info in Map</h5>
+            <!-- <small>This button only functions after importing GPX file(s)</small> -->
             <div>
               <button type="button" id="update-button" class="btn btn-success form-top-extra-margin">Update</button>
             </div>
@@ -298,18 +299,26 @@
         </div>
 
 
+        <!-- ########### COLUMN 2.3 - Download the GeoJSON or GPX File ############ -->
+        <div class="card bg-light mb-4 HiddenElement" id="download-button-container">
+          <div class="card-body text-center">
 
+            <h5 class="card-title">DOWNLOAD FILE</h5>
+            <div>
+              <button type="button" id="geojson-download-button" class="btn btn-success form-top-extra-margin">GeoJSON</button>
+              <button type="button" id="gpx-download-button" class="btn btn-success form-top-extra-margin">GPX</button>
+            </div>
+          </div>
+        </div>
 
 
 
 
       </div>
 
-      <!-- ########### COLUMN 3 - Import GPX and Export GeoJSON ############ -->
+      <!-- ########### COLUMN 3 - Import GPX ############ -->
       <div class="col-md-3">
 
-
-        <!-- ########### COLUMN 3.1 - GPX Import ############ -->
         <div class="card bg-light mb-4">
           <div class="card-body text-center">
 
@@ -326,30 +335,6 @@
         </div>
 
 
-        <!-- ########### COLUMN 3.2 - Export the GeoJSON File ############ -->
-        <div class="card bg-light mb-4">
-          <div class="card-body text-center">
-
-            <h5 class="card-title">GeoJSON EXPORT</h5>
-            <div>
-              <button type="button" id="export-button" class="btn btn-success form-top-extra-margin">Export</button>
-            </div>
-
-          </div>
-        </div>
-
-        <!-- ########### COLUMN 3.3 - Test Buttons ############ -->
-        <!-- <div class="card bg-light ">
-          <div class="card-body text-center">
-
-            <h5 class="card-title">Testing Buttons</h5>
-            <div>
-              <button type="button" id="test-button-1" class="btn btn-success form-top-extra-margin">Update</button>
-              <button type="button" id="test-button-2" class="btn btn-success form-top-extra-margin">Export</button>
-            </div>
-
-          </div>
-        </div>         -->
 
       </div>
     

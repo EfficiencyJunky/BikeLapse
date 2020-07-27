@@ -314,6 +314,8 @@ function handleGpxFileSelectionCombineAndConvertToGeoJson(e) {
 
         //******** Display ride GeoJson on the map *************************************
         addRideToMap();
+
+        unhideButtons();
     }
 
 
@@ -342,17 +344,21 @@ function showGeoJSONInTextArea(geoJson){
 
 }
 
+// unhides the "Update" and "Download" button containers
+// after we've imported a GPX file
+function unhideButtons(){
 
-function exportButtonHandler(e){
-    console.log("Need to implement export button");
-    
+    let updateButtonContainer = document.getElementById('update-button-container');
+    updateButtonContainer.classList.remove("HiddenElement");
+
+    let downloadButtonContainer = document.getElementById('download-button-container');
+    downloadButtonContainer.classList.remove("HiddenElement");
 }
 
-function updateTestButton(){
 
-    console.log("Need to implement update test button");
 
-}
+
+
 
 
 // Called when someone pushes the Update button
@@ -407,9 +413,73 @@ function updateButtonHandler(e){
 }
 
 
-function exportTestButton(e){
-    console.log('Need to implement "Export" TEST button');
+// handle the download button presses and download the correct file according to which button was pressed
+function downloadButtonHandler(e){
+
+    // check to make sure the GeoJson has been created first
+    if(ridesData[currentRideID] !== undefined){
+
+        // get the routeLineString from the rideData 
+        let routeLineString = ridesData[currentRideID].features.find( (feature) => 
+                                                                            feature.properties.name === "ROUTE"
+                                                                            && feature.geometry.type === "LineString"
+                                                                    );
+
+        // pull the ISO date time so we can use for the file name later
+        let rideTime = routeLineString.properties.time;
+        let rideName = ridesData[currentRideID].metadata.rideName;
+        let fileExtension = "";
+        let fileContents = "";
+
+        switch (e.target.id) {
+            case 'geojson-download-button':
+                fileExtension = '.json';
+                fileContents = geoJsonTextarea.value;
+                break;
+            case 'gpx-download-button':
+                fileExtension = '.gpx';
+                fileContents = gpxTextarea.value;
+                break;
+        }
+
+        // use moment to turn the rideTime string into a new string that we will use for the prefix of the filename
+        // it will look something like this "2020_07_23--"
+        let fileNameDatePrefix = moment(rideTime).format('YYYY[_]MM[_]DD[--]');
+
+        // if the ride name is an empty string, give it a name
+        // otherwise replace all spaces with underscores
+        // and lastly add the file extension to the end
+        let filename = fileNameDatePrefix + ( (rideName === '') ? 'BikeLapseRideData' :  rideName.replace(/\s+/g, '_').toLowerCase() ) + fileExtension;
+
+        console.log(filename);
+
+        // Generate download of file with fileContents as content
+        download(filename, fileContents);
+    }
+    else{
+        alert('Please import a GPX file first');
+        console.log("rides data is of type: ", typeof(ridesData[currentRideID]));
+    }
+    
 }
+
+
+function download(filename, text) {
+    var element = document.createElement('a');
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+    element.setAttribute('download', filename);
+
+    element.style.display = 'none';
+    document.body.appendChild(element);
+
+    element.click();
+
+    document.body.removeChild(element);
+}
+
+
+
+
 
 // SETUP THE FILE INPUT SELECTION EVENT HANDLER
 // d3.select("#filein").on("change", handleFileSelection);
@@ -419,13 +489,5 @@ function exportTestButton(e){
 // document.getElementById('filein').onchange = handleFileSelection;
 document.getElementById('filein').onchange = handleGpxFileSelectionCombineAndConvertToGeoJson;
 document.getElementById('update-button').onclick = updateButtonHandler;
-document.getElementById('export-button').onclick = exportButtonHandler;
-
-
-if(document.getElementById('test-button-1')){
-    document.getElementById('test-button-1').onclick = updateTestButton;
-}
-
-if(document.getElementById('test-button-2')){
-    document.getElementById('test-button-2').onclick = exportTestButton;
-}
+document.getElementById('geojson-download-button').onclick = downloadButtonHandler;
+document.getElementById('gpx-download-button').onclick = downloadButtonHandler;
