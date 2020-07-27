@@ -18,9 +18,18 @@ let geoJsonLayer = undefined;
 maximumZoom = 18;
 minimumZoom = 2;
 
+
+// override the elevation display position to be top left
+// mapUISettings.legend.position = "topleft";
+// elevationControl.setPosition("topleft");
+
 // since we're only dealing with one single ride in this version of the map
 // we can set the rideID to be anything we want
 currentRideID = "single_ride_ID";
+
+
+
+
 
 
 /* ##################################################################################
@@ -126,9 +135,15 @@ function createMap(){
 
   // add the elevationControl to the map to initialize it
   elevationControl.addTo(map);
+  // console.log(elevationControl.getContainer());
 
+  // get a reference to the DIV where we want to move the ElevationControl Display
+  elevationDiv = document.getElementById('elevation-disp');
+  // grab the elevationControl container and move it to the elevationDiv
+  elevationDiv.appendChild(elevationControl.getContainer());
+  
   // then immediately remove it so it doesn't show up on the map until we create a ride
-  elevationControl.remove();  
+  // elevationControl.remove();  
 
 
 }
@@ -136,7 +151,7 @@ function createMap(){
 
 
 
-function addRideToMap(operation = undefined){
+function addRideToMap(operation){
   
   // if we're updating the map, then first clear the layers on it
   if(operation === "update"){

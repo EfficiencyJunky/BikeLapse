@@ -156,7 +156,7 @@ function createMap(){
         let removedRideID = e.target.getLayers()[0].feature.properties.rideID;
         
         if(removedRideID === elevationRideID) {
-          clearElevationDisplay(removedRideID);
+          clearElevationDisplay("remove");
         }
       });
 

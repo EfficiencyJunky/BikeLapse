@@ -132,7 +132,7 @@ function createPointFeature(tempGeoJson, pointName, pointLocationName = 'Locatio
             },
             "properties": {
               "name": pointName,
-              "description": (pointName === "DETAILS") ? createDetailsDescription(routeLineString, formattedDateTimeString) : '<b>Location Name:</b> ' + pointLocationName + '<br>' +
+              "description": (pointName === "DETAILS") ? createDetailsDescription(routeLineString, formattedDateTimeString) : '<b>Location Name:</b> ' + pointLocationName + '<br><br>' +
                                                                                       '<b>Time:</b> ' + formattedDateTimeString + '<br>' +
                                                                                       '<b>Elevation:</b> ' + Math.round(pointCoords[2]*3.28084) + ' feet &nbsp (' + Math.round(pointCoords[2]) + ' meters)'
             }
@@ -319,8 +319,11 @@ function handleGpxFileSelectionCombineAndConvertToGeoJson(e) {
         //******* Let the user know the adding to map worked **********************************
         gpxImportButtonFileNameLabel.innerHTML = gpxImportButtonFileNameLabel.innerHTML + '<br><b>DONE</b><br><br>(Reload page to import again)'
 
-        //******** unhide download buttons and disable Import *********************************
-        updateButtonStates();
+        // disable the GPX import button
+        document.getElementById('gpx-import-button').disabled = true;
+
+        // update "Save Changes" button display
+        unsavedChanges(false);
 
     }
 
@@ -352,15 +355,26 @@ function showGeoJSONInTextArea(geoJson){
 
 // unhides the "Update" and "Download" button containers
 // after we've imported a GPX file
-function updateButtonStates(){
+function unsavedChanges(unsavedChanges){
 
-    let updateButtonContainer = document.getElementById('update-button-container');
-    updateButtonContainer.classList.remove("HiddenElement");
+    document.getElementById('save-changes-button').disabled = !unsavedChanges;
+    
+    let notificationText = (unsavedChanges) ? 'unsaved changes' : '';
 
-    let downloadButtonContainer = document.getElementById('download-button-container');
-    downloadButtonContainer.classList.remove("HiddenElement");
+    document.getElementById('save-changes-button-notification-text').innerHTML = notificationText;    
 
-    document.getElementById('gpx-import-button').disabled = true;
+}
+
+// this function enables or disables the GeoJsonExport button
+// if the user changes form inputs we want them to click "Update"
+// before exporting
+function setDownloadButtonsDisabled(disabled){
+
+    // let geoJsonNotificationText = (disabled) ? '' : 'unsaved changes';
+    // document.getElementById('save-changes-button-notification-text').innerHTML = geoJsonNotificationText;
+
+    document.getElementById('geojson-download-button').disabled = disabled;
+    document.getElementById('gpx-download-button').disabled = disabled;
 
 }
 
@@ -368,11 +382,9 @@ function updateButtonStates(){
 
 
 
-
-
 // Called when someone pushes the Update button
 //
-function updateButtonHandler(e){
+function saveChangesButtonHandler(e){
 
     // check to make sure the GeoJson has been created first
     if(ridesData[currentRideID] !== undefined){
@@ -413,7 +425,8 @@ function updateButtonHandler(e){
         
         addRideToMap("update");
         
-        enableGeoJsonExportButton(true);
+        //******** update save button and clear helper text *********************************
+        unsavedChanges(false);
     }
     else{
         alert('Please import a GPX file first');
@@ -462,7 +475,7 @@ function downloadButtonHandler(e){
         // and lastly add the file extension to the end
         let filename = fileNameDatePrefix + ( (rideName === '') ? 'BikeLapseRideData' :  rideName.replace(/\s+/g, '_').toLowerCase() ) + fileExtension;
 
-        console.log(filename);
+        // console.log(filename);
 
         // Generate download of file with fileContents as content
         download(filename, fileContents);
@@ -497,18 +510,16 @@ function handleGPXButtonClick(e){
 }
 
 // if the user has changed one of the form fields
-// we need to disable the GeoJson download button until they press "update"
-// otherwise they may forget to press update
-// we could avoid this all together by just automatically updating the map
-// everytime the user modifies a form field
+// then we want to update the "Saved Changes" button and text label
 function handleFormChanges(e){
 
-    // let gpxImportButtonDisabled = document.getElementById('gpx-import-button').disabled;
-    
-    // if we've imported data and are therefore displaying it in the map
-    // then we want to disable the GeoJson export button everytime form fields change
+    // if we've imported data and are therefore displaying it in the map then carry out the event
     if(ridesData[currentRideID] !== undefined){
-        enableGeoJsonExportButton(false);
+
+        if(e.type === "keyup" || (e.type === "change" && e.target.type === "radio") ){
+            unsavedChanges(true);
+            // document.getElementById('save-changes-button').disabled = false;
+        }
     }
     else{
         // console.log("gpx import still enabled");
@@ -517,31 +528,22 @@ function handleFormChanges(e){
 }
 
 
-// this function enables or disables the GeoJsonExport button
-// if the user changes form inputs we want them to click "Update"
-// before exporting
-function enableGeoJsonExportButton(enable){
-
-    let geoJsonNotificationText = (enable) ? '' : 'Click Update to enable GeoJson Download';
-
-    document.getElementById('geojson-notification-text').innerHTML = geoJsonNotificationText;
-
-    document.getElementById('geojson-download-button').disabled = !enable;
-
-}
-
 // SETUP THE FILE INPUT SELECTION EVENT HANDLER
 // d3.select("#filein").on("change", handleFileSelection);
 // document.getElementById('filein').addEventListener("change", handleFileSelection);
 
 
-// document.getElementById('filein').onchange = handleFileSelection;
-document.getElementById('ride-info-form').onchange = handleFormChanges;
-document.getElementById('startLocationName').onchange = handleFormChanges;
-document.getElementById('finishLocationName').onchange = handleFormChanges;
-
-document.getElementById('filein').onchange = handleGpxFileSelectionCombineAndConvertToGeoJson;
+// handlers for when gpx-import-button is clicked
 document.getElementById('gpx-import-button').onclick = handleGPXButtonClick;
-document.getElementById('update-button').onclick = updateButtonHandler;
+document.getElementById('filein').onchange = handleGpxFileSelectionCombineAndConvertToGeoJson;
+
+
+document.getElementById('ride-info-form').onchange = handleFormChanges;
+document.getElementById('ride-info-form').onkeyup = handleFormChanges;
+
+// save changes button click handler
+document.getElementById('save-changes-button').onclick = saveChangesButtonHandler;
+
+// download button click handlers
 document.getElementById('geojson-download-button').onclick = downloadButtonHandler;
 document.getElementById('gpx-download-button').onclick = downloadButtonHandler;

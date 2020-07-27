@@ -403,15 +403,17 @@ function showElevationForRideID(clickedRideID){
 
 
 
-
-function clearElevationDisplay(removedRideID){
+function clearElevationDisplay(operation){
 
   if(elevationControl.getContainer() !== null){
       elevationRabbitLayer.remove();
       elevationRabbitLayer = undefined;
       elevationRideID = "";
       elevationControl.clear();
-      elevationControl.remove();
+
+      if(operation === "remove"){
+        elevationControl.remove();
+      }
   }
   else{
     // console.log("rideIDs are equal? ", removedRideID === elevationRideID);

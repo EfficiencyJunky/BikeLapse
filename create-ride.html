@@ -55,6 +55,11 @@
       margin-bottom: 20px;
     }
 
+    .elevation-disp-div{
+      width: 100%;
+      font-size: 12px;
+    }
+
     .leaflet-popup-content h3 {
       display: block;
       font-size: 1.17em;
@@ -137,35 +142,47 @@
         <h1>Create a Ride</h1>
         <div>
         <ul>
-          <li><b>Title and Info: </b>Give your ride a name and add additional information (like video/strava/googlemap links)</li>
-          <li><b>Start/Finish Markers: </b>Name the locations where the ride started and finished (cafe, landmark, address, whatever!)</li>
-          <li><b>Import GPX: </b>Import a GPX file to convert to the BikeLapse GeoJSON based format</li>
-          <li><b>Convert and Preview: </b>Convert to GeoJSON that is ready to use on Bikelapse.com and show preview on map as well as the text output of the file</li>
-          <li><b>Download: </b>Download to a file that will be downloaded to your computer and is ready for use on Bikelapse.com</li>
+          <li><b>GPX Import:</b> Import a GPX file (or multiple files from the same ride) to convert to the BikeLapse GeoJSON based format and preview on the map below</li>
+          <li><b>Ride Info:</b> Give your ride a name and choose whether you completed it, or are suggesting it</li>
+          <li><b>Start/Finish Markers:</b> Name the locations where the ride started and finished (cafe, landmark, address, whatever!)</li>
+          <li><b>Video and Links:</b> Optionally add the YouTube ID for the BikeLapse video and/or links to the strava activity / annotated googlemap</li>
+          <li><b>Save changes:</b> Make sure to save your changes!!!</li>
+          <li><b>Download:</b> Save the GeoJSON that is ready for use on Bikelapse.com. If you imported multiple gpx files, you may want to export the combined GPX</li>
         </ul>
       </div>
       </div>
 
     </div>
 
-    <!-- ########### INFORMATION ENTRY ROW ############ -->
+    <!-- ########### ROW 1 - GPX IMPORT ############ -->
+    <div class="well text-center">
+
+      <h4 >GPX IMPORT</h4>
+
+      <input type="file" id="filein" name="file-input" accept=".gpx" multiple="true" class="hidden"/>
+      <!-- <label for="filein" id="gpx-import-button" class="btn btn-primary">Choose file</label> -->
+      <button id="gpx-import-button" class="btn btn-primary">Choose file</button>
+      <span id='file-name-disp-text' class="help-block" style="word-wrap: break-word;"></span>
+
+    </div>    
+
+
+
+    <!-- ########### ROW 2 - RIDE ENTRY AND MAP DISPLAY ############ -->
     <div class="row">
 
-      <!-- ########### COLUMN 1 - Ride Info ############ -->
-      <div class="col-sm-6">
+      <!-- ########### COLUMN 1 - RIDE INFO ############ -->
+      <div class="col-md-4">
         <div class="well">
 
-          <div class="row">
-            <div class="col-xs-12">
-              <h4 style="text-align: center;">RIDE INFO</h4>
-            </div>
-          </div>
+          <h4 style="text-align: center;">RIDE INFO</h4>
               
-          <form class="form-top-extra-margin" id="ride-info-form">
+          <form id="ride-info-form">
             <div class="form-group">
               <label for="rideName">Ride Name:</label>
               <input type="text" id="rideName" class="form-control" placeholder="Name your route">
             </div>
+
             <h5 style='font-weight: bold;' class="form-element-extra-padding">Ride Type:</h5>
             <div class="radio">
               <label>
@@ -180,8 +197,16 @@
               </label>
             </div>
             <div class="form-group form-element-extra-padding">
+              <label for="startLocationName">Start Location Name</label>
+              <input type="text" id="startLocationName" class="form-control" placeholder="Name of Start Location">
+            </div>
+            <div class="form-group form-element-extra-padding">
+              <label for="finishLocationName">Finish Location Name</label>
+              <input type="text" id="finishLocationName" class="form-control" placeholder="Name of Finish Location">
+            </div>
+            <div class="form-group form-element-extra-padding">
               <label for="videoEmbedID">YouTube Video ID:</label>
-              <input type="text" id="videoEmbedID" class="form-control" placeholder="YouTube Video ID">
+              <input type="text" id="videoEmbedID" class="form-control" placeholder="example: YN9b3LK1la0">
             </div>
             <div class="form-group form-element-extra-padding">
               <label for="stravaURL">Strava URL:</label>
@@ -194,175 +219,56 @@
           </form>
 
 
-          <!-- <div class="row">
-            <div class="col-xs-12">
-                <h5>Ride Name</h5>
-                <input type="text" name="rideName" class="route-metadata-input">
-            </div>           
+          <div>
+            <button type="button" id="save-changes-button" class="btn btn-success form-top-extra-margin" disabled>Save Changes</button>
+            <span id="save-changes-button-notification-text" style="font-style: italic; margin-left: 20px; color: red;"></span>
           </div>
-          <br>
-          <div class="row">
-            <div class="col-xs-12">
-              <h5>Ride Type:</h5>
-              <input type="radio" name="rideType" class="route-metadata-input" value="completed" checked> Completed</br>
-              <input type="radio" name="rideType" class="route-metadata-input" value="suggestion"> Suggestion
-            </div>
-          </div>
-          <br>
-          <div class="row">
-            <div class="col-xs-12">
-                <h5>YouTube Video ID</h5>
-                <input type="text" name="videoEmbedID" class="route-metadata-input">
-            </div>           
-          </div>
-          <br>
-          <div class="row">
-            <div class="col-xs-12">
-                <h5>Strava URL</h5>
-                <input type="text" name="stravaURL" class="route-metadata-input">
-            </div>           
-          </div>
-          <br>
-          <div class="row">
-            <div class="col-xs-12">
-                <h5>Google Map URL</h5>
-                <input type="text" name="googleMapURL" class="route-metadata-input">
-            </div>           
-          </div> -->
 
+          <hr class="form-element-extra-padding" >
+          
+          <div>
+            <h4>DOWNLOAD</h4>
+
+            <button type="button" id="geojson-download-button"  class="btn btn-primary form-top-extra-margin">GeoJSON</button>
+            <button type="button" id="gpx-download-button" class="btn btn-primary form-top-extra-margin">GPX</button>
+          </div>
         </div>
       </div>
 
-      <!-- ########### COLUMN 2 - Marker Location Names and GPX Import ############ -->
-      <div class="col-sm-3">
-        <!-- ########### COLUMN 2.1 - Marker Location Names ############ -->
-        <div class="well">
-
-          <div class="row">
-            <div class="col-sm-12">
-              <h4 style="text-align: center;">START/FINISH MARKERS</h4>
-            </div>
-          </div>
-
-          <form class="form-top-extra-margin">
-            <div class="form-group">
-              <label for="startLocationName">START: Location Name</label>
-              <input type="text" id="startLocationName" class="form-control" placeholder="Name of Start Location">
-            </div>
-            <div class="form-group form-element-extra-padding">
-              <label for="finishLocationName">FINISH: Location Name</label>
-              <input type="text" id="finishLocationName" class="form-control" placeholder="Name of Finish Location">
-            </div>
-          </form>
-
-        </div>
-
-
-        <!-- ########### COLUMN 2.2 - Allow the user to update the details or location names for the ride ############ -->
-        <div class="well text-center HiddenElement" id="update-button-container">
-
-          <div class="row">
-            <div class="col-sm-12">
-              <h4>Update Ride Info in Map</h4>
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col-sm-12">
-              <div>
-                <button type="button" id="update-button" class="btn btn-success form-top-extra-margin">Update</button>
-              </div>
-            </div>
-          </div>
-
-        </div>
-
-        <!-- ########### COLUMN 2.3 - Download the GeoJSON or GPX File ############ -->
-        <div class="well text-center HiddenElement" id="download-button-container">
-
-          <div class="row">
-            <div class="col-sm-12">
-              <h4>DOWNLOAD FILE</h4>
-              
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col-sm-12">
-              <span id="geojson-notification-text" style="font-style: italic;"></span>
-              <div>
-                <button type="button" id="geojson-download-button"  class="btn btn-success form-top-extra-margin">GeoJSON</button>
-                <button type="button" id="gpx-download-button" class="btn btn-success form-top-extra-margin">GPX</button>
-              </div>
-            </div>
-          </div>
-
-        </div>
-
-      </div>
-
-      <!-- ########### COLUMN 3 - Import GPX ############ -->
-      <div class="col-sm-3">
-        <div class="well text-center">
-
-          <div class="row ">
-            <div class="col-sm-12 ">
-              <h4 >GPX IMPORT</h4>
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col-sm-12">
-              <!-- <form class="form-top-extra-margin">
-                <div class="form-group"> -->
-                    <input type="file" id="filein" name="file-input" accept=".gpx" multiple="true" class="hidden"/>
-                    <!-- <label for="filein" id="gpx-import-button" class="btn btn-primary">Choose file</label> -->
-                    <button id="gpx-import-button" class="btn btn-primary">Choose file</button>
-                    <span id='file-name-disp-text' class="help-block" style="word-wrap: break-word;"></span>
-                <!-- </div>
-              </form> -->
-            </div>
-          </div>
-
-        </div>    
-
-
-
-      </div>
-    
-    </div><!-- ########### INFORMATION ENTRY ROW CLOSE ############ -->
-  
-    <!-- ########### MAP ROW ############ -->
-    <div class="row">
-      <div class="col-sm-12">
+      <!-- ########### COLUMN 2 - MAP ############ -->
+      <div class="col-md-8">
         <div id="map" class="map-div"><h1 class="map-placeholder-text">You <i>should</i> see a map here...</h1></div>
+        
+        <h5>Elevation</h5>
+        <div id="elevation-disp" class="elevation-disp-div"></div>
+        <!-- <div id="elevation-disp" class="leaflet-bar leaflet-control elevation-div"></div> -->        
       </div>
+
+
     </div>
 
-    <!-- ########### GPX/XML AND GEOJSON TEXT OUTPUT ROW ############ -->
-    <!-- <div class="container"> -->
-      <div class="row">
-        <div class="col-md-12 jumbotron">
-          
-          <h4 class="text-center">Input/Output File Contents Display</h4>
+    <!-- ########### ROW 3 - GPX/XML AND GEOJSON FILE PREVIEW ############ -->
+    <div class="row">
+      <div class="col-md-12 jumbotron form-element-extra-padding">
+        
+        <h4 class="text-center">File Contents Preview</h4>
 
-          <ul class="nav nav-tabs form-element-extra-padding" id="textarea-toggle-tabs" role="tablist">
-            <li class="active" role="presentation">
-              <a id="gpx-tab" href="#gpx-textarea" data-toggle="tab" role="tab" aria-controls="gpx-textarea">GPX/XML</a>
-            </li>
-            <li role="presentation">
-              <a id="geojson-tab" href="#geojson-textarea" data-toggle="tab" role="tab" aria-controls="geojson-textarea">GeoJSON</a>
-            </li>
-          </ul>          
+        <ul class="nav nav-tabs form-element-extra-padding" id="textarea-toggle-tabs" role="tablist">
+          <li class="active" role="presentation">
+            <a id="gpx-tab" href="#gpx-textarea" data-toggle="tab" role="tab" aria-controls="gpx-textarea">GPX/XML</a>
+          </li>
+          <li role="presentation">
+            <a id="geojson-tab" href="#geojson-textarea" data-toggle="tab" role="tab" aria-controls="geojson-textarea">GeoJSON</a>
+          </li>
+        </ul>          
 
-          <div class="tab-content" id="myTabContent">
-            <textarea class="tab-pane fade in active" id="gpx-textarea" role="tabpanel" readonly>Import GPX to display here</textarea>
-            <textarea class="tab-pane fade" id="geojson-textarea" role="tabpanel" readonly>Convert GPX file to display GeoJSON here</textarea>
-          </div>
-
+        <div class="tab-content" id="myTabContent">
+          <textarea class="tab-pane fade in active" id="gpx-textarea" role="tabpanel" readonly>Import GPX to display here</textarea>
+          <textarea class="tab-pane fade" id="geojson-textarea" role="tabpanel" readonly>Convert GPX file to display GeoJSON here</textarea>
         </div>
+
       </div>
-    <!-- </div> -->
+    </div>
 
   </div>
 
