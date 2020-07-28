@@ -7,15 +7,15 @@
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   
   <title>Create a Ride!</title>
-  
+
   <!-- FAVICON -->
   <link rel='icon' href='static/favicon.ico' type='image/x-icon'/>
 
   <!-- CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS -->
 
-  <!-- Bootstrap 3 CSS - Stable 3.4.1 compiled and minified -->
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" 
-  integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" 
+  <!-- Bootstrap 4 CSS - Stable 4.5 compiled and minified -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" 
+  integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" 
   crossorigin="anonymous">
 
   <!-- Date Range Picker -- UNUSED -->
@@ -39,12 +39,51 @@
 
   <!-- ELEVATION PLUGIN CSS -->
   <link rel="stylesheet" href="lib/elevation/leaflet.elevation-0.0.4.css" />
-  
+
   <!-- CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS -->
 
 
   <!-- additional styling for elements on the page -->
   <style>
+
+    @media (max-width: 600px) {
+        #main-container {
+            width: 97.5%; /*this gives it the precise width to match the Bootstrap defaults*/
+        }
+    }
+
+
+    @media screen and (min-width: 768px){
+    .jumbotron .h1, .jumbotron h1 {
+        font-size: 63px;
+        }
+    }
+
+
+
+    .card-body {
+      min-height: 20px;
+      padding: 19px;
+      /* margin-bottom: 20px; */
+      /* background-color: #f5f5f5;
+      border: 1px solid #e3e3e3; */
+      /* border-radius: 4px; */
+      /* -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.05); */
+      box-shadow: inset 0 1px 1px rgba(0,0,0,.05);
+    }
+
+    body{
+      font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+    }
+    
+    label {
+        /* font-family: "Helvetica Neue",Helvetica,Arial,sans-serif; */
+        font-size: 14px;
+        font-weight: bold;
+        line-height: 1.42857143;
+        color: #333;
+        /* background-color: #fff; */
+    }
 
     #map { 
       height: 600px;
@@ -86,15 +125,54 @@
       /* vertical-align: middle; */
     }
 
-    input[type="text"].route-metadata-input, input[type="text"].start-point-metadata-input, input[type="text"].finish-point-metadata-input {
+    /* input[type="text"].route-metadata-input, input[type="text"].start-point-metadata-input, input[type="text"].finish-point-metadata-input {
       width: 100%;
-    }
+    } */
 
     textarea {
       height: 300px;
       width: 100%;
       max-width:100%;
     }
+
+    h5 {
+      margin-top: 10px;
+      margin-bottom: 10px;
+      /* margin-right: -10px;
+      margin-left: -10px; */
+      font-family: inherit;
+      font-weight: 500;
+      line-height: 1.1;
+      color: inherit;      
+      /* display: block; */
+      /* margin-block-start: 1.33em;
+      margin-block-end: 1.33em;
+      margin-inline-start: 0px;
+      margin-inline-end: 0px; */
+      font-size: 18px;
+      /* font-weight: bold; */
+  }
+
+
+    .form-control {
+      display: block;
+      width: 100%;
+      height: 34px;
+      padding: 6px 12px;
+      font-size: 14px;
+      line-height: 1.42857143;
+      color: #555;
+      background-color: #fff;
+      background-image: none;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+
+    .form-check-label {
+      font-weight: initial;
+    }
+
 
     .textarea-size-styles {
       height: 300px;
@@ -114,134 +192,131 @@
       margin-top: 3px;
     }
 
-    .HiddenCheckbox {
-      display: none;  
-    }
     .HiddenElement {
       display: none;  
-    }    
-    .YAxisRangeSetter, .LTVPerTrialSetter{
-      width: 50px;
-      /* display: none;   */
-    }       
-    .highlight, .table-striped > tbody > tr:nth-child(odd).highlight > td {
-      background-color: rgb(92, 92, 92);
-      color: white;
-    }    
+    }
+
     </style>
 </head>
 
 <body>
   <!-- ########### MAIN CONTAINER THAT HOLDS EVERYTHING ############ -->
-  <div class="container">
+  <!-- <div class="container-md" id="main-container"> -->
+  <div class="container-md" id="main-container">
 
     <!-- ########### HEADER JUMBOTRON ROW ############ -->
     <div class="row">
       <div class="col-md-12 jumbotron">
-        <!-- <h1 class="text-center">Create a Ride</h1> -->
         <h1>Create a Ride</h1>
         <div>
-        <ul>
-          <li><b>GPX Import:</b> Import a GPX file (or multiple files from the same ride) to convert to the BikeLapse GeoJSON based format and preview on the map below</li>
-          <li><b>Ride Info:</b> Give your ride a name and choose whether you completed it, or are suggesting it</li>
-          <li><b>Start/Finish Markers:</b> Name the locations where the ride started and finished (cafe, landmark, address, whatever!)</li>
-          <li><b>Video and Links:</b> Optionally add the YouTube ID for the BikeLapse video and/or links to the strava activity / annotated googlemap</li>
-          <li><b>Save changes:</b> Make sure to save your changes!!!</li>
-          <li><b>Download:</b> Save the GeoJSON that is ready for use on Bikelapse.com. If you imported multiple gpx files, you may want to export the combined GPX</li>
-        </ul>
-      </div>
+          <ul>
+            <li><b>GPX Import:</b> Import a GPX file (or multiple files from the same ride) to convert to the BikeLapse GeoJSON based format and preview on the map below</li>
+            <li><b>Ride Info:</b> Give your ride a name and choose whether you completed it, or are suggesting it</li>
+            <li><b>Start/Finish Markers:</b> Name the locations where the ride started and finished (cafe, landmark, address, whatever!)</li>
+            <li><b>Video and Links:</b> Optionally add the YouTube ID for the BikeLapse video and/or links to the strava activity / annotated googlemap</li>
+            <li><b>Save changes:</b> Make sure to save your changes!!!</li>
+            <li><b>Download:</b> Save the GeoJSON that is ready for use on Bikelapse.com. If you imported multiple gpx files, you may want to export the combined GPX</li>
+          </ul>
+        </div>
       </div>
 
     </div>
 
     <!-- ########### ROW 1 - GPX IMPORT ############ -->
-    <div class="well text-center">
+    <div class="card bg-light mb-4">
+      <div class="card-body text-center">
 
-      <h4 >GPX IMPORT</h4>
+        <h5 class="card-title">GPX IMPORT</h5>
 
-      <input type="file" id="filein" name="file-input" accept=".gpx" multiple="true" class="hidden"/>
-      <!-- <label for="filein" id="gpx-import-button" class="btn btn-primary">Choose file</label> -->
-      <button id="gpx-import-button" class="btn btn-primary">Choose file</button>
-      <span id='file-name-disp-text' class="help-block" style="word-wrap: break-word;"></span>
+        <input type="file" id="filein" name="file-input" accept=".gpx" multiple="true" class="HiddenElement"/>
+        <!-- <label for="filein" id="gpx-import-button" class="btn btn-primary">Choose file</label> -->
+        <button id="gpx-import-button" class="btn btn-primary mb-4">Choose file</button>
+        <span id='file-name-disp-text' class="help-block" style="word-wrap: break-word;"></span>
 
-    </div>    
-
+      </div>
+    </div>
 
 
     <!-- ########### ROW 2 - RIDE ENTRY AND MAP DISPLAY ############ -->
-    <div class="row">
+    <div class="row mb-4">
 
-      <!-- ########### COLUMN 1 - RIDE INFO ############ -->
-      <div class="col-md-4">
-        <div class="well">
+      <!-- ########### COLUMN 1 - Ride Info ############ -->
+      <div class="col-lg-4 ">
+        <div class="card bg-light mb-4">  
+          <div class="card-body">
 
-          <h4 style="text-align: center;">RIDE INFO</h4>
-              
-          <form id="ride-info-form">
-            <div class="form-group">
-              <label for="rideName">Ride Name:</label>
-              <input type="text" id="rideName" class="form-control" placeholder="Name your route">
-            </div>
+            <h5 class="card-title text-center">RIDE INFO</h5>
 
-            <h5 style='font-weight: bold;' class="form-element-extra-padding">Ride Type:</h5>
-            <div class="radio">
-              <label>
-                <input type="radio" name="rideType" id="rideTypeRadioCompleted" value="completed">
-                Completed
-              </label>
-            </div>
-            <div class="radio">
-              <label>
-                <input type="radio" name="rideType" id="rideTypeRadioSuggestion" value="suggested">
-                Suggested
-              </label>
-            </div>
-            <div class="form-group form-element-extra-padding">
-              <label for="startLocationName">Start Location Name</label>
-              <input type="text" id="startLocationName" class="form-control" placeholder="Name of Start Location">
-            </div>
-            <div class="form-group form-element-extra-padding">
-              <label for="finishLocationName">Finish Location Name</label>
-              <input type="text" id="finishLocationName" class="form-control" placeholder="Name of Finish Location">
-            </div>
-            <div class="form-group form-element-extra-padding">
-              <label for="videoEmbedID">YouTube Video ID:</label>
-              <input type="text" id="videoEmbedID" class="form-control" placeholder="example: YN9b3LK1la0">
-            </div>
-            <div class="form-group form-element-extra-padding">
-              <label for="stravaURL">Strava URL:</label>
-              <input type="text" id="stravaURL" class="form-control" placeholder="Strava URL">
-            </div>
-            <div class="form-group form-element-extra-padding">
-              <label for="googleMapURL">Google Map URL:</label>
-              <input type="text" id="googleMapURL" class="form-control" placeholder="Google Map URL">
-            </div>
-          </form>
+            <form id="ride-info-form">
+              <div class="form-group">
+                <label for="rideName">Ride Name:</label>
+                <input type="text" id="rideName" class="form-control" placeholder="Name your route">
+              </div>
+
+              <label >Ride Type:</label>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="rideType" id="rideTypeRadioCompleted" value="completed" checked>
+                <label class="form-check-label" for="rideTypeRadioCompleted">
+                  Completed
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="rideType" id="rideTypeRadioSuggestion" value="suggested">
+                <label class="form-check-label" for="rideTypeRadioSuggestion">
+                  Suggested
+                </label>
+              </div>
 
 
-          <div>
-            <button type="button" id="save-changes-button" class="btn btn-success form-top-extra-margin" disabled>Save Changes</button>
-            <span id="save-changes-button-notification-text" style="font-style: italic; margin-left: 20px; color: red;"></span>
-          </div>
+              <div class="form-group form-element-extra-padding">
+                <label for="startLocationName">Start Location Name</label>
+                <input type="text" id="startLocationName" class="form-control" placeholder="Name of Start Location">
+              </div>
+              <div class="form-group form-element-extra-padding">
+                <label for="finishLocationName">Finish Location Name</label>
+                <input type="text" id="finishLocationName" class="form-control" placeholder="Name of Finish Location">
+              </div>
 
-          <hr class="form-element-extra-padding" >
-          
-          <div>
-            <h4>DOWNLOAD</h4>
 
-            <button type="button" id="geojson-download-button"  class="btn btn-primary form-top-extra-margin">GeoJSON</button>
-            <button type="button" id="gpx-download-button" class="btn btn-primary form-top-extra-margin">GPX</button>
+              <div class="form-group form-element-extra-padding">
+                <label for="videoEmbedID">YouTube Video ID:</label>
+                <input type="text" id="videoEmbedID" class="form-control" placeholder="example: YN9b3LK1la0">
+              </div>
+              <div class="form-group form-element-extra-padding">
+                <label for="stravaURL">Strava URL:</label>
+                <input type="text" id="stravaURL" class="form-control" placeholder="Strava URL">
+              </div>
+              <div class="form-group form-element-extra-padding">
+                <label for="googleMapURL">Google Map URL:</label>
+                <input type="text" id="googleMapURL" class="form-control" placeholder="Google Map URL">
+              </div>
+            </form>
+
+
+            <div>
+              <button type="button" id="save-changes-button" class="btn btn-success form-top-extra-margin" disabled>Save Changes</button>
+              <span id="save-changes-button-notification-text" style="font-style: italic; margin-left: 20px; color: red;"></span>
+            </div>
+
+            <hr class="form-element-extra-padding" >
+            
+            <div>
+              <h5 class="card-title">DOWNLOAD</h5>
+            
+              <button type="button" id="geojson-download-button" class="btn btn-primary">GeoJSON</button>
+              <button type="button" id="gpx-download-button" class="btn btn-primary">GPX</button>
+            </div>
           </div>
         </div>
       </div>
 
       <!-- ########### COLUMN 2 - MAP ############ -->
-      <div class="col-md-8">
+      <div class="col-lg-8">
         <div id="map" class="map-div"><h1 class="map-placeholder-text">You <i>should</i> see a map here...</h1></div>
         
         <h5>Elevation</h5>
-        <div id="elevation-disp" class="elevation-disp-div"></div>
-        <!-- <div id="elevation-disp" class="leaflet-bar leaflet-control elevation-div"></div> -->        
+        <div id="elevation-disp" class="elevation-disp-div"></div><br>
+        <!-- <div id="elevation-disp" class="leaflet-bar leaflet-control elevation-div"></div> -->
       </div>
 
 
@@ -250,25 +325,25 @@
     <!-- ########### ROW 3 - GPX/XML AND GEOJSON FILE PREVIEW ############ -->
     <div class="row">
       <div class="col-md-12 jumbotron form-element-extra-padding">
-        
+
         <h4 class="text-center">File Contents Preview</h4>
 
         <ul class="nav nav-tabs form-element-extra-padding" id="textarea-toggle-tabs" role="tablist">
-          <li class="active" role="presentation">
-            <a id="gpx-tab" href="#gpx-textarea" data-toggle="tab" role="tab" aria-controls="gpx-textarea">GPX/XML</a>
+          <li class="nav-item" role="presentation">
+            <a class="nav-link active" id="gpx-tab" href="#gpx-textarea" data-toggle="tab" role="tab" aria-controls="gpx-textarea" aria-selected="true">GPX/XML</a>
           </li>
-          <li role="presentation">
-            <a id="geojson-tab" href="#geojson-textarea" data-toggle="tab" role="tab" aria-controls="geojson-textarea">GeoJSON</a>
+          <li class="nav-item" role="presentation">
+            <a class="nav-link" id="geojson-tab" href="#geojson-textarea" data-toggle="tab" role="tab" aria-controls="geojson-textarea" aria-selected="false">GeoJSON</a>
           </li>
-        </ul>          
-
+        </ul>
         <div class="tab-content" id="myTabContent">
-          <textarea class="tab-pane fade in active" id="gpx-textarea" role="tabpanel" readonly>Import GPX to display here</textarea>
-          <textarea class="tab-pane fade" id="geojson-textarea" role="tabpanel" readonly>Convert GPX file to display GeoJSON here</textarea>
+          <textarea class="tab-pane fade show active" id="gpx-textarea" role="tabpanel" aria-labelledby="gpx-textarea-tab" readonly>Import GPX to display here</textarea>
+          <textarea class="tab-pane fade" id="geojson-textarea" role="tabpanel" aria-labelledby="geojson-textarea-tab" readonly>Convert GPX file to display GeoJSON here</textarea>
         </div>
-
+        
       </div>
     </div>
+
 
   </div>
 
@@ -278,23 +353,16 @@
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.5.0/d3.js"></script>
   <!-- <script src="https://d3js.org/d3.v5.min.js"></script> -->
 
-  
+
   <!-- jQuery, Popper.js, and Bootstrap.js - FOR BOOTSTRAP 4 -->
-  <!-- <script type="text/javascript" src="https://code.jquery.com/jquery-3.5.1.slim.min.js" 
+  <script type="text/javascript" src="https://code.jquery.com/jquery-3.5.1.slim.min.js" 
   integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" 
-  crossorigin="anonymous"></script> -->
-  <!-- <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" 
-  integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" 
-  crossorigin="anonymous"></script> -->
-  <!-- <script type="text/javascript" src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" 
-  integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" 
-  crossorigin="anonymous"></script> -->
-  <!-- Latest compiled and minified JavaScript -->
-  <script src="https://code.jquery.com/jquery-1.12.4.min.js" 
-  integrity="sha384-nvAa0+6Qg9clwYCGGPpDQLVpLNn0fRaROjHqs13t4Ggj3Ez50XnGQqc/r8MhnRDZ" 
   crossorigin="anonymous"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js" 
-  integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd" 
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" 
+  integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" 
+  crossorigin="anonymous"></script>
+  <script type="text/javascript" src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" 
+  integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" 
   crossorigin="anonymous"></script>
 
   <!-- Latest jQuery, Daterangepicker (requires jQuery), Moment (only requires jQuery for stuff we likely don't need) -->

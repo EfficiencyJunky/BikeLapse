@@ -253,7 +253,7 @@ function createPopupHTMLVideo(properties){
 
   let detailsPointDescription = (detailsPointFeature ? detailsPointFeature.properties.description : 'no description found');
  
-  return  '<h2>ROUTE: ' + rideName + '</h2>' +
+  return  '<h2>RIDE: ' + rideName + '</h2>' +
           detailsPointDescription + '<br><br>' +
           videoEmbedHTML +
           stravaHTML +
