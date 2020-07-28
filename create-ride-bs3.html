@@ -161,7 +161,7 @@
 
       <input type="file" id="filein" name="file-input" accept=".gpx" multiple="true" class="hidden"/>
       <!-- <label for="filein" id="gpx-import-button" class="btn btn-primary">Choose file</label> -->
-      <button id="gpx-import-button" class="btn btn-primary">Choose file</button>
+      <button id="gpx-import-button" class="btn btn-primary">Choose file(s)</button>
       <span id='file-name-disp-text' class="help-block" style="word-wrap: break-word;"></span>
 
     </div>    
@@ -254,17 +254,17 @@
         <h4 class="text-center">File Contents Preview</h4>
 
         <ul class="nav nav-tabs form-element-extra-padding" id="textarea-toggle-tabs" role="tablist">
-          <li class="active" role="presentation">
-            <a id="gpx-tab" href="#gpx-textarea" data-toggle="tab" role="tab" aria-controls="gpx-textarea">GPX/XML</a>
+          <li role="presentation" class="active">
+            <a id="geojson-tab" href="#geojson-textarea" data-toggle="tab" role="tab" aria-controls="geojson-textarea">GeoJSON</a>
           </li>
           <li role="presentation">
-            <a id="geojson-tab" href="#geojson-textarea" data-toggle="tab" role="tab" aria-controls="geojson-textarea">GeoJSON</a>
+            <a id="gpx-tab" href="#gpx-textarea" data-toggle="tab" role="tab" aria-controls="gpx-textarea">GPX</a>
           </li>
         </ul>          
 
         <div class="tab-content" id="myTabContent">
-          <textarea class="tab-pane fade in active" id="gpx-textarea" role="tabpanel" readonly>Import GPX to display here</textarea>
-          <textarea class="tab-pane fade" id="geojson-textarea" role="tabpanel" readonly>Convert GPX file to display GeoJSON here</textarea>
+          <textarea class="tab-pane fade in active" id="geojson-textarea" role="tabpanel" readonly>Import GPX file(s) to generate GeoJSON and display here</textarea>
+          <textarea class="tab-pane fade" id="gpx-textarea" role="tabpanel" readonly>Import GPX file(s) to combine and display here</textarea>
         </div>
 
       </div>

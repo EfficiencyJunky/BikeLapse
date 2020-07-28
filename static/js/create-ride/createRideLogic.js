@@ -429,7 +429,7 @@ function saveChangesButtonHandler(e){
         unsavedChanges(false);
     }
     else{
-        alert('Please import a GPX file first');
+        alert('Please import a GPX file (or files) first')
         console.log("rides data is of type: ", typeof(ridesData[currentRideID]));
     }
 
@@ -481,7 +481,7 @@ function downloadButtonHandler(e){
         download(filename, fileContents);
     }
     else{
-        alert('Please import a GPX file first');
+        alert('Please import a GPX file (or files) first\nOnce imported, the GeoJSON will be generated\nIf multiple GPX files were imported they will be combined into one file');
         console.log("rides data is of type: ", typeof(ridesData[currentRideID]));
     }
     

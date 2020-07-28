@@ -230,7 +230,7 @@
 
         <input type="file" id="filein" name="file-input" accept=".gpx" multiple="true" class="HiddenElement"/>
         <!-- <label for="filein" id="gpx-import-button" class="btn btn-primary">Choose file</label> -->
-        <button id="gpx-import-button" class="btn btn-primary mb-4">Choose file</button>
+        <button id="gpx-import-button" class="btn btn-primary mb-4">Choose file(s)</button>
         <span id='file-name-disp-text' class="help-block" style="word-wrap: break-word;"></span>
 
       </div>
@@ -330,15 +330,15 @@
 
         <ul class="nav nav-tabs form-element-extra-padding" id="textarea-toggle-tabs" role="tablist">
           <li class="nav-item" role="presentation">
-            <a class="nav-link active" id="gpx-tab" href="#gpx-textarea" data-toggle="tab" role="tab" aria-controls="gpx-textarea" aria-selected="true">GPX/XML</a>
+            <a class="nav-link active" id="geojson-tab" href="#geojson-textarea" data-toggle="tab" role="tab" aria-controls="geojson-textarea" aria-selected="true">GeoJSON</a>
           </li>
           <li class="nav-item" role="presentation">
-            <a class="nav-link" id="geojson-tab" href="#geojson-textarea" data-toggle="tab" role="tab" aria-controls="geojson-textarea" aria-selected="false">GeoJSON</a>
+            <a class="nav-link" id="gpx-tab" href="#gpx-textarea" data-toggle="tab" role="tab" aria-controls="gpx-textarea" aria-selected="false">GPX</a>
           </li>
         </ul>
         <div class="tab-content" id="myTabContent">
-          <textarea class="tab-pane fade show active" id="gpx-textarea" role="tabpanel" aria-labelledby="gpx-textarea-tab" readonly>Import GPX to display here</textarea>
-          <textarea class="tab-pane fade" id="geojson-textarea" role="tabpanel" aria-labelledby="geojson-textarea-tab" readonly>Convert GPX file to display GeoJSON here</textarea>
+          <textarea class="tab-pane fade show active" id="geojson-textarea" role="tabpanel" aria-labelledby="geojson-textarea-tab" readonly>Import GPX file(s) to generate GeoJSON and display here</textarea>
+          <textarea class="tab-pane fade" id="gpx-textarea" role="tabpanel" aria-labelledby="gpx-textarea-tab" readonly>Import GPX file(s) to combine and display here</textarea>
         </div>
         
       </div>
