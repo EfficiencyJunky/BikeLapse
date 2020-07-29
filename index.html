@@ -1,10 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="utf-8">
+  <meta charset="UTF-8">
+  <!-- <meta name="viewport" content="width=device-width, initial-scale=0.7"> -->
+  <meta name="viewport" content="initial-scale=0.7, user-scalable=no">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
   <title>BikeLapse - Open Source and fun way to visually catalog bike rides</title>
 
+  <!-- FAVICON -->
   <link rel='icon' href='static/favicon.ico' type='image/x-icon'/>
 
 <!-- META META META META META META META META META META META META META META META META META META META  -->
@@ -68,14 +73,6 @@
   <!-- Styling specific to full page maps -->
   <style>
 
-    @media (max-width: 600px) {
-        #main-container {
-          width: 97.5%; /*this gives it the precise width to match the Bootstrap defaults*/
-            /* height: 600px; */
-        }
-    }
-
-
     /* remove default margin and padding from body */
     body {
       padding: 0;
@@ -86,17 +83,9 @@
     
 
     /* set map, body, and html to 100% of the screen size */
-    
     #map, body, html {
         height: 100%;
     }
-
-    /* testing for mobile devices */
-    /* Ideally this is matched to the height of the device screen */
-    /* #map{
-        height: 600px;
-    } */
-
 
     .leaflet-control-layers-list {
       display: block;
@@ -112,6 +101,29 @@
       font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;
       padding: 6px 10px 0px 6px;
     }
+
+    /* Specific styling for the bullets (which we will use the marker sprites to fill) */
+    /* .legend i {
+      width: 20px;
+      height: 20px;
+      line-height: 200px;
+      float: left;
+      margin-right: 0px;
+      margin-top: 0px;
+      opacity: 1;
+    }
+
+    .legend {
+      line-height: 20px;
+    } */
+
+    /* .info.legend.leaflet-control {
+      font: 12px/14px Arial, Helvetica, sans-serif;
+    }
+
+    .leaflet-control-layers-list{
+      font: 8px/10px Arial, Helvetica, sans-serif;
+    } */
 
 
   </style>
@@ -140,10 +152,10 @@
   </nav>
 
   <!-- <div class="container-lg" id="main-container"> -->
-  <!-- <div class="container-fluid">
-    <div class="row">
+  <!-- <div class="container-fluid"> -->
+    <!-- <div class="row">
       <div class="col-lg-12">
-        <div id="map"></div>
+        This is a test
       </div>
     </div>
   </div> -->
