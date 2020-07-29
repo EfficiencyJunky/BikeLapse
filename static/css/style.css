@@ -128,3 +128,26 @@ we would also need to add this class along with the usual class for each icon */
   /* border:1px solid black; 
   display: inline-block; */
 /* } */
+
+
+/* CSS TO COUNTERACT BOOTSTRAP STYLES */
+
+.leaflet-popup-content h3 {
+  display: block;
+  font-size: 1.17em;
+  margin-block-start: 1em;
+  margin-block-end: 1em;
+  margin-inline-start: 0px;
+  margin-inline-end: 0px;
+  font-weight: bold;
+}
+
+.leaflet-popup-content h2 {
+  display: block;
+  font-size: 1.5em;
+  margin-block-start: 0.83em;
+  margin-block-end: 0.83em;
+  margin-inline-start: 0px;
+  margin-inline-end: 0px;
+  font-weight: bold;
+}
