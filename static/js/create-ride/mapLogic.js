@@ -7,7 +7,7 @@
 // Create our map using the div with id="map"
 let map = L.map("map", {
   // center: [37.77, -122.42], // san francisco
-  center: [30, 0], // san francisco
+  center: [30, 0], // GMT
   zoom: 2
 });
 
