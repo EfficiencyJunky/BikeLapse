@@ -67,6 +67,15 @@
   
   <!-- Styling specific to full page maps -->
   <style>
+
+    @media (max-width: 600px) {
+        #main-container {
+          width: 97.5%; /*this gives it the precise width to match the Bootstrap defaults*/
+            /* height: 600px; */
+        }
+    }
+
+
     /* remove default margin and padding from body */
     body {
       padding: 0;
@@ -75,12 +84,19 @@
       margin: 0;
     }
     
+
     /* set map, body, and html to 100% of the screen size */
-    #map,
-      body,
-      html {
+    
+    /* #map, body, html {
         height: 100%;
+    } */
+
+    /* testing for mobile devices */
+    /* Ideally this is matched to the height of the device screen */
+    #map{
+        height: 600px;
     }
+
 
     .leaflet-control-layers-list {
       display: block;
@@ -123,10 +139,20 @@
     </div>
   </nav>
 
+  <!-- <div class="container-lg" id="main-container"> -->
+  <!-- <div class="container-fluid">
+    <div class="row">
+      <div class="col-lg-12">
+        <div id="map"></div>
+      </div>
+    </div>
+  </div> -->
+    
+    <!-- The div where we will inject our map -->
+    <div id="map"></div>
 
-  <!-- The div where we will inject our map -->
-  <div id="map"></div>
 
+  </div>
 
 
 
