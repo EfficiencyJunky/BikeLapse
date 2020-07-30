@@ -156,17 +156,25 @@ function createPointFeature(tempGeoJson, pointName, pointLocationName = 'Locatio
 //      Total descent: 100 feet
 function createDetailsDescription(routeLineString, formattedStartTimeString){
 
-    let linestringDistance = getDistance(routeLineString.geometry.coordinates, 6, latLonReversed = true);
-    let linestringDuration = getDuration(routeLineString.properties.coordTimes);
-    let avgSpeed = getAvgSpeed(linestringDuration, linestringDistance);
-    let elevationStats = getElevationStats(routeLineString.geometry.coordinates);
+    const coordTimes = routeLineString.properties.coordTimes;
+    const coordinates = routeLineString.geometry.coordinates;
 
-    // console.log(linestringDuration.hours);
+    let linestringDistance = getDistance(coordinates, 6, latLonReversed = true);
+    
+    let linestringMovingDuration = getRideDuration(coordTimes, 'moving');
+    let avgMovingSpeed = getAvgSpeed(linestringMovingDuration, linestringDistance);
+
+    let linestringElapsedDuration = getRideDuration(coordTimes, 'elapsed');    
+    let avgElapsedSpeed = getAvgSpeed(linestringElapsedDuration, linestringDistance);
+
+    let elevationStats = getElevationStats(coordinates);
 
     return '<b>Start Time:</b> ' + formattedStartTimeString + '<br>' +
            '<b>Distance:</b> ' + linestringDistance.mi + ' miles &nbsp (' + linestringDistance.km + ' km)<br>' +
-           '<b>Duration:</b> ' + linestringDuration.string + '<br>' +
-           '<b>Average Speed:</b> ' + avgSpeed.mph + ' mph &nbsp (' + avgSpeed.kph + ' kph)<br>' +
+           '<b>Moving Time:</b> ' + linestringMovingDuration.string + '<br>' +
+           '<b>Average Moving Speed:</b> ' + avgMovingSpeed.mph + ' mph &nbsp (' + avgMovingSpeed.kph + ' kph)<br>' +
+           '<b>Elapsed Time:</b> ' + linestringElapsedDuration.string + '<br>' +
+           '<b>Average Elapsed Speed:</b> ' + avgElapsedSpeed.mph + ' mph &nbsp (' + avgElapsedSpeed.kph + ' kph)<br>' +
            '<b>Minimum Elevation:</b> ' + elevationStats.min_ft + ' feet &nbsp (' + elevationStats.min_m + ' meters)<br>' +
            '<b>Maximum Elevation:</b> ' + elevationStats.max_ft + ' feet &nbsp (' + elevationStats.max_m + ' meters)<br>' +
            '<b>Total Climb:</b> ' + elevationStats.gain_ft + ' feet &nbsp (' + elevationStats.gain_m + ' meters)<br>' +
