@@ -111,6 +111,10 @@ function createPointFeature(tempGeoJson, pointName, pointLocationName = 'Locatio
         case "DETAILS":
             pointTime = routeLineString.properties.time;    
             pointCoords = routeCoordinates[Math.round(routeCoordinates.length/2)];
+            // console.log("DETAILS timecoords length: ", routeCoordTimes.length);
+            // console.log("DETAILS coords length: ", routeCoordinates.length);
+            // console.log("DETAILS index: ", Math.round(routeCoordinates.length/2));
+            // console.log("DETAILS pointCoords: ", pointCoords);
           break;
         default:
             console.log("Point Name not recognized");

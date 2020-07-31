@@ -50,18 +50,33 @@ function combineXMLFiles(filesTextArray){
   // grab the first xmlDocDom in the array and use that as our base file that we will add on to
   let xmlDocDom = xmlDocsArray[0];
 
+  // grab a reference to this xmlDocDom's first (and should be only) "trkseg" node
+  let trkseg = xmlDocDom.getElementsByTagName("trkseg")[0];
+  
+  //loop to do the work
   for(let i=1; i < xmlDocsArray.length; i++){
     
-    let trkseg = xmlDocDom.getElementsByTagName("trkseg")[0];
-  
     let xmlDocToAdd = xmlDocsArray[i];
-    let trkpts = xmlDocToAdd.getElementsByTagName("trkpt");
-  
-    for (let j=0; j < trkpts.length; j++) {
-      trkseg.appendChild(trkpts[j]);
-    }
-  }
 
+    let trkpts = xmlDocToAdd.getElementsByTagName("trkpt");
+
+    for (let j=0; j < trkpts.length; j++) {
+
+      // add a newline and the appropriate indent (not necessary for XML specification but keeps the output file looking pretty)
+      trkseg.appendChild(document.createTextNode("\n			"));
+
+      // use the cloneNode() function to clone the node and set the "deep" parameter to true
+      // setting deep to true means it will do a full clone of the node AND its descendants (child nodes)
+      let trkpt = trkpts[j].cloneNode(deep = true);
+
+      // append the cloned node to the trkseg node (array of trkpt nodes)
+      trkseg.appendChild(trkpt);
+    }
+   
+  }
+  
+  // add a newline and the appropriate indent for the closing </trkseg> tag (not necessary for XML specification but keeps the output file looking pretty)
+  trkseg.appendChild(document.createTextNode("\n		"));
 
   // let mySerializer = new XMLSerializer();
   
