@@ -8,7 +8,7 @@
 // but if we wanted to execute another API call we could update it
 let numAPICalls = bikeRideJSONFileNames.length;
 
-var myAsyncCounter = new asyncCounter(numAPICalls, createMap);
+var myAsyncCounter = new asyncCounter(numAPICalls+1, createMap);
 
 /* ###################################################################
    ****  THE MAIN MAP OBJECT NEEDS TO BE GLOBALY ACCESSIBLE
@@ -31,15 +31,22 @@ function createMap(){
   //     FIRST DEFINE THE "TILE LAYERS" TO USE AS  
   //     THE ACTUAL MAPS WE WILL DRAW FEATURES ON TOP OF 
   // *************************************************************
-  // let streetmap = L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}", {
-  let streetmap = L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
-      attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\" target=\"_blank\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\" target=\"_blank\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\" target=\"_blank\">Mapbox</a>",
-      maxZoom: maximumZoom,
-      minZoom: minimumZoom,
-      id: "mapbox/streets-v11",
-      // id: "mapbox.streets",
-      accessToken: API_KEY
+  // THIS WAY OF DOING IT I FOUND FROM LOOKING AT THE CODE ON MonkeyBrains website
+  let terrainmap = L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}.png', {
+    // attribution: 'Map tiles by <a target="_blank" href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0" target="_blank">CC BY 3.0</a>. Data by <a target="_blank" href="http://openstreetmap.org">OpenStreetMap</a> under <a target="_blank" href="http://www.openstreetmap.org/copyright">ODbL</a>, and <a target="_blank" href="http://whosonfirst.mapzen.com#License">Who\'s On First</a>.',  
+    attribution: 'Map tiles by <a target="_blank" href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0" target="_blank">CC BY 3.0</a>. Data by <a target="_blank" href="http://openstreetmap.org">OpenStreetMap</a>, under <a target="_blank" href="http://www.openstreetmap.org/copyright">ODbL</a>.',
+    maxZoom: maximumZoom,
+    minZoom: minimumZoom
   });
+
+  // THIS WAY OF DOING IT I FOUND FROM LOOKING AT THE CODE ON MonkeyBrains website
+  let tonerlitemap = L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}.png', {
+    // attribution: 'Map tiles by <a target="_blank" href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0" target="_blank">CC BY 3.0</a>. Data by <a target="_blank" href="http://openstreetmap.org">OpenStreetMap</a> under <a target="_blank" href="http://www.openstreetmap.org/copyright">ODbL</a>, and <a target="_blank" href="http://whosonfirst.mapzen.com#License">Who\'s On First</a>.',  
+    attribution: 'Map tiles by <a target="_blank" href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0" target="_blank">CC BY 3.0</a>. Data by <a target="_blank" href="http://openstreetmap.org">OpenStreetMap</a>, under <a target="_blank" href="http://www.openstreetmap.org/copyright">ODbL</a>.',
+    maxZoom: maximumZoom,
+    minZoom: minimumZoom
+  });
+
 
   // let streetmap = L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}", {
   let darkmap = L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
@@ -48,6 +55,16 @@ function createMap(){
       minZoom: minimumZoom,
       id: "mapbox/dark-v9",      
       // id: "mapbox.dark",
+      accessToken: API_KEY
+  });
+
+  // let streetmap = L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}", {
+  let streetmap = L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
+      attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\" target=\"_blank\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\" target=\"_blank\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\" target=\"_blank\">Mapbox</a>",
+      maxZoom: maximumZoom,
+      minZoom: minimumZoom,
+      id: "mapbox/streets-v11",
+      // id: "mapbox.streets",
       accessToken: API_KEY
   });
 
@@ -61,21 +78,9 @@ function createMap(){
       accessToken: API_KEY
   });
 
-  // THIS WAY OF DOING IT I FOUND FROM LOOKING AT THE CODE ON MonkeyBrains website
-  let tonerlitemap = L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}.png', {
-    // attribution: 'Map tiles by <a target="_blank" href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0" target="_blank">CC BY 3.0</a>. Data by <a target="_blank" href="http://openstreetmap.org">OpenStreetMap</a> under <a target="_blank" href="http://www.openstreetmap.org/copyright">ODbL</a>, and <a target="_blank" href="http://whosonfirst.mapzen.com#License">Who\'s On First</a>.',  
-    attribution: 'Map tiles by <a target="_blank" href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0" target="_blank">CC BY 3.0</a>. Data by <a target="_blank" href="http://openstreetmap.org">OpenStreetMap</a>, under <a target="_blank" href="http://www.openstreetmap.org/copyright">ODbL</a>.',
-    maxZoom: maximumZoom,
-    minZoom: minimumZoom
-  });
 
-  // THIS WAY OF DOING IT I FOUND FROM LOOKING AT THE CODE ON MonkeyBrains website
-  let terrainmap = L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}.png', {
-    // attribution: 'Map tiles by <a target="_blank" href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0" target="_blank">CC BY 3.0</a>. Data by <a target="_blank" href="http://openstreetmap.org">OpenStreetMap</a> under <a target="_blank" href="http://www.openstreetmap.org/copyright">ODbL</a>, and <a target="_blank" href="http://whosonfirst.mapzen.com#License">Who\'s On First</a>.',  
-    attribution: 'Map tiles by <a target="_blank" href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0" target="_blank">CC BY 3.0</a>. Data by <a target="_blank" href="http://openstreetmap.org">OpenStreetMap</a>, under <a target="_blank" href="http://www.openstreetmap.org/copyright">ODbL</a>.',
-    maxZoom: maximumZoom,
-    minZoom: minimumZoom
-  });
+
+
 
   // THIS WAY OF DOING IT REQUIRES A LIBRARY THAT DOESN'T HAVE THE "s" in "https" SO DOESN'T WORK AS A SECURE SITE
   // replace "toner" here with "terrain" or "watercolor"
@@ -95,12 +100,17 @@ function createMap(){
   // Define a baseMaps object to hold our base layers
   // *************************************************************
   let baseMaps = {
-      "Street Map": streetmap,
       "Terrain": terrainmap,
-      "Satellite": satellite,
-      "Dark Map": darkmap,
       "Light Map": tonerlitemap
   };
+
+  if(mapboxTilesAvailable){
+    baseMaps["Dark Map **"] = darkmap;
+    baseMaps["Street Map **"] = streetmap;
+    baseMaps["Satellite **"] = satellite;
+  }
+
+
 
   
   // *************************************************************
@@ -252,8 +262,12 @@ bikeRideJSONFileNames.forEach( (geoJsonFileName, i) => {
 
   let geoJsonFilePath = "static/data/" + geoJsonFileName;
   
-  // Perform a GET request to the query URL
-  d3.json(geoJsonFilePath, function(rideGeoJSON) {
+  // Perform a GET request to the query URL either with D3 or with Fetch
+  // d3.json(geoJsonFilePath).then( function(rideGeoJSON) {
+  fetch(geoJsonFilePath)
+    .then(response => response.json()) // Transform the data into json
+    .then(rideGeoJSON => {
+    
     // Once we get a response, send the data.features object to the createFeatures function along with color seting function and pane name
 
     // create a new rideID based on the order in which the file was loaded. This way it's not in order of the file names.
@@ -283,5 +297,26 @@ bikeRideJSONFileNames.forEach( (geoJsonFileName, i) => {
     // Sending our earthquakes layer to the createMap function
     // createMap(earthquakes, tectonicPlates);
   });
+
+});
+
+
+// the following code does a check to see if our call to the mapbox tilesets is valid
+// if the response is anything other than 200 then we force the initial map to be "Terrain"
+// since the "Terrain" tileset is provided free from Stamen.com, this means it should always load
+let mapboxTestURL = 'https://api.mapbox.com/styles/v1/mapbox/dark-v9/tiles/1/1/1?access_token=' + API_KEY;
+// let mapboxTestURL = 'https://api.mapbox.com/styles/v1/mapbox/dark-v9/tiles/1/1/1?access_token=';
+
+fetch(mapboxTestURL).then(response => {
+ 
+  if (response.status !== 200) {
+    console.log("map load response status:", response.status);    
+    selectedBaseMap = "Terrain";
+    mapboxTilesAvailable = false;
+  }
+  else{
+    mapboxTilesAvailable = true;
+  }
+  myAsyncCounter.increment();
 
 });

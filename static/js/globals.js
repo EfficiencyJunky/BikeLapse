@@ -108,7 +108,10 @@ let elevationRideID = "";
 
 // chooses the default basemap to enable depending on if it's night or day
 let isNight = getIsNight();
-let selectedBaseMap = isNight ? "Dark Map" : "Street Map";
+let selectedBaseMap = isNight ? "Dark Map **" : "Street Map **";
+
+let mapboxTilesAvailable = false;
+
 
 // map zoom parameters
 let maximumZoom = 18;

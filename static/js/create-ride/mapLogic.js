@@ -40,6 +40,35 @@ function createMap(){
   //     FIRST DEFINE THE "TILE LAYERS" TO USE AS  
   //     THE ACTUAL MAPS WE WILL DRAW FEATURES ON TOP OF 
   // *************************************************************
+
+  // THIS WAY OF DOING IT I FOUND FROM LOOKING AT THE CODE ON MonkeyBrains website
+  let terrainmap = L.tileLayer('//stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}.png', {
+    attribution: 'Map tiles by <a target="_blank" href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0" target="_blank">CC BY 3.0</a>. Data by <a target="_blank" href="http://openstreetmap.org">OpenStreetMap</a> under <a target="_blank" href="http://www.openstreetmap.org/copyright">ODbL</a>, and <a target="_blank" href="http://whosonfirst.mapzen.com#License">Who\'s On First</a>.',  
+    maxZoom: maximumZoom,
+    minZoom: minimumZoom
+  });
+
+
+  // THIS WAY OF DOING IT I FOUND FROM LOOKING AT THE CODE ON MonkeyBrains website
+  let tonerlitemap = L.tileLayer('//stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}.png', {
+    attribution: 'Map tiles by <a target="_blank" href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0" target="_blank">CC BY 3.0</a>. Data by <a target="_blank" href="http://openstreetmap.org">OpenStreetMap</a> under <a target="_blank" href="http://www.openstreetmap.org/copyright">ODbL</a>, and <a target="_blank" href="http://whosonfirst.mapzen.com#License">Who\'s On First</a>.',  
+    maxZoom: maximumZoom,
+    minZoom: minimumZoom
+  });
+
+
+
+  // let streetmap = L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}", {
+    let darkmap = L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
+      attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\" target=\"_blank\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\" target=\"_blank\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\" target=\"_blank\">Mapbox</a>",
+      maxZoom: maximumZoom,
+      minZoom: minimumZoom,
+      id: "mapbox/dark-v9",      
+      // id: "mapbox.dark",
+      accessToken: API_KEY
+  });
+
+
   // let streetmap = L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}", {
   let streetmap = L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
       attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\" target=\"_blank\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\" target=\"_blank\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\" target=\"_blank\">Mapbox</a>",
@@ -57,18 +86,6 @@ function createMap(){
   //   minZoom: minimumZoom
   // });
   
-
-
-  // let streetmap = L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}", {
-  let darkmap = L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
-      attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\" target=\"_blank\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\" target=\"_blank\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\" target=\"_blank\">Mapbox</a>",
-      maxZoom: maximumZoom,
-      minZoom: minimumZoom,
-      id: "mapbox/dark-v9",      
-      // id: "mapbox.dark",
-      accessToken: API_KEY
-  });
-
   // let streetmap = L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}", {
   let satellite = L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
       attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\" target=\"_blank\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\" target=\"_blank\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\" target=\"_blank\">Mapbox</a>",
@@ -79,19 +96,7 @@ function createMap(){
       accessToken: API_KEY
   });  
   
-  // THIS WAY OF DOING IT I FOUND FROM LOOKING AT THE CODE ON MonkeyBrains website
-  let tonerlitemap = L.tileLayer('//stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}.png', {
-    attribution: 'Map tiles by <a target="_blank" href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0" target="_blank">CC BY 3.0</a>. Data by <a target="_blank" href="http://openstreetmap.org">OpenStreetMap</a> under <a target="_blank" href="http://www.openstreetmap.org/copyright">ODbL</a>, and <a target="_blank" href="http://whosonfirst.mapzen.com#License">Who\'s On First</a>.',  
-    maxZoom: maximumZoom,
-    minZoom: minimumZoom
-  });
 
-  // THIS WAY OF DOING IT I FOUND FROM LOOKING AT THE CODE ON MonkeyBrains website
-  let terrainmap = L.tileLayer('//stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}.png', {
-    attribution: 'Map tiles by <a target="_blank" href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0" target="_blank">CC BY 3.0</a>. Data by <a target="_blank" href="http://openstreetmap.org">OpenStreetMap</a> under <a target="_blank" href="http://www.openstreetmap.org/copyright">ODbL</a>, and <a target="_blank" href="http://whosonfirst.mapzen.com#License">Who\'s On First</a>.',  
-    maxZoom: maximumZoom,
-    minZoom: minimumZoom
-  });
 
   // THIS WAY OF DOING IT REQUIRES A LIBRARY THAT DOESN'T HAVE THE "s" in "https" SO DOESN'T WORK AS A SECURE SITE
   // replace "toner" here with "terrain" or "watercolor"
@@ -102,13 +107,25 @@ function createMap(){
   // *************************************************************
   // Define a baseMaps object to hold our base layers
   // *************************************************************
+  // let baseMaps = {
+  //     "Terrain": terrainmap,
+  //     "Light Map": tonerlitemap,
+  //     "Dark Map **": darkmap,
+  //     "Street Map **": streetmap,
+  //     "Satellite **": satellite
+  // };
+
   let baseMaps = {
-      "Street Map": streetmap,
-      "Terrain": terrainmap,
-      "Satellite": satellite,
-      "Dark Map": darkmap,
-      "Light Map": tonerlitemap
+    "Terrain": terrainmap,
+    "Light Map": tonerlitemap
   };
+
+  if(mapboxTilesAvailable){
+    baseMaps["Dark Map **"] = darkmap;
+    baseMaps["Street Map **"] = streetmap;
+    baseMaps["Satellite **"] = satellite;
+  }
+
 
   // *************************************************************
   // ADD THE INITIALLY CHOSEN MAP LAYERS TO THE MAP
@@ -222,4 +239,26 @@ function addRideToMap(operation){
 
 
 
-createMap();
+
+// the following code does a check to see if our call to the mapbox tilesets is valid
+// if the response is anything other than 200 then we force the initial map to be "Terrain"
+// since the "Terrain" tileset is provided free from Stamen.com, this means it should always load
+var myAsyncCounter = new asyncCounter(1, createMap);
+
+let mapboxTestURL = 'https://api.mapbox.com/styles/v1/mapbox/dark-v9/tiles/1/1/1?access_token=' + API_KEY;
+// let mapboxTestURL = 'https://api.mapbox.com/styles/v1/mapbox/dark-v9/tiles/1/1/1?access_token=';
+
+fetch(mapboxTestURL).then(response => {
+ 
+  if (response.status !== 200) {
+    console.log("map load response status:", response.status);
+    selectedBaseMap = "Terrain";
+    mapboxTilesAvailable = false;
+  }
+  else{
+    mapboxTilesAvailable = true;
+  }
+  
+  myAsyncCounter.increment();
+
+});
