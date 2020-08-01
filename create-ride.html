@@ -9,7 +9,7 @@
   <title>Create a Ride!</title>
 
   <!-- FAVICON -->
-  <link rel='icon' href='static/favicon.ico' type='image/x-icon'/>
+  <link rel='icon' href='img/favicon.ico' type='image/x-icon'/>
 
 <!-- CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS -->
 <!-- CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS -->
@@ -37,10 +37,10 @@
   <!-- <script type="text/javascript" src="http://maps.stamen.com/js/tile.stamen.js?v1.3.0"></script> -->
   
   <!-- LEAFLET ELEVATION PLUGIN CSS -->
-  <link rel="stylesheet" href="lib/elevation/leaflet.elevation-0.0.4.css" />
+  <link rel="stylesheet" type="text/css" href="css/lib/leaflet.elevation-0.0.4.css" />
 
   <!-- Our CSS -->
-  <link rel="stylesheet" type="text/css" href="static/css/style.css">
+  <link rel="stylesheet" type="text/css" href="css/style.css">
 
 <!-- CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS -->
 <!-- CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS CSS -->
@@ -237,7 +237,7 @@
         <h1>Create a Ride</h1>
         <div>
           <ul>
-            <li><b>GPX Import:</b> Import a GPX file (or multiple files from the same ride) to convert to the BikeLapse GeoJSON based format and preview on the map below -- <a href="static/data/gpx_example/gpx_examples_for_bikelapse.zip">DOWNLOAD EXAMPLE GPX FILES TO TRY IT OUT</a></li>
+            <li><b>GPX Import:</b> Import a GPX file (or multiple files from the same ride) to convert to the BikeLapse GeoJSON based format and preview on the map below -- <a href="data/gpx_example/gpx_examples_for_bikelapse.zip">DOWNLOAD EXAMPLE GPX FILES TO TRY IT OUT</a></li>
             <li><b>Ride Info:</b> Give your ride a name and choose whether you completed it, or are suggesting it</li>
             <li><b>Start/Finish Markers:</b> Name the locations where the ride started and finished (cafe, landmark, address, whatever!)</li>
             <li><b>Video and Links:</b> Optionally add the YouTube ID for the BikeLapse video and/or links to the strava activity / annotated googlemap</li>
@@ -401,23 +401,23 @@
   
   
   <!-- ########### OTHER PEOPLE'S MAPING RELATED LIBRARIES WE'RE USING ############ -->
-  <script type="text/javascript" src='lib/togeojson.js'></script>
-  <script type="text/javascript" src='lib/geojson-tools.js'></script>
-  <script type="text/javascript" src="lib/elevation/leaflet.elevation-0.0.4.min.js"></script>
+  <script type="text/javascript" src='js/lib/togeojson.js'></script>
+  <script type="text/javascript" src='js/lib/geojson-tools.js'></script>
+  <script type="text/javascript" src="js/lib/leaflet.elevation-0.0.4.min.js"></script>
 
   <!-- API key -->
-  <script type="text/javascript" src="static/config/config.js"></script>
-  <!-- <script type="text/javascript" src="static/config/config_testing.js"></script> -->
+  <script type="text/javascript" src="js/config/mapbox_api_key.js"></script>
+  <!-- <script type="text/javascript" src="js/config/mapbox_api_key_test.js"></script> -->
 
   <!-- ########### JAVASCRIPT FILES WE'RE RE-USING FROM THE MAIN MAP DISPLAYING APP USED IN "index.html" ############ -->
-  <script type="text/javascript" src='static/js/create-ride/xml-parse-tools.js'></script>
-  <script type="text/javascript" src="static/js/otherHelperFunctions.js"></script>
-  <script type="text/javascript" src="static/js/mappingHelperFunctions.js"></script>
-  <script type="text/javascript" src="static/js/globals.js"></script>
+  <script type="text/javascript" src='js/create-ride-xml-parsing.js'></script>
+  <script type="text/javascript" src="js/global-helper-functions.js"></script>
+  <script type="text/javascript" src="js/global-leaflet-functions.js"></script>
+  <script type="text/javascript" src="js/global-variables.js"></script>
 
   <!-- ########### JAVASCRIPT FILES FOR THE "create-ride.html" APP THAT PERFORM ALL THE EVENT HANDLING AND MAPPING FUNCTIONS ############ -->
-  <script type="text/javascript" src="static/js/create-ride/createRideLogic.js"></script>
-  <script type="text/javascript" src="static/js/create-ride/mapLogic.js"></script>
+  <script type="text/javascript" src="js/create-ride-functions.js"></script>
+  <script type="text/javascript" src="js/create-ride-map-logic.js"></script>
 
 <!-- JAVASCRIPT JAVASCRIPT JAVASCRIPT JAVASCRIPT JAVASCRIPT JAVASCRIPT JAVASCRIPT JAVASCRIPT JAVASCRIPT JAVASCRIPT -->  
 <!-- JAVASCRIPT JAVASCRIPT JAVASCRIPT JAVASCRIPT JAVASCRIPT JAVASCRIPT JAVASCRIPT JAVASCRIPT JAVASCRIPT JAVASCRIPT -->

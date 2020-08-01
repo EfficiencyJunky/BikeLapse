@@ -1,20 +1,20 @@
 # This is a very basic workflow with a simple task. Here's what it does:
 # This job will run anytime someone pushes to the repository, 
 # but it will only run if their push has added a new ".json" file (or updated an existing one)
-# to the "static/data/" directory
+# to the "data/" directory
 # When this happens, this job will turn on a linux computer (or virtual machine or whatever) 
 # somewhere in the cloud using Github Actions. 
 # this computer will checkout our repository, and then run a python script 
 # who's filepath is /build/create_all_ride_file_names_js.py (you can look at this file in this repository)
-# the purpose of this python script is to look in the "static/data/" directory (the directory who's changes triggered the job)
+# the purpose of this python script is to look in the "data/" directory (the directory who's changes triggered the job)
 # and create a list of all the filenames that end in ".json"
-# then it creates a new file or overwrites the file located at "/static/config/all_ride_file_names.js"
+# then it creates a new file or overwrites the file located at "/js/config/all_ride_file_names.js"
 # and writes out the text required to create a javascript object with the list of ".json" filenames
 # our webapp will reference this list in order to add data from those files to our map
 # effectively what this means is, we can add new data to our map 
-# simply by checking in a new properly formatted ".json" file to the "static/data/" directory with data we want to display on the map
+# simply by checking in a new properly formatted ".json" file to the "data/" directory with data we want to display on the map
 
-name: create js file with list of all JSON filenames in the 'static/data/' folder
+name: create js file with list of all JSON filenames in the 'js/config/' folder
 
 # Controls when the action will run. Triggers the workflow on push or pull request 
 # events but only for the master branch
@@ -25,9 +25,9 @@ on:
     branches:
       - master
     # we further narrow the potential for this script to run
-    # only if a new ".json" file has been added or updated in the "static/data/" directory
+    # only if a new ".json" file has been added or updated in the "data/" directory
     paths:
-      - 'static/data/*.json'
+      - 'data/*.json'
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # in our case we only have one simple job to run
@@ -70,9 +70,9 @@ jobs:
 
     # Run python script using the runner's shell. 
     # In this case we're simply running a python script in the "./build/" directory of our repo
-    # All this python script does is look in the "/static/data/" directory, 
+    # All this python script does is look in the "/js/data/" directory, 
     # and adds all of the file names of all ".json" files in that directory to a list object
-    # then it creates a new file or overwrites the file located at "/static/config/all_ride_file_names.js"
+    # then it creates a new file or overwrites the file located at "/js/config/all_ride_file_names.js"
     # and writes out the text required to create a javascript object with that list of ".json" filenames
     # our webapp will reference this list in order to add data from those files to our map
     - name: Run the python script
@@ -80,19 +80,19 @@ jobs:
         python ${GITHUB_WORKSPACE}/build/create_all_ride_file_names_js.py
 
     # Commit the changes using the runner's shell
-    # run: Execute a regular git command to checkin our changes specifically for the file "/static/config/all_ride_file_names.js"
+    # run: Execute a regular git command to checkin our changes specifically for the file "/js/config/all_ride_file_names.js"
     #      git config: first we have to configure this local instance of git by setting the user.name variable to use the github.actor context variable
     #                  for a full list of context variables (context variables are somehow different from environment variables) see this resource: https://docs.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions
     #                  the definition of the github.actor context variable is: The login of the user that initiated the workflow run.
     #                  this context variable is made available by the magic of github's actions. yay github!
-    #      git add:    then we stage the file that we've created or updated (which in this case is "/static/config/all_ride_file_names.js") by using the git command "add"
+    #      git add:    then we stage the file that we've created or updated (which in this case is "/js/config/all_ride_file_names.js") by using the git command "add"
     #                  again we are using the ${GITHUB_WORKSPACE} environment variable to make sure we use the correct full path
     #      git commit: lastly we commit the changes and include a descriptive message with the commit so we know it was automated through this workflow
     - name: Commit files
       run: |
         git config --local user.name  ${{ github.actor }}
-        git add ${GITHUB_WORKSPACE}/static/config/all_ride_file_names.js
-        git commit -m "Automated commit - update all_ride_file_names.js in the /static/config folder"
+        git add ${GITHUB_WORKSPACE}/js/config/all_ride_file_names.js
+        git commit -m "Automated commit - update all_ride_file_names.js in the /js/config folder"
 
     # FUNCTION: Push the changes to our repo using the "ad-m/github-push-action" action
     # uses: in this case we are using (by specifying the "uses:" command) an action "plugin" which we are pulling from the "ad-m/github-push-action" github repo
@@ -110,37 +110,3 @@ jobs:
       with: 
         github_token: ${{ secrets.GITHUB_TOKEN }}
         # force: true
-
-
-# OTHER EXAMPLES I'VE FOUND ON THE WEB FOR HOW TO COMMIT FILES
-    # - name: Commit files using some guy's action
-    #   id: git_commit
-    #   uses: zwaldowski/git-commit-action@v1
-    #   with:
-    #     commit_message: "Updating the all_ride_file_names.js file in the /static/config folder"
-    # - name: print the outputs of the commit
-    #   run: echo "${{ steps.git_commit.outputs.sha }}"
-
-    # # Commit files using another resource found online
-    # - name: Commit files
-    #   run: |
-    #     git config --global user.name ${GITHUB_ACTOR}
-    #     git config --global user.email ${GITHUB_ACTOR}@my-domain.io
-    #     git add ${GITHUB_WORKSPACE}/my-docs
-    #     git commit -m "committing my-docs"
-
-
-    # Commit files using example from ad-m/github-push-action@master
-    # - name: Commit files
-    #   run: |
-    #     git config --local user.email "action@github.com"
-    #     git config --local user.name "GitHub Action"
-    #     git commit -m "Add changes" -a
-
-
-    # Commit files using resource found online
-    # - name: Commit files  # transfer the new files back into the repository
-    #   run: |
-    #     git config --local user.name  ${{ github.actor }}
-    #     git add ./static/config/all_ride_file_names.js
-    #     git commit -m "Updating the all_ride_file_names.js file in the /static/config folder"

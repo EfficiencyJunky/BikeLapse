@@ -260,7 +260,7 @@ function createUIElements(baseMaps, overlayMaps){
 // LOAD THE JSON FILES FOR EACH RIDE AS SPECIFIED IN THE "bikeRideJSONFileNames" VARIABLE IN THE "globals.js" file
 bikeRideJSONFileNames.forEach( (geoJsonFileName, i) => {
 
-  let geoJsonFilePath = "static/data/" + geoJsonFileName;
+  let geoJsonFilePath = "data/" + geoJsonFileName;
   
   // Perform a GET request to the query URL either with D3 or with Fetch
   // d3.json(geoJsonFilePath).then( function(rideGeoJSON) {
@@ -268,34 +268,34 @@ bikeRideJSONFileNames.forEach( (geoJsonFileName, i) => {
     .then(response => response.json()) // Transform the data into json
     .then(rideGeoJSON => {
     
-    // Once we get a response, send the data.features object to the createFeatures function along with color seting function and pane name
+      // Once we get a response, send the data.features object to the createFeatures function along with color seting function and pane name
 
-    // create a new rideID based on the order in which the file was loaded. This way it's not in order of the file names.
-    let rideID = "ride" + pad(i+1, 4);
-    
-    // save the rideID in the "metadata" of the ride 
-    rideGeoJSON.metadata["rideID"] = rideID;
+      // create a new rideID based on the order in which the file was loaded. This way it's not in order of the file names.
+      let rideID = "ride" + pad(i+1, 4);
+      
+      // save the rideID in the "metadata" of the ride 
+      rideGeoJSON.metadata["rideID"] = rideID;
 
-    // also save the rideID in the "properties" of each feature
-    // this is used as a reference for events that occur on each feature later
-    rideGeoJSON.features.forEach((feature) => {
-      feature.properties["rideID"] = rideID;
-    });
+      // also save the rideID in the "properties" of each feature
+      // this is used as a reference for events that occur on each feature later
+      rideGeoJSON.features.forEach((feature) => {
+        feature.properties["rideID"] = rideID;
+      });
 
-    // rideData2[rideID] = data.metadata;
-    ridesData[rideID] = rideGeoJSON;
-    
-    // console.log(ridesData[rideID]);
+      // rideData2[rideID] = data.metadata;
+      ridesData[rideID] = rideGeoJSON;
+      
+      // console.log(ridesData[rideID]);
 
-    // let rideID = data.metadata.rideID;
-    // console.log(data.metadata.testdata, data);
+      // let rideID = data.metadata.rideID;
+      // console.log(data.metadata.testdata, data);
 
-    // ridesData[rideID].geoJSON = data;
+      // ridesData[rideID].geoJSON = data;
 
-    myAsyncCounter.increment();
+      myAsyncCounter.increment();
 
-    // Sending our earthquakes layer to the createMap function
-    // createMap(earthquakes, tectonicPlates);
+      // Sending our earthquakes layer to the createMap function
+      // createMap(earthquakes, tectonicPlates);
   });
 
 });
