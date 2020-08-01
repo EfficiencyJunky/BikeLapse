@@ -1,8 +1,8 @@
 from os.path import basename
 from glob import glob
 
-filePathsToSearchFor = "./static/data/*.json"
-outputFilepath = "./static/config/all_ride_file_names.js"
+filePathsToSearchFor = "./data/*.json"
+outputFilepath = "./js/config/all_ride_file_names.js"
 
 # We want to create a file with the names of the JSON files that have the information on all the rides we want to display
 # The contents of the file should look something like this:
@@ -13,7 +13,7 @@ outputFilepath = "./static/config/all_ride_file_names.js"
 #     "2020_07_11--ingleside.json"
 #   ]
 
-# print(glob.glob("../../static/data/*.json"))
+# print(glob.glob("../../data/*.json"))
 
 file_path_list = glob(filePathsToSearchFor)
 
