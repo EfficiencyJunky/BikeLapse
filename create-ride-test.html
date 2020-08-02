@@ -59,7 +59,7 @@
       margin-bottom: 20px;
     }
 
-    .elevation-disp-div{
+    .elevation-display-div{
       width: 100%;
       font-size: 12px;
     }
@@ -166,7 +166,7 @@
       <input type="file" id="filein" name="file-input" accept=".gpx" multiple="true" class="hidden"/>
       <!-- <label for="filein" id="gpx-import-button" class="btn btn-primary">Choose file</label> -->
       <button id="gpx-import-button" class="btn btn-primary">Choose file(s)</button>
-      <span id='file-name-disp-text' class="help-block" style="word-wrap: break-word;"></span>
+      <span id='gpx-import-progress-label' class="help-block" style="word-wrap: break-word;"></span>
 
     </div>    
 
@@ -244,8 +244,8 @@
         <div id="map" class="map-div"><h1 class="map-placeholder-text">You <i>should</i> see a map here...</h1></div>
         
         <h5>Elevation</h5>
-        <div id="elevation-disp" class="elevation-disp-div"></div><br>
-        <!-- <div id="elevation-disp" class="leaflet-bar leaflet-control elevation-div"></div> -->        
+        <div id="elevation-display" class="elevation-display-div"></div><br>
+        <!-- <div id="elevation-display" class="leaflet-bar leaflet-control elevation-div"></div> -->        
       </div>
 
 
@@ -313,15 +313,17 @@
   <!-- <script type="text/javascript" src="js/config/mapbox_api_key.js"></script> -->
   <script type="text/javascript" src="js/config/mapbox_api_key_test.js"></script>
 
-  <!-- ########### JAVASCRIPT FILES WE'RE RE-USING FROM THE MAIN MAP DISPLAYING APP USED IN "index.html" ############ -->
-  <script type="text/javascript" src='js/create-ride-xml-parsing.js'></script>
-  <script type="text/javascript" src="js/global-helper-functions.js"></script>
-  <script type="text/javascript" src="js/global-leaflet-functions.js"></script>
+  <!-- Our JS -->
+  <!-- shared JS functionality -->
   <script type="text/javascript" src="js/global-variables.js"></script>
+  <script type="text/javascript" src="js/initialize-map-functions.js"></script>
+  <script type="text/javascript" src="js/global-leaflet-functions.js"></script>
+  <script type="text/javascript" src="js/global-helper-functions.js"></script>
 
-  <!-- ########### JAVASCRIPT FILES FOR THE "create-ride.html" APP THAT PERFORM ALL THE EVENT HANDLING AND MAPPING FUNCTIONS ############ -->
+  <!-- specific JS functionality for the create-ride.html page -->
+  <script type="text/javascript" src='js/create-ride-gpx-parsing.js'></script>
   <script type="text/javascript" src="js/create-ride-functions.js"></script>
-  <script type="text/javascript" src="js/create-ride-map-logic.js"></script>
+  <script type="text/javascript" src="js/create-ride-main.js"></script>
 
 <!-- JAVASCRIPT JAVASCRIPT JAVASCRIPT JAVASCRIPT JAVASCRIPT JAVASCRIPT JAVASCRIPT JAVASCRIPT JAVASCRIPT JAVASCRIPT -->  
 <!-- JAVASCRIPT JAVASCRIPT JAVASCRIPT JAVASCRIPT JAVASCRIPT JAVASCRIPT JAVASCRIPT JAVASCRIPT JAVASCRIPT JAVASCRIPT -->

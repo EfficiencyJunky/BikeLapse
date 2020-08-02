@@ -392,6 +392,7 @@ function showElevationForRideID(clickedRideID){
         elevationControl.addTo(map);
     }
 
+
     elevationRabbitLayer.addTo(map);
       
   }
@@ -433,7 +434,7 @@ function reCenterMap(rideIDtoCenterOn){
   // find the DETAILS pin in the Features array for the GeoJSON
   let detailsPoint = ridesData[rideIDtoCenterOn].features.find( (feature) => feature.properties.name === "DETAILS");
   let centerLatLon = detailsPoint.geometry.coordinates.slice(0, 2).reverse();
-  map.flyTo(centerLatLon, typicalZoom + 2, {animate: true, duration: 0.5});
+  map.flyTo(centerLatLon, defaultRideViewZoom, {animate: true, duration: 0.5});
 }
 
 

@@ -1,70 +1,48 @@
 /* ###################################################################
    ****  GLOBAL VARIABLES -- GLOBAL VARIABLES -- GLOBAL VARIABLES ****
 ###################################################################### */
-
-
-/* ###############################################################################################
-   ****  VARIOUS OBJECTS THAT DEFINE THE MAJORITY OF THE APP'S FUNCTIONALITY
-################################################################################################## */
-
-
-// THIS OBJECT WILL BE UPDATED WITH THE GeoJSON DATA 
-// FROM THE LIST OF ".json" FILES IN THE "/static/data/" folder
+// ridesData will be the object that holds a reference to every JSON file we import
+// rideIDs will be added as the JSON files are imported
 let ridesData = {};
+let currentRideID = "";
+let elevationRideID = "";
 
-// setting this to "var" becauese it will need to be accessible throughout the program
-var currentRideID = "";
-let initialRideIDsToDisplay = ["ride0001", "ride0003"];
+/* ###################################################################
+   ****  THE MAIN MAP OBJECTS NEED TO BE GLOBALY ACCESSIBLE
+###################################################################### */
+// Create our map using the div with id="map"
+let map = L.map("map", {
+  center: [37.77, -122.42], // san francisco
+  zoom: 10
+});
 
-
-
-// let currentRideMetadata;
-
-// ICON PROPERTIES AND HOW THEY TRANSLATE TO CSS:
-    // iconSize: [24, 24]
-        // creates css --> width: 24px; 
-        // creates css --> height: 24px;
-    // iconAnchor: [12, 12]
-        // creates css --> margin-left: -12px;
-        // creates css --> margin-top: -12px;
-// ORIGINAL START ICON PROPERTIES:
-    // iconURLorClass: "https://maps.gstatic.com/mapfiles/ms2/micons/green.png",   iconSize: [32, 32], iconAnchor: [16, 32], popupAnchor: [0, -32]},
-// ORIGINAL FINISH ICON PROPERTIES: 
-    // iconURLorClass: "https://maps.gstatic.com/mapfiles/ms2/micons/red.png",   iconSize: [32, 32], iconAnchor: [16, 32], popupAnchor: [0, -32]},
-
-// any map icon that appears in the below object will appear in the legend and also be added to each ride if applicable
-let mapIcons = {
-  "START":    {markerText: "START",     iconType: "divIcon",  iconURLorClass: "start-icon",             iconSize: [24, 24], iconAnchor: [12, 12], popupAnchor: [1, -8]},
-  "FINISH":   {markerText: "FINISH",    iconType: "divIcon",  iconURLorClass: "finish-icon",            iconSize: [24, 24], iconAnchor: [12, 12], popupAnchor: [1, -8]},
-  "DETAILS":  {markerText: "DETAILS",   iconType: "default",  iconURLorClass: "legend-default-icon",    iconSize: [32, 32], iconAnchor: [16, 32], popupAnchor: [0, -32]},
-  // "PHOTO_OP": {markerText: "PHOTO OP",  iconType: "icon",     iconURLorClass: "https://maps.gstatic.com/mapfiles/ms2/micons/camera.png",  iconSize: [38, 38], iconAnchor: [22, 37], popupAnchor: [-3, -30]},
-  // "POI":      {markerText: "POI",       iconType: "icon",     iconURLorClass: "https://maps.gstatic.com/mapfiles/ms2/micons/POI.png",     iconSize: [38, 38], iconAnchor: [22, 37], popupAnchor: [-3, -38]}
-}
-
-let mapIconsKeys = Object.keys(mapIcons);
-
-// white -- "rgba(255, 255, 255, 1)"
-let routeLineProperties = {
-  "completed":          {"legendText": "Completed Route",        "lineFillOpacity": 1, "lineWeight": 4.0, "lineOpacity": 1, "lineColor": "rgba(62, 146, 204, 1)"    },
-  "suggested":          {"legendText": "Suggested Route",        "lineFillOpacity": 1, "lineWeight": 4.0, "lineOpacity": 1, "lineColor": "rgba(251, 255, 0, 1)"     },
-  "variantNormal":      {"legendText": "Variant - Normal",       "lineFillOpacity": 1, "lineWeight": 4.0, "lineOpacity": 1, "lineColor": "green"                    },
-  "variantDifficult":   {"legendText": "Variant - Difficult",    "lineFillOpacity": 1, "lineWeight": 4.0, "lineOpacity": 1, "lineColor": "red"                      },
-  "rabbitLayer":        {"legendText": "Selected Route",         "lineFillOpacity": 1, "lineWeight": 0.5, "lineOpacity": 1, "lineColor": "black"                    },
-  "default":            {"legendText": "Default Route Color",    "lineFillOpacity": 1, "lineWeight": 4.0, "lineOpacity": 1, "lineColor": "rgba(155, 155, 155, 1)"   }
-};
-
-// this isn't ever used
-let bikeRouteColorCodesKeys = Object.keys(routeLineProperties);
+// map zoom parameters
+let minimumZoom = 10;
+let maximumZoom = 18;
+let defaultRideViewZoom = 12;
 
 // settings for map UI elements
 let mapUISettings = {
+  "baseLayerCtl": {"position": "topright"},
+  "overlayLayerCtl": {"position": "topleft"},
   "legend": {"position": "bottomright"},
-  "layerCtl": {"position": "topright"},
   "ele": {"position": "bottomleft"}
 };
 
-// *************  ELEVATION DISPLAY GLOBAL VARIABLES *****************************************************************
-// *************  ELEVATION DISPLAY GLOBAL VARIABLES *****************************************************************
+
+
+// *************************************************************
+// SET UP A PANE FOR OUR BIKE RIDES WITH zIndex OF 399
+//    setting zIndex to 399 for our 'bikeRidesPane' in this case means that
+//    when rides are added and removed using the layer control UI  
+//    the elevation control layer (which is automatically set to z = 400)
+//    will always display on top of them 
+// *************************************************************    
+map.createPane('bikeRidesPane');
+map.getPane('bikeRidesPane').style.zIndex = 399;
+
+
+/* ############### ELEVATION DISPLAY GLOBAL VARIABLES ################## */
 // find out more about elevation control and options here: https://github.com/MrMufflon/Leaflet.Elevation
 let elevationControlOptions = {
   position: mapUISettings.ele.position,
@@ -96,27 +74,11 @@ let elevationControl = L.control.elevation(elevationControlOptions);
 // this is the layer that will be added and removed as data is added and removed from the elevationControl layer
 let elevationRabbitLayer;
 
-let elevationRideID = "";
-
-// *************  ELEVATION DISPLAY GLOBAL VARIABLES *****************************************************************
-// *************  ELEVATION DISPLAY GLOBAL VARIABLES *****************************************************************
 
 
 /* ###################################################################
-   ****  VARIOUS INDIVIDUAL VARIABLES
+   ****  VARIOUS INDIVIDUAL VARIABLES AND SETTINGS INFO OBJECTS
 ###################################################################### */
-
-// chooses the default basemap to enable depending on if it's night or day
-let isNight = getIsNight();
-let selectedBaseMap = isNight ? "Dark Map **" : "Street Map **";
-
-let mapboxTilesAvailable = false;
-
-
-// map zoom parameters
-let maximumZoom = 18;
-let minimumZoom = 10;
-let typicalZoom = 10;
 
 // youtube video embed size variables
 let videoHeight = 200;
@@ -129,29 +91,63 @@ let videoEmbedParams = {
   secondHalf: '" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>'
 };
 
+// ICON PROPERTIES AND HOW THEY TRANSLATE TO CSS:
+    // iconSize: [24, 24]
+        // creates css --> width: 24px; 
+        // creates css --> height: 24px;
+    // iconAnchor: [12, 12]
+        // creates css --> margin-left: -12px;
+        // creates css --> margin-top: -12px;
 
+// any rows that appear in the below object will show up in the legend and also be added to each ride if applicable
+let mapIcons = {
+  "START":    {markerText: "START",     iconType: "divIcon",  iconURLorClass: "start-icon",             iconSize: [24, 24], iconAnchor: [12, 12], popupAnchor: [1, -8]},
+  "FINISH":   {markerText: "FINISH",    iconType: "divIcon",  iconURLorClass: "finish-icon",            iconSize: [24, 24], iconAnchor: [12, 12], popupAnchor: [1, -8]},
+  "DETAILS":  {markerText: "DETAILS",   iconType: "default",  iconURLorClass: "legend-default-icon",    iconSize: [32, 32], iconAnchor: [16, 32], popupAnchor: [0, -32]},
+  // "START":    {markerText: "START",     iconType: "divIcon",  iconURLorClass: "https://maps.gstatic.com/mapfiles/ms2/micons/green.png",   iconSize: [32, 32], iconAnchor: [16, 32], popupAnchor: [0, -32]},
+  // "FINISH":   {markerText: "FINISH",    iconType: "divIcon",  iconURLorClass: "https://maps.gstatic.com/mapfiles/ms2/micons/red.png",     iconSize: [32, 32], iconAnchor: [16, 32], popupAnchor: [0, -32]},
+  // "PHOTO_OP": {markerText: "PHOTO OP",  iconType: "icon",     iconURLorClass: "https://maps.gstatic.com/mapfiles/ms2/micons/camera.png",  iconSize: [38, 38], iconAnchor: [22, 37], popupAnchor: [-3, -30]},
+  // "POI":      {markerText: "POI",       iconType: "icon",     iconURLorClass: "https://maps.gstatic.com/mapfiles/ms2/micons/POI.png",     iconSize: [38, 38], iconAnchor: [22, 37], popupAnchor: [-3, -38]}
+}
 
-/* ############################################################################################################################
-// **************** ASYNCRONOUS COUNTER FUNCTIONS TO CONTROL WHEN WE CALL THE "createMap()" FUNCTION ******************
-// **************** BECAUSE WE ONLY WANT TO CALL THIS FUNCTION AFTER ALL THE API CALLS HAVE COMPLETED *****************
-############################################################################################################################### */
-function asyncCounter(numCalls, callback){
-  this.callback = callback;
-  this.numCalls = numCalls;
-  this.calls = 0;
+let mapIconsKeys = Object.keys(mapIcons);
+
+// white -- "rgba(255, 255, 255, 1)"
+let routeLineProperties = {
+  "completed":          {"legendText": "Completed Route",        "lineFillOpacity": 1, "lineWeight": 4.0, "lineOpacity": 1, "lineColor": "rgba(62, 146, 204, 1)"    },
+  "suggested":          {"legendText": "Suggested Route",        "lineFillOpacity": 1, "lineWeight": 4.0, "lineOpacity": 1, "lineColor": "rgba(251, 255, 0, 1)"     },
+  "variantNormal":      {"legendText": "Variant - Normal",       "lineFillOpacity": 1, "lineWeight": 4.0, "lineOpacity": 1, "lineColor": "green"                    },
+  "variantDifficult":   {"legendText": "Variant - Difficult",    "lineFillOpacity": 1, "lineWeight": 4.0, "lineOpacity": 1, "lineColor": "red"                      },
+  "rabbitLayer":        {"legendText": "Selected Route",         "lineFillOpacity": 1, "lineWeight": 0.5, "lineOpacity": 1, "lineColor": "black"                    },
+  "default":            {"legendText": "Default Route Color",    "lineFillOpacity": 1, "lineWeight": 4.0, "lineOpacity": 1, "lineColor": "rgba(155, 155, 155, 1)"   }
 };
 
+// this isn't ever used
+let bikeRouteColorCodesKeys = Object.keys(routeLineProperties);
 
-asyncCounter.prototype.increment = function(){
 
-  this.calls += 1;
 
-  if(this.calls === this.numCalls){
-      this.callback();
+
+/* ##########################################################################################################
+// *** ASYNCRONOUS COUNTER CLASS TO TRIGGER A CALLBACK WHEN ALL ASYNCRONOUS TASKS HAVE COMPLETED   *******
+// *** BECAUSE WE ONLY WANT TO CALL THIS FUNCTION AFTER ALL THE API CALLS HAVE COMPLETED               *******
+############################################################################################################# */
+// ******* AsyncCounter Class ****************
+class AsyncCounter {
+  constructor(numCalls, callback){
+    this.callback = callback;
+    this.numCalls = numCalls;
+    this.calls = 0;
   }
-};
 
+  increment(){
+    this.calls += 1;
 
+    if(this.calls === this.numCalls){
+        this.callback();
+    }
+  }
+}
 
 
 

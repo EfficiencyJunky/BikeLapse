@@ -1,31 +1,3 @@
-// comparison function for sorting XML File Parser Array
-function compare(a, b) {
-
-  let startTimeA = a.getElementsByTagName("trkpt")[0].getElementsByTagName("time")[0].innerHTML;
-  let startTimeB = b.getElementsByTagName("trkpt")[0].getElementsByTagName("time")[0].innerHTML;
-
-  // a is less than b by some ordering criterion
-  if (moment(startTimeA).isBefore(startTimeB)) {
-    return -1;
-  }
-  else {
-    return 1;
-  }
-
-  // here's the way to do the same thing if we need to have a separate
-  // return function when they are equal. this is really just for future reference
-  // if (moment(startTimeA).isBefore(startTimeB)) {
-  //   return -1;
-  // }  
-  // // a is greater than b by the ordering criterion
-  // if (!moment(startTime1).isBefore(startTime2)) {
-  //   return 1;
-  // }
-  // // a must be equal to b
-  // return 0;
-}
-
-
 // takes an array of parsed XML (GPX) files in text format, sorts them by start time, and then combines them together
 function combineXMLFiles(filesTextArray){
   
@@ -78,13 +50,34 @@ function combineXMLFiles(filesTextArray){
   // add a newline and the appropriate indent for the closing </trkseg> tag (not necessary for XML specification but keeps the output file looking pretty)
   trkseg.appendChild(document.createTextNode("\n		"));
 
-  // let mySerializer = new XMLSerializer();
-  
-  // let xmlString = mySerializer.serializeToString(xmlDocDom);
-  
-  // return xmlString;
-
   return xmlDocDom;
+}
 
 
+
+// comparison function for sorting XML File Parser Array
+function compare(a, b) {
+
+  let startTimeA = a.getElementsByTagName("trkpt")[0].getElementsByTagName("time")[0].innerHTML;
+  let startTimeB = b.getElementsByTagName("trkpt")[0].getElementsByTagName("time")[0].innerHTML;
+
+  // a is less than b by some ordering criterion
+  if (moment(startTimeA).isBefore(startTimeB)) {
+    return -1;
+  }
+  else {
+    return 1;
+  }
+
+  // here's the way to do the same thing if we need to have a separate
+  // return function when they are equal. this is really just for future reference
+  // if (moment(startTimeA).isBefore(startTimeB)) {
+  //   return -1;
+  // }  
+  // // a is greater than b by the ordering criterion
+  // if (!moment(startTime1).isBefore(startTime2)) {
+  //   return 1;
+  // }
+  // // a must be equal to b
+  // return 0;
 }
