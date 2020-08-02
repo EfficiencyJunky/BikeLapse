@@ -4,20 +4,26 @@
 let initialRideIDsToDisplay = ["ride0001", "ride0003"];
 
 let overlayLayerControl = L.control.layers(undefined, undefined, {
-  collapsed: false,
+  collapsed: mapUISettings.overlayLayerCtl.collapsed,
   position: mapUISettings.overlayLayerCtl.position
 }).addTo(map);
 
-map.zoomControl.setPosition('topright');
+// move the zoom control to the top left
+map.zoomControl.setPosition(mapUISettings.zoomCtl.position);
+
+
 /* ###############################################################################
    ****  INITIALIZE OUR MAP WITH AVAILABLE BASEMAPS AND UI OVERLAYS ELEMENTS ****
 ################################################################################## */
 initializeMap();
 
+
 /* ###############################################################################
-   ****  LOAD THE JSON FILES FOR EACH RIDE AS SPECIFIED IN THE               ****
-   ****  "bikeRideJSONFileNames" VARIABLE FOUND IN "all_ride_file_names.js"  ****
+   ****  LOAD THE JSON FILES FOR EACH RIDE                  ****
+   ****  LISTED IN THE "all_ride_file_names.js" FILE        ****
 ################################################################################## */
+
+// "bikeRideJSONFileNames" is a variable found in the "all_ride_file_names.js" file
 bikeRideJSONFileNames.forEach( (jsonFileName, i) => {
 
   let jsonFilePath = "data/" + jsonFileName;
@@ -29,45 +35,52 @@ bikeRideJSONFileNames.forEach( (jsonFileName, i) => {
     .then(rideJSON => {
     
       // ****************************************************************************
-      // GIVE EACH rideJSON A 'rideID', ADD THAT 'rideID' TO EACH FEATURE
-      // THEN STORE THE rideJSON IN THE 'ridesData' OBJECT USING THE 'rideID' AS ITS KEY
+      // CREATE A UNIQUE RIDE ID 
+      //    THEN EMBED IT IN EVERY FEATURE OF THE JSON OBJECT 
+      //    WE'LL USE TO CREATE THE GEOJSON
       // ****************************************************************************
 
       // create a new rideID that gets incremented by 1 for each file we read in
       // this way we can store the rideJSONs by rideID and not file name
-      let rideID = "ride" + pad(i+1, 4);
+      let newRideID = "ride" + pad(i+1, 4);
+
+      // set the global variable "currentRideID" to be the rideID for this ride
+      // this global variable will be used to access the correct data for this ride
+      // in the 'filter', 'pointToLayer', 'onEachFeature', and 'style'
+      // functions used to create the geoJson layer below
+      currentRideID = newRideID;
       
       // save the rideID in the "metadata" of the rideJSON
-      rideJSON.metadata["rideID"] = rideID;
+      rideJSON.metadata["rideID"] = currentRideID;
 
       // also save the rideID in the "properties" of each feature in the rideJSON
       // this is used as a reference for events that occur on each feature later
       rideJSON.features.forEach((feature) => {
-        feature.properties["rideID"] = rideID;
+        feature.properties["rideID"] = currentRideID;
       });
 
       // finally store the rideJSON in the 'ridesData' object using the 'rideID' as the key
-      ridesData[rideID] = rideJSON;
+      ridesData[currentRideID] = rideJSON;
       
       // set the global variable "currentRideID" to be the rideID for this ride
       // this global variable will be used to access the correct data for this ride
       // in the 'filter', 'pointToLayer', 'onEachFeature', and 'style'
       // functions used to create the geoJson layer below
-      currentRideID = rideID;
+      // currentRideID = rideID;
 
       // ****************************************************************************
       // CREATE A GEOJSON LAYER FOR THE 'rideJSON'
       //    ATTACH EVENT LISTENER FOR WHEN WE CLICK ON THE LAYER IN THE MAP
       //    ATTACH EVENT LISTENER FOR WHEN WE REMOVE THE LAYER FROM THE MAP (UNCHECK IT)
       // ****************************************************************************
-      let geoJsonLayer = L.geoJson(ridesData[rideID], { 
-                                                          pane: 'bikeRidesPane', // the "pane" option is inherited from the "Layer" object
-                                                          filter: filterFunction,
-                                                          pointToLayer: pointToLayerFunction,
-                                                          onEachFeature: onEachFeatureFunction,
-                                                          style: styleFunction
-                                                          // style: { fillOpacity: 0.0, weight: 4, opacity: 1, color: rideMetadata.lineColor}
-                                                        });
+      let geoJsonLayer = L.geoJson(rideJSON, { 
+                                                pane: 'bikeRidesPane', // the "pane" option is inherited from the "Layer" object
+                                                filter: filterFunction,
+                                                pointToLayer: pointToLayerFunction,
+                                                onEachFeature: onEachFeatureFunction,
+                                                style: styleFunction
+                                                // style: { fillOpacity: 0.0, weight: 4, opacity: 1, color: rideMetadata.lineColor}
+                                              });
 
       // when we click on the layer, we want to show the elevation data
       // by adding it to the elevation control layer
@@ -104,7 +117,7 @@ bikeRideJSONFileNames.forEach( (jsonFileName, i) => {
       overlayLayerControl.addOverlay(geoJsonLayer, rideJSON.metadata.rideName);
       
       // if the ride id matches one of those in the 'initialRideIDsToDisplay' array, add it to the map
-      if(initialRideIDsToDisplay.includes(rideID)){
+      if(initialRideIDsToDisplay.includes(currentRideID)){
         geoJsonLayer.addTo(map);
       }
 

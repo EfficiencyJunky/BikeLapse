@@ -1,12 +1,168 @@
-// let gpxImportProgressLabel = document.getElementById('file-name-disp-text');
-// let gpxTextarea = document.getElementById('gpx-textarea');
-// let geoJsonTextarea = document.getElementById('geojson-textarea');
+// ****************************************************************
+//     WHEN A USER CHOOSES ONE OR MORE GPX FILES WE NEED TO
+//     READ THE SELECTED GPX FILE(S) INTO MEMORY AS A DOCDOMS, COMBINE THEM INTO ONE GPX FILE
+//     CALL THE "combineXMLFilesAndConvertToGeoJSON" FUNCTION TO CONVERT IT
+//     THEN DISPLAY THE OUTPUT CONTENTS OF THE GEOJSON AND GPX IN THE TEXTAREAS
+// ****************************************************************
+function handleGpxFileSelectionCombineAndConvertToGeoJson(event) {
 
-// **************************************************************************
-//     CONVERT THE GPX FILE TEXT OBJECT TO GEOJSON USING "toGeoJSON" LIBRARY
-// **************************************************************************
+    // Check for the various File API support.
+    if (window.File && window.FileReader && window.FileList && window.Blob) {
+    // Great success! All the File APIs are supported.
+    } 
+    else {
+        alert('The File Import APIs are not fully supported in this browser.');
+    }
 
-// Rename the LineString to "ROUTE"
+    // Get reference to the Selected File(s) from the event
+    const selectedFiles = event.target.files;
+    const numFilesSelected = selectedFiles.length;
+
+    // console.log("num files selected ", numFilesSelected);
+
+    // let the user know we've received their request to import the file(s) and it might take a couple seconds to finish loading them
+    gpxImportProgressLabel.innerHTML = gpxImportProgressLabel.innerHTML + '<br><b>Importing ' + numFilesSelected + ' files</b><br>' +
+                                             'this should only take a few seconds...';
+
+
+    // need to make an AsyncCounter that will trigger the "combineXMLFilesAndConvertToGeoJSON" function
+    // only once all of the files are completely finished being read as text
+    let filesLoadedCounter = new AsyncCounter(numFilesSelected, combineXMLFilesAndConvertToGeoJSON);
+
+    // create empty arrays to be loaded with contents of the files and their names
+    let selectedFilesText = [];
+    let selectedFilesNames = [];
+
+    for(let i=0; i < numFilesSelected; i++){
+
+        // grab reference to the first file in the list
+        const file = selectedFiles[i];
+
+        // check to see if the file exists (probably don't need to do this but just in case)
+        if(file){
+
+            // create a new FileReader
+            const reader = new FileReader();
+
+            // attach an "onload" event listener function to the FileReader object
+            // when the file text is finished being read as Text,
+            // we want to push it to an Array with all of the files we're reading
+            // we also want a separate Array with the name of the file (used for displaying names of files imported later)
+            // then we need to update the AsyncCounter object to kick off the "combineXMLFilesAndConvertToGeoJSON" function
+            // once all the files are finished being loaded
+            reader.onload = function(event) {
+                selectedFilesText.push(event.target.result);
+                selectedFilesNames.push(file.name);
+                filesLoadedCounter.increment();
+            };
+
+            // Read in the file as text and trigger the ".onload" function once it's done
+            reader.readAsText(file);
+
+        }
+        else{
+            console.log("file doesn't exist?");
+    
+            // update the "choose file" button subtext to indicate something went wrong with file loading
+            gpxImportProgressLabel.innerHTML = '<b>Error loading file</b>';
+        }
+    }
+
+    // WE NEEDED TO PUT THIS FUNCTION INSIDE THE "handleGpxFileSelectionCombineAndConvertToGeoJson" FUNCTION
+    // IN ORDER TO MAINTAIN THE SCOPE OF "selectedFilesText" AND "selectedFilesNames" VARAIBLES
+    function combineXMLFilesAndConvertToGeoJSON(){
+        
+        //******* Let the user know the file import worked **********************************
+        //******* and that we're now attempting to convert them *****************************
+        // update the GPX Import button label text to show that the files have been imported
+        gpxImportProgressLabel.innerHTML = gpxImportProgressLabel.innerHTML + '<br><br><b>SUCCESS!!!<br>File(s) Imported:</b><br>'
+
+        selectedFilesNames.forEach((fileName, i) => {
+            // update the label below the GPX file import button to indicate the name of the file that was imported
+            gpxImportProgressLabel.innerHTML = gpxImportProgressLabel.innerHTML + String(i+1) + ') ' + fileName + '<br>';
+        });
+        gpxImportProgressLabel.innerHTML = gpxImportProgressLabel.innerHTML + '<br>Converting to GeoJson'        
+
+        //******* Combine GPX/XML Files ************************************************
+        // (or just return the one provided if there's only one)
+        // combineXMLFiles() is located in the 'create-ride-gpx-parsing.js' file
+        let tempXmlDocDom = combineXMLFiles(selectedFilesText);
+        
+        //******* Convert GPX/XML to GeoJSON with "toGeoJSON" library ******************
+        let tempGeoJson = toGeoJSON.gpx(tempXmlDocDom);
+
+        // rename LineString to "ROUTE"
+        // get user input from text fields
+        // add "metadata" object with those user inputs
+        // add "START" and "FINISH" points with user inputs
+        // add "DETAILS" point with ride details calculated from GeoJson
+        let modifiedTempGeoJson = addSupplementalGeoJSONFeatures(tempGeoJson);
+        
+        //******** Print GPX and GeoJson Contents to Textareas *************************
+        // print out the contents of the final "gpx" AND "GeoJSON" files
+        // showGPXInTextArea(tempXmlDocDom);
+        gpxTextarea.value = new XMLSerializer().serializeToString(tempXmlDocDom);
+        showGeoJSONInTextArea(modifiedTempGeoJson);
+
+        //******* Load temporary GeoJson object into Globally accessible variable *****************
+        // load the ridesData Object with a single ride 
+        // who's key is stored in the global variable createRideInterfaceRideID
+        // and value is the GeoJSON we just created
+        ridesData[currentRideID] = modifiedTempGeoJson;
+
+        //******* Let the user know the conversion worked **********************************
+        gpxImportProgressLabel.innerHTML = gpxImportProgressLabel.innerHTML + '<br>Adding to map'
+
+        //******** Display ride GeoJson on the map *************************************
+        addRideToMap();
+
+        //******* Let the user know the adding to map worked **********************************
+        gpxImportProgressLabel.innerHTML = gpxImportProgressLabel.innerHTML + '<br><b>DONE</b><br><br>(Reload page to import again)'
+
+        // disable the GPX import button
+        document.getElementById('gpx-import-button').disabled = true;
+
+        // update "Save Changes" button display since there are no unsaved changes anymore
+        unsavedChanges(false);
+
+    }
+
+}
+
+
+
+// #############################################################################
+// *********  HELPERS FOR THE MAIN FUNCTION ABOVE ****************
+// #############################################################################
+// THIS IS THE FUNCTION THAT TAKES THE GEOJSON (THAT WAS CREATED BY CONVERTING THE GPX FILE)
+// AND ADDS INFORMATION TO IT SO THAT IT ADHERES TO THE CORRECT SPECIFICATIONS FOR THE BIKELAPSE WEBSITE
+function addSupplementalGeoJSONFeatures(tempGeoJson){
+
+    // rename linestring to ROUTE, create an alert if conditions are not met
+    // return the LineString Feature
+    renameLineStringToROUTE(tempGeoJson);
+
+    // get all the user input from the text fields
+    let userInput = getUserInputsFromTextFields();
+
+    // add metadata from form inputs
+    tempGeoJson["metadata"] = userInput.rideInfo;
+    
+    // create Point Features for START/FINISH/DETAILS
+    let startPoint = createPointFeature(tempGeoJson, "START", userInput.startName);
+    let finishPoint = createPointFeature(tempGeoJson, "FINISH", userInput.finishName);
+    let detailsPoint = createPointFeature(tempGeoJson, "DETAILS");
+
+    tempGeoJson.features.push(startPoint);
+    tempGeoJson.features.push(finishPoint);
+    tempGeoJson.features.push(detailsPoint);
+
+    return tempGeoJson;
+
+}
+
+
+// Rename the LineString to "ROUTE" is called from the "addSupplementalGeoJSONFeatures" function above
 function renameLineStringToROUTE(tempGeoJson) {
 
     // first make sure there's only one feature in the GeoJSON and that feature is a LineString
@@ -62,14 +218,9 @@ function getUserInputsFromTextFields(){
            };
 }
 
-// THIS IS THE FUNCTION THAT GENERATES THE START AND FINISH FEATURES
+
+// THIS IS THE FUNCTION THAT GENERATES THE START, FINISH AND DETAILS POINT FEATURES
 // SO WE CAN ADD THEM TO THE GEOJSON AND THEY WILL APPEAR ON OUR MAP
-// Add START/FINISH points
-// name: START | FINISH
-// description: 
-//      Location Name: <pulled from form input>
-//      time: <pulled from from first/last index of "coordTimes" list in "properties" of LineString feature>
-//      Location Elevation: <pulled from from first/last coordinates of LineString feature>
 function createPointFeature(tempGeoJson, pointName, pointLocationName = 'Location Name'){
 
     // get the LineString Feature from the Features array in the GeoJSON object
@@ -182,166 +333,30 @@ function createDetailsDescription(routeLineString, formattedStartTimeString){
 }
 
 
-// THIS IS THE FUNCTION THAT TAKES THE GEOJSON (THAT WAS CREATED BY CONVERTING THE GPX FILE)
-// AND ADDS INFORMATION TO IT SO THAT IT ADHERES TO THE CORRECT SPECIFICATIONS FOR THE BIKELAPSE WEBSITE
-function addSupplementalGeoJSONFeatures(tempGeoJson){
+// this simply shows the geoJson in the text area
+// it is called when the gpx file is initially converted
+// and anytime a user saves the RIDE INFO they want to update
+function showGeoJSONInTextArea(geoJson){
 
-    // rename linestring to ROUTE, create an alert if conditions are not met
-    // return the LineString Feature
-    renameLineStringToROUTE(tempGeoJson);
-
-    // get all the user input from the text fields
-    let userInput = getUserInputsFromTextFields();
-
-    // add metadata from form inputs
-    tempGeoJson["metadata"] = userInput.rideInfo;
+    // if a GeoJson was passed in, use it, otherwise use the globally defined one
+    // we don't need to do it this way anymore so it's commented out
+    // let geoJsonToOutput = (geoJson !== undefined) ? geoJson : ridesData[currentRideID];
     
-    // create Point Features for START/FINISH/DETAILS
-    let startPoint = createPointFeature(tempGeoJson, "START", userInput.startName);
-    let finishPoint = createPointFeature(tempGeoJson, "FINISH", userInput.finishName);
-    let detailsPoint = createPointFeature(tempGeoJson, "DETAILS");
-
-    tempGeoJson.features.push(startPoint);
-    tempGeoJson.features.push(finishPoint);
-    tempGeoJson.features.push(detailsPoint);
-
-    return tempGeoJson;
+    // stringify the GeoJson in order to print to the textarea
+    geoJsonTextarea.value = JSON.stringify(geoJson, null, 4);
 
 }
 
-
-
-// ****************************************************************
-//     IMPORT THE SELECTED GPX FILE AND READ IT IN AS TEXT
-//     CALL THE "combineXMLFilesAndConvertToGeoJSON" FUNCTION TO CONVERT IT
-// ****************************************************************
-function handleGpxFileSelectionCombineAndConvertToGeoJson(event) {
-
-    // Check for the various File API support.
-    if (window.File && window.FileReader && window.FileList && window.Blob) {
-    // Great success! All the File APIs are supported.
-    } 
-    else {
-        alert('The File Import APIs are not fully supported in this browser.');
-    }
-
-    // Get reference to the Selected File(s) from the event
-    const selectedFiles = event.target.files;
-    const numFilesSelected = selectedFiles.length;
-
-    // console.log("num files selected ", numFilesSelected);
-
-    // let the user know we've received their request to import the file(s) and it might take a couple seconds to finish loading them
-    gpxImportProgressLabel.innerHTML = gpxImportProgressLabel.innerHTML + '<br><b>Importing ' + numFilesSelected + ' files</b><br>' +
-                                             'this should only take a few seconds...';
-
-
-    // need to make an AsyncCounter that will trigger the "combineXMLFilesAndConvertToGeoJSON" function
-    // only once all of the files are completely finished being read as text
-    let filesLoadedCounter = new AsyncCounter(numFilesSelected, combineXMLFilesAndConvertToGeoJSON);
-
-    // create empty arrays to be loaded with contents of the files and their names
-    let selectedFilesText = [];
-    let selectedFilesNames = [];
-
-    for(let i=0; i < numFilesSelected; i++){
-
-        // grab reference to the first file in the list
-        const file = selectedFiles[i];
-
-        // check to see if the file exists (probably don't need to do this but just in case)
-        if(file){
-
-            // create a new FileReader
-            const reader = new FileReader();
-
-            // attach an "onload" event listener function to the FileReader object
-            // when the file text is finished being read as Text,
-            // we want to push it to an Array with all of the files we're reading
-            // we also want a separate Array with the name of the file (used for displaying names of files imported later)
-            // then we need to update the AsyncCounter object to kick off the "combineXMLFilesAndConvertToGeoJSON" function
-            // once all the files are finished being loaded
-            reader.onload = function(event) {
-                selectedFilesText.push(event.target.result);
-                selectedFilesNames.push(file.name);
-                filesLoadedCounter.increment();
-            };
-
-            // Read in the file as text and trigger the ".onload" function once it's done
-            reader.readAsText(file);
-
-        }
-        else{
-            console.log("file doesn't exist?");
-    
-            // update the "choose file" button subtext to indicate something went wrong with file loading
-            gpxImportProgressLabel.innerHTML = '<b>Error loading file</b>';
-        }
-    }
-
-    
-    function combineXMLFilesAndConvertToGeoJSON(){
-        
-        //******* Let the user know the file import worked **********************************
-        //******* and that we're now attempting to convert them *****************************
-        // update the GPX Import button label text to show that the files have been imported
-        gpxImportProgressLabel.innerHTML = gpxImportProgressLabel.innerHTML + '<br><br><b>SUCCESS!!!<br>File(s) Imported:</b><br>'
-        selectedFilesNames.forEach((fileName, i) => {
-            // update the label below the GPX file import button to indicate the name of the file that was imported
-            gpxImportProgressLabel.innerHTML = gpxImportProgressLabel.innerHTML + String(i+1) + ') ' + fileName + '<br>';
-        });
-        gpxImportProgressLabel.innerHTML = gpxImportProgressLabel.innerHTML + '<br>Converting to GeoJson'        
-
-        //******* Combine GPX/XML Files ************************************************
-        // (or just return the one provided if there's only one)
-        let tempXmlDocDom = combineXMLFiles(selectedFilesText);
-        
-        //******* Convert GPX/XML to GeoJSON with "toGeoJSON" library ******************
-        let tempGeoJson = toGeoJSON.gpx(tempXmlDocDom);
-
-        // rename LineString to "ROUTE"
-        // get user input from text fields
-        // add "metadata" object with those user inputs
-        // add "START" and "FINISH" points with user inputs
-        // add "DETAILS" point with ride details calculated from GeoJson
-        let modifiedTempGeoJson = addSupplementalGeoJSONFeatures(tempGeoJson);
-        
-        //******** Print GPX and GeoJson Contents to Textareas *************************
-        // print out the contents of the final "gpx" AND "GeoJSON" files
-        showGPXInTextArea(tempXmlDocDom);
-        showGeoJSONInTextArea(modifiedTempGeoJson);
-
-        //******* Load temporary GPX and GeoJson objects into Globally accessible variables *****************
-        // load the ridesData Object with a single ride 
-        // who's key is stored in the global variable createRideInterfaceRideID
-        // and value is the GeoJSON we just created
-        ridesData[currentRideID] = modifiedTempGeoJson;
-        gpxFileXmlDocDom = tempXmlDocDom;
-
-        //******* Let the user know the conversion worked **********************************
-        gpxImportProgressLabel.innerHTML = gpxImportProgressLabel.innerHTML + '<br>Adding to map'
-
-        //******** Display ride GeoJson on the map *************************************
-        addRideToMap();
-
-        //******* Let the user know the adding to map worked **********************************
-        gpxImportProgressLabel.innerHTML = gpxImportProgressLabel.innerHTML + '<br><b>DONE</b><br><br>(Reload page to import again)'
-
-        // disable the GPX import button
-        document.getElementById('gpx-import-button').disabled = true;
-
-        // update "Save Changes" button display
-        unsavedChanges(false);
-
-    }
-
-
-}
 
 
 
 /* ##################################################################################
-   ****  ADD RIDE TO MAP
+    ADD RIDE TO MAP
+        This is the function that will add the ride to the map initially
+        or if the "save changes" button is pressed, it will "update" the ride
+        it will also re-set the elevation display for the ride although
+        that is likely not necessary, but will be good if in the future
+        we want to allow the ability to re-import GPX files
 ##################################################################################### */
 function addRideToMap(operation){
   
@@ -389,8 +404,8 @@ function addRideToMap(operation){
     // in the order we want them to
     // *************************************************************    
     geoJsonLayer.addTo(map);
-    // overlayMaps[ridesData[currentRideID].metadata.rideName].addTo(map); // this is the way we do it in the index.html file
   
+    // show the elevationfor currentRideID
     showElevationForRideID(currentRideID);
   
     // re-center the map on the location of the ride
@@ -400,61 +415,38 @@ function addRideToMap(operation){
   
   
   
-  
-  
 
 
-function showGPXInTextArea(gpxDocDom){
+/* ########### UI INTERACTION HANDLERS ##############################################
+    TEXT FIELD INTERACTION HANDLER, BUTTON CLICK HANDLERS, UI TEXT FIELD UPDATERS
+        Save Changes button and "unsaved changes" text aleart show/hide
+        download button handler for "GeoJSON" and 'GPX download buttons
+##################################################################################### */
 
-    // if a DocDom was passed in, use it, otherwise use the globally defined one
-    // let gpxDocDomToOutput = (gpxDocDom !== undefined) ? gpxDocDom : gpxFileXmlDocDom;
+// this event fires if the user has typed new text in one the form fields
+// or chosen a different radio button
+// all it does is update the "Saved Changes" button and text label
+// so the user knows they need to save changes before downloading their file
+function handleFormChanges(event){
 
-    // serialize the DocDom in order to print to the textarea
-    gpxTextarea.value = new XMLSerializer().serializeToString(gpxDocDom);
-    
-}
+    // if we've imported data and are therefore displaying it in the map then carry out the event
+    if(ridesData[currentRideID] !== undefined){
 
-function showGeoJSONInTextArea(geoJson){
-
-    // if a GeoJson was passed in, use it, otherwise use the globally defined one
-    // let geoJsonToOutput = (geoJson !== undefined) ? geoJson : ridesData[currentRideID];
-    
-    // stringify the GeoJson in order to print to the textarea
-    geoJsonTextarea.value = JSON.stringify(geoJson, null, 4);
-
-}
-
-// unhides the "Update" and "Download" button containers
-// after we've imported a GPX file
-function unsavedChanges(unsavedChanges){
-
-    document.getElementById('save-changes-button').disabled = !unsavedChanges;
-    
-    let notificationText = (unsavedChanges) ? 'unsaved changes' : '';
-
-    document.getElementById('save-changes-button-notification-text').innerHTML = notificationText;    
-
-}
-
-// this function enables or disables the GeoJsonExport button
-// if the user changes form inputs we want them to click "Update"
-// before exporting
-function setDownloadButtonsDisabled(disabled){
-
-    // let geoJsonNotificationText = (disabled) ? '' : 'unsaved changes';
-    // document.getElementById('save-changes-button-notification-text').innerHTML = geoJsonNotificationText;
-
-    document.getElementById('geojson-download-button').disabled = disabled;
-    document.getElementById('gpx-download-button').disabled = disabled;
-
+        if(event.type === "keyup" || (event.type === "change" && event.target.type === "radio") ){
+            unsavedChanges(true);
+            // document.getElementById('save-changes-button').disabled = false;
+        }
+    }
+    else{
+        // console.log("gpx import still enabled");
+    }
 }
 
 
-
-
-
-// Called when someone pushes the Update button
-//
+// This function is called when someone pushes the "save changes" button 
+// is the most involved function other than the initial gpx import and conversion function above
+// it updates all of the metadata associated with each feature 
+// that is able to be modifiedby the user text input fields 
 function saveChangesButtonHandler(event){
 
     // check to make sure the GeoJson has been created first
@@ -508,10 +500,29 @@ function saveChangesButtonHandler(event){
 }
 
 
-// handle the download button presses and download the correct file according to which button was pressed
+
+// this simply toggles if the "Save Changes" button is enabled or disabled
+// and either ads or removes the notification text next to the button that says "unsaved changes"
+function unsavedChanges(unsavedChanges){
+
+    document.getElementById('save-changes-button').disabled = !unsavedChanges;
+    
+    let notificationText = (unsavedChanges) ? 'unsaved changes' : '';
+
+    document.getElementById('save-changes-button-notification-text').innerHTML = notificationText;    
+
+}
+
+
+
+// CALLED WHEN "GeoJSON" and "GPX" DOWNLOAD BUTTONS ARE CLICKED
+// downloads the correct file according to which button was pressed
+// the name of the file is generated from the date/name of the ride
 function downloadButtonHandler(event){
 
     // check to make sure the GeoJson has been created first
+    // if it hasn't, send an alert that the user needs to
+    // import a GPX file before we will generate a GeoJSON or GPX to save
     if(ridesData[currentRideID] !== undefined){
 
         // get the routeLineString from the rideData 
@@ -546,8 +557,6 @@ function downloadButtonHandler(event){
         // and lastly add the file extension to the end
         let filename = fileNameDatePrefix + ( (rideName === '') ? 'BikeLapseRideData' :  rideName.replace(/\s+/g, '_').toLowerCase() ) + fileExtension;
 
-        // console.log(filename);
-
         // Generate download of file with fileContents as content
         download(filename, fileContents);
     }
@@ -558,7 +567,11 @@ function downloadButtonHandler(event){
     
 }
 
+// FILE DOWNLOAD HACK
 // a hacky way that the internet taught me to be able to download text files
+// called after the file the user wants to download has been generated
+// it basically creates a hidden HTML <a href> element who's href url
+// points to the contents of the text of the file, which we have encoded into the href url
 function download(filename, text) {
     var element = document.createElement('a');
     element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
@@ -572,49 +585,25 @@ function download(filename, text) {
     document.body.removeChild(element);
 }
 
-// a hacky way to deal with the fact that File input buttons can't be styled
-// so we create a file input in the HTML file, make it hidden
-// then put a nice looking button in its place
-// when that button is clicked we just send a click message to the file input
-function handleGPXButtonClick(e){
-    document.getElementById('filein').click();
-}
 
-// if the user has changed one of the form fields
-// then we want to update the "Saved Changes" button and text label
-function handleFormChanges(event){
 
-    // if we've imported data and are therefore displaying it in the map then carry out the event
-    if(ridesData[currentRideID] !== undefined){
 
-        if(event.type === "keyup" || (event.type === "change" && event.target.type === "radio") ){
-            unsavedChanges(true);
-            // document.getElementById('save-changes-button').disabled = false;
-        }
-    }
-    else{
-        // console.log("gpx import still enabled");
-    }
+
+
+
+
+
+// THIS ISN'T BEING USED CURRENTLY
+// THIS ISN'T BEING USED CURRENTLY
+// THIS ISN'T BEING USED CURRENTLY
+// THIS ISN'T BEING USED CURRENTLY
+// THIS ISN'T BEING USED CURRENTLY
+function setDownloadButtonsDisabled(disabled){
+
+    // let geoJsonNotificationText = (disabled) ? '' : 'unsaved changes';
+    // document.getElementById('save-changes-button-notification-text').innerHTML = geoJsonNotificationText;
+
+    document.getElementById('geojson-download-button').disabled = disabled;
+    document.getElementById('gpx-download-button').disabled = disabled;
 
 }
-
-
-// SETUP THE FILE INPUT SELECTION EVENT HANDLER
-// d3.select("#filein").on("change", handleFileSelection);
-// document.getElementById('filein').addEventListener("change", handleFileSelection);
-
-
-// // handlers for when gpx-import-button is clicked
-// document.getElementById('gpx-import-button').onclick = handleGPXButtonClick;
-// document.getElementById('filein').onchange = handleGpxFileSelectionCombineAndConvertToGeoJson;
-
-
-// document.getElementById('ride-info-form').onchange = handleFormChanges;
-// document.getElementById('ride-info-form').onkeyup = handleFormChanges;
-
-// // save changes button click handler
-// document.getElementById('save-changes-button').onclick = saveChangesButtonHandler;
-
-// // download button click handlers
-// document.getElementById('geojson-download-button').onclick = downloadButtonHandler;
-// document.getElementById('gpx-download-button').onclick = downloadButtonHandler;

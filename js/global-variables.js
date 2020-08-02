@@ -9,6 +9,7 @@ let elevationRideID = "";
 
 /* ###################################################################
    ****  THE MAIN MAP OBJECTS NEED TO BE GLOBALY ACCESSIBLE
+   ****  AND SOME GLOBAL MAP AND MAP UI SETTINGS
 ###################################################################### */
 // Create our map using the div with id="map"
 let map = L.map("map", {
@@ -23,12 +24,12 @@ let defaultRideViewZoom = 12;
 
 // settings for map UI elements
 let mapUISettings = {
-  "baseLayerCtl": {"position": "topright", "collapsed": true},
-  "overlayLayerCtl": {"position": "topleft", "collapsed": false},
-  "legend": {"position": "bottomright"},
-  "ele": {"position": "bottomleft"}
+  "baseLayerCtl":     { "position": "topright",        "collapsed": true   },
+  "overlayLayerCtl":  { "position": "topleft",         "collapsed": false  },
+  "legend":           { "position": "bottomright"                          },
+  "elevation":        { "position": "bottomleft"                           },
+  "zoomCtl":          { "position": "topright"                             },
 };
-
 
 
 // *************************************************************
@@ -42,10 +43,14 @@ map.createPane('bikeRidesPane');
 map.getPane('bikeRidesPane').style.zIndex = 399;
 
 
-/* ############### ELEVATION DISPLAY GLOBAL VARIABLES ################## */
-// find out more about elevation control and options here: https://github.com/MrMufflon/Leaflet.Elevation
+// *************************************************************
+// ELEVATION CONTROL CREATION
+//    the elevationControl will be used throughout the app to 
+//    display the elevation for a selected ride 
+//    find out more about elevation control and options here: https://github.com/MrMufflon/Leaflet.Elevation
+// *************************************************************    
 let elevationControlOptions = {
-  position: mapUISettings.ele.position,
+  position: mapUISettings.elevation.position,
   theme: "steelblue-theme", //default: lime-theme
   width: 600,
   height: 125,
@@ -77,7 +82,7 @@ let elevationRabbitLayer;
 
 
 /* ###################################################################
-   ****  VARIOUS INDIVIDUAL VARIABLES AND SETTINGS INFO OBJECTS
+   ****  VARIOUS OTHER INDIVIDUAL VARIABLES AND OBJECTS FOR SETTINGS
 ###################################################################### */
 
 // youtube video embed size variables
@@ -122,15 +127,11 @@ let routeLineProperties = {
   "default":            {"legendText": "Default Route Color",    "lineFillOpacity": 1, "lineWeight": 4.0, "lineOpacity": 1, "lineColor": "rgba(155, 155, 155, 1)"   }
 };
 
-// this isn't ever used
-let bikeRouteColorCodesKeys = Object.keys(routeLineProperties);
-
-
 
 
 /* ##########################################################################################################
 // *** ASYNCRONOUS COUNTER CLASS TO TRIGGER A CALLBACK WHEN ALL ASYNCRONOUS TASKS HAVE COMPLETED   *******
-// *** BECAUSE WE ONLY WANT TO CALL THIS FUNCTION AFTER ALL THE API CALLS HAVE COMPLETED               *******
+// *** BECAUSE WE ONLY WANT TO CALL THE CALLBACK AFTER ALL THE API CALLS ETC HAVE COMPLETED               *******
 ############################################################################################################# */
 // ******* AsyncCounter Class ****************
 class AsyncCounter {
@@ -149,13 +150,3 @@ class AsyncCounter {
   }
 }
 
-
-
-// -----------------------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------------------
-/* ###########################################################################
-   ****  UNUSED OBJECTS - ORIGINALLY FOR A LEGEND THAT USED COLOR CODES ***  rgba(62, 146, 204, 1)
-############################################################################## */
-// returns a string for the current time in "HH:MM" format
-// let currentTime = getCurrentTime();

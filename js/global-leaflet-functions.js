@@ -1,10 +1,11 @@
-// **************** MAPPING HELPER FUNCTIONS ******************
-// **************** MAPPING HELPER FUNCTIONS ******************
-// **************** MAPPING HELPER FUNCTIONS ******************
+// ###########################################################################################################
+// THIS FILE CONTAINS THE SHARED CUSTOM FUNCTIONS THAT CREATE THE LEAFLET FEATURS FOR THE GEOJSON LAYERS AND
+// AND VARIOUS OTHER LEAFLET SPECIFIC FUNCTIONALITY
+// ###########################################################################################################
 
 
 // ************************************************************************************************************************************
-//     THESE ARE THE FUNCTIONS AVAILABLE FOR THE OPTIONS OBJECT WHEN CREATING A GEOJSON LAYER
+// FIRST WE START WITH THE FUNCTIONS PASSED IN AS OPTIONS TO THE GEOJSON LAYER UPON CREATION
 //     Information on the usage of these functions can be found here: https://leafletjs.com/reference-1.6.0.html#geojson
 //        FUNCTION CALL ORDER for GEOJSON LAYER ADD
 //           1) The Filter Function is called to remove any features that we don't want cluttering the Layer
@@ -12,25 +13,21 @@
 //           3) The onEachFeature is called to bind any popups or any additional things that might need to be done
 // ************************************************************************************************************************************
 
-
-// A Function that will be used to decide whether to include a feature or not. The default is to include all features:
-// This function allows us to filter out features
+// ####### FILTER FUNCTION #################################################
+// This function allows us to decide whether to include a feature or not. 
 // if the function returns true, the feature will be included
 // if the function returns false, the feature will not be included
 // the default function is to return true;
 function filterFunction (geoJsonFeature) {
 
-  // console.log("**********************************");
-  // console.log("currentRideID: ", currentRideID);
-  // console.log("Filter Function Call");
-  // console.log("Feature Type: ", geoJsonFeature.geometry.type);
-  // console.log("Feature Name: ", geoJsonFeature.properties.name);
-  // console.log("    ###    ");
-
+  // we will filter out features by their geometry type
   switch (geoJsonFeature.geometry.type) {
+    // include all LineString features
     case 'LineString':
       return true;
       break;
+    // include all Point features who's names appear as keys
+    // in the global mapIcons settings object
     case 'Point':
 
       if(mapIconsKeys.includes(geoJsonFeature.properties.name)){
@@ -44,17 +41,11 @@ function filterFunction (geoJsonFeature) {
 }
 
 
-
-
+// ####### POINT TO LAYER FUNCTION #################################################
 // This function allows us to define how points are added to the layer
 // the default behavior is to simply create a marker for each point
 // by using the following code: "return L.marker(latlng);"
 function pointToLayerFunction(geoJsonPoint, latlng) {
-
-  // console.log("Point To Layer Function Call");
-  // console.log("Feature Type: ", geoJsonPoint.geometry.type);
-  // console.log("Feature Name: ", geoJsonPoint.properties.name);
-  // console.log("    ###    ");
 
   let markerType = geoJsonPoint.properties.name;
   
@@ -80,9 +71,7 @@ function pointToLayerFunction(geoJsonPoint, latlng) {
 }
 
 
-
-
-
+// ####### ON EACH FEATURE FUNCTION #################################################
 // A Function that will be called once for each created Feature, after it has been created and styled. 
 // Useful for attaching events and popups to features. 
 // The default is to do nothing with the newly created layers:
@@ -101,16 +90,16 @@ function onEachFeatureFunction(feature, layer) {
   switch (feature.geometry.type) {
     case 'LineString': 
 
-      // layer.bindPopup(createPopupHTMLVideo(properties), bindPopupProperties);
+      // layer.bindPopup(createPopupHTMLDetailsPoint(properties), bindPopupProperties);
 
       break;
     case 'Point':
 
       if(properties.name === "DETAILS"){
-        layer.bindPopup(createPopupHTMLVideo(properties), bindPopupProperties);
+        layer.bindPopup(createPopupHTMLDetailsPoint(properties), bindPopupProperties);
       }
       else{
-        layer.bindPopup(createPopupHTMLBasic(properties), bindPopupProperties);
+        layer.bindPopup(createPopupHTMLBasicPoints(properties), bindPopupProperties);
       }
       
       break;
@@ -124,13 +113,11 @@ function onEachFeatureFunction(feature, layer) {
   //   showElevationForRideID(e, e.target.feature.properties.rideID);
   //   // console.log(e);
   // });
-
-
 }
 
 
 
-
+// ####### STYLE FUNCTION #################################################
 // A Function that will be called once for each created Feature, after it has been created and styled. 
 // Useful for attaching events and popups to features. 
 // The default is to do nothing with the newly created layers:
@@ -189,11 +176,9 @@ function styleFunction (geoJsonFeature) {
 
 
 
-
-// **************************************************************************************
-// **************** HELPERS FOR ABOVE FUNCTIONS ******************
-// **************************************************************************************
-
+// #############################################################################
+// *********  HELPERS FOR ABOVE GEOJSON CREATION FUNCTIONS ****************
+// #############################################################################
 // creates the correct Marker object
 // depending on if we are supposed to use the "divIcon" or regular "icon"
 // which is designated in the markerProperties (coming from the mapIcons global variable)
@@ -228,22 +213,28 @@ function createMarkerIcon(markerType){
 
 }
 
-
+// ####### CREATE THE HTML FOR DETAILS POINT POPUP BINDING #####################################
 // creates the HTML code necessary for the "DETAILS" Popup
-// probably need to re-name this function
-function createPopupHTMLVideo(properties){
-  let videoEmbedID = getTextFromValue(ridesData[currentRideID].metadata.videoEmbedID);
+// IN THE FUTURE, WE MAY WANT TO GENERATE ALL THE 'detailsPointDesctiption' HTML
+// FROM THE PROPERTIES WE STORE IN THE DETAILS PIN
+function createPopupHTMLDetailsPoint(properties){
+
+  let rideMetadata = ridesData[currentRideID].metadata;
+  let rideFeatures = ridesData[currentRideID].features;
+
+  let videoEmbedID = validate(rideMetadata.videoEmbedID);
   let videoEmbedHTML = (videoEmbedID !== '' ? videoEmbedParams.firstHalf + videoEmbedID + videoEmbedParams.secondHalf : 'no video URL<br>');
 
-  let rideName = getTextFromValue(ridesData[currentRideID].metadata.rideName);
+  let rideName = validate(rideMetadata.rideName);
 
-  let stravaURL = getTextFromValue(ridesData[currentRideID].metadata.stravaURL);
+  let stravaURL = validate(rideMetadata.stravaURL);
   let stravaHTML = (stravaURL !== '' ? '<h3><a href="' + stravaURL + '" target="_blank">Click here for Strava Recording and Map</a></h3>' : 'no strava URL<br>');
 
-  let googleMapURL = getTextFromValue(ridesData[currentRideID].metadata.googleMapURL);
+  let googleMapURL = validate(rideMetadata.googleMapURL);
   let googleMapHTML = (googleMapURL !== '' ? '<h3><a href="' + googleMapURL + '" target="_blank">Click here for detailed Google Map</a></h3>' : 'no googlemap URL');
 
-  let detailsPointFeature = ridesData[currentRideID].features.find( (element, i) =>{
+  // find the point feature named "DETAILS"
+  let detailsPointFeature = rideFeatures.find( (element, i) =>{
     
     if(element.geometry.type === "Point" && element.properties.name === "DETAILS"){
       return true;
@@ -260,11 +251,14 @@ function createPopupHTMLVideo(properties){
           googleMapHTML;
 }
 
+// formerly "getTextFromValue"
 // tests whether the value exists (either undefined or empty string) 
 // and then returns the actual text or an empty string if it's undefined or already an empty string
-function getTextFromValue (value){
+// this is not exactly necessary, but it's helpful if we for some reason
+// the geoJSON we're working with doesn't have the correct metadata we need
+function validate(value){
   
-  if(typeof(value) !== undefined && value !== ''){
+  if(typeof(value) !== 'undefined' && value !== ''){
     // console.log("value exists: ", value);
 
     return value;
@@ -272,17 +266,16 @@ function getTextFromValue (value){
   }
 
   // console.log("value does not exist: ", value);
-  return "";
+  
+  return '';
 
 }
 
 
-
-
-
+// ####### CREATE THE HTML FOR START/FINISH POINT POPUP BINDING #####################################
 // creates the HTML code necessary for the "START" and "FINISH" Popups
 // probably need to re-name this function
-function createPopupHTMLBasic(properties){
+function createPopupHTMLBasicPoints(properties){
   let markerTypeText = mapIcons[properties.name].markerText;
 
   let rideName = ridesData[currentRideID].metadata.rideName;
@@ -293,50 +286,19 @@ function createPopupHTMLBasic(properties){
 }
 
 
-// **************************************************************************************
-//         FUNCTIONS TO CREATE THE LEGEND WHEN IT'S ADDED TO THE MAP
-// **************************************************************************************
+// #############################################################################
+// *********  OTHER LEAFLET SPECIFIC FUNCIONS ********************************
+// #############################################################################
 
-// THIS IS THE LEGEND ONADD FUNCTION WE WILL USE. BELOW IS AN EXAMPLE OF A DIFFERENT TYPE
-function legendOnAdd(map) {
-  
-  // create a div for the legend
-  let div = L.DomUtil.create('div', 'info legend');
-
-  labels = ['<strong>Markers</strong>'],
-
-  mapIconsKeys.map( (key, i) => {
-
-    labels.push('<i class="' + mapIcons[key].iconURLorClass + '"></i>' + (key ? key : undefined));
-
-    // this is how we'd do it if we didn't want to use the <i> (bullet) element
-    // labels.push('<span class="' + mapIcons[key].iconURLorClass + ' legend-icon-positioning"></span>' + (key ? key : 'undefined'));
-
-  });
-  
-  // takes the "labels" list and turns it into a single string with "<br>" appended between each item in the list
-  // basically just a different way to accomplish the same thing as using the "div.innerHTML +=" in the 
-  // above "mapIconsKeys.map" function. Potato Potahtoe
-  div.innerHTML = labels.join('<br>');
-
-  // create a horizontal line between the mapIcons section of the legend and the routes section
-  div.innerHTML += '<hr>';
-
-  // And this time just using the += because laziness
-  div.innerHTML += '<strong>Route Types</strong>' + '<br>';
-  div.innerHTML += '<span class="legend-route-completed-icon"></span>' +          '<span>' + routeLineProperties.completed.legendText + '</span>' + '<br>';
-  div.innerHTML += '<span class="legend-route-suggested-icon"></span>' +          '<span>' + routeLineProperties.suggested.legendText + '</span>';// + '<br>';
-  // div.innerHTML += '<span class="legend-route-variant-normal-icon"></span>' +     '<span>' + routeLineProperties.variantNormal.legendText + '</span>' + '<br>';
-  // div.innerHTML += '<span class="legend-route-variant-difficult-icon"></span>' +  '<span>' + routeLineProperties.variantDifficult.legendText + '</span>';
-  
-  return div;
-}
-
-
-
-// FUNCTION THAT MANAGES THE ADDING AND REMOVING OF THE ELEVATION CONTROL LAYER AND RABBIT DISPLAY LAYER
+// *********************************************************
+// ELEVATION DISPLAY FUNCTIONS
+// This function manages the adding and removing of the
+// elevation control display and rabbit geojson overlay layer
 function showElevationForRideID(clickedRideID){
 
+  // We only want to run this logic if we are clicking on a different
+  // ride than we had previously clicked on, or if we haven't clicked
+  // on a ride at all yet
   if(elevationRideID !== clickedRideID && clickedRideID !== undefined){
     
     elevationRideID = clickedRideID;
@@ -350,13 +312,13 @@ function showElevationForRideID(clickedRideID){
     }
 
     // get the feature who's name is ROUTE and who's type is "LineString"
-    // so we can use its coordinates for the newGeoJSON we'll use to create the RabbitLayer
+    // so we can use its coordinatesArray to create the rabbitLayerGeoJSON we'll use to create the RabbitLayer
     let routeLineString = ridesData[elevationRideID].features.find( (feature) => 
                                                                     feature.properties.name === "ROUTE"
                                                                     && feature.geometry.type === "LineString"
                                                                 );
 
-    let newGeoJSON = {
+    let rabbitLayerGeoJSON = {
       "name":"RabbitLayerOverlay",
       "type":"FeatureCollection",
       "features":[
@@ -372,8 +334,8 @@ function showElevationForRideID(clickedRideID){
       ]
     };        
 
-    // assign the rabbitLayer to a new geoJSON
-    elevationRabbitLayer = L.geoJson(newGeoJSON,{
+    // assign a new geoJson layer with the 'rabbitLayerGeoJSON' data to the 'elevationRabbitLayer' object
+    elevationRabbitLayer = L.geoJson(rabbitLayerGeoJSON,{
       // pane: 'elevationPane', // panes don't seem to work
       onEachFeature: elevationControl.addData.bind(elevationControl),
       // filter: function(feature, layer) {  // the filter function doesn't seem to work either
@@ -382,9 +344,6 @@ function showElevationForRideID(clickedRideID){
       style: { fillOpacity: 0.0, weight: routeLineProperties.rabbitLayer.lineWeight, opacity: 1, color: routeLineProperties.rabbitLayer.lineColor}
     });
 
-    // map.createPane('elevationPane');
-    // map.getPane('elevationPane').style.zIndex = 401;
-
     // if the elevationControl Layer's container is null, 
     // then that means it has previously been removed from the map
     // so we need to add it back before we add the rabbit layer
@@ -392,7 +351,7 @@ function showElevationForRideID(clickedRideID){
         elevationControl.addTo(map);
     }
 
-
+    // add the rabbitLayer to the map
     elevationRabbitLayer.addTo(map);
       
   }
@@ -403,15 +362,26 @@ function showElevationForRideID(clickedRideID){
 }
 
 
-
+// Sometimes we need to clear the elevation display 
+// everytime we click on a different ride than we had previously selected
+// and everytime we remove the ride from the map that is currently showing its elevation
+// in that case we want to remove the elevation control along with the layer
 function clearElevationDisplay(operation){
 
   if(elevationControl.getContainer() !== null){
+      // first remove the elevationRabbitLayer
       elevationRabbitLayer.remove();
+
+      // set it to undefined so we know it needs to be re-initialized
       elevationRabbitLayer = undefined;
+
+      // reset the elevationRideID
       elevationRideID = "";
+
+      // clear the elevationControl display
       elevationControl.clear();
 
+      // if the operation string passed in is set to "remove" then we should remove it all together
       if(operation === "remove"){
         elevationControl.remove();
       }
@@ -434,7 +404,9 @@ function reCenterMap(rideIDtoCenterOn){
   // find the DETAILS pin in the Features array for the GeoJSON
   let detailsPoint = ridesData[rideIDtoCenterOn].features.find( (feature) => feature.properties.name === "DETAILS");
   let centerLatLon = detailsPoint.geometry.coordinates.slice(0, 2).reverse();
-  map.flyTo(centerLatLon, defaultRideViewZoom, {animate: true, duration: 0.5});
+
+  // this is supposed to animate the pan and zoom but doesn't always seem to do this
+  map.flyTo(centerLatLon, defaultRideViewZoom, {animate: true, duration: 1});
 }
 
 

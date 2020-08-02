@@ -31,8 +31,15 @@ let elevationDisplayDiv = document.getElementById('elevation-display');
 // *************************************************************
 // ADD EVENT LISTENERS TO OUR INTERACTIVE HTML UI ELEMENTS
 // *************************************************************
-// handlers for when user clicks gpx-import-button and chooses a file
-document.getElementById('gpx-import-button').onclick = handleGPXButtonClick;
+
+// GPX IMPORT BUTTON ONCLICK HANDLER
+// a hacky way to deal with the fact that File input buttons can't be styled
+// so we create a file input element in the HTML file, make it hidden
+// then put a nice looking button in its place
+// when that button is clicked we just send a click message to the file input element
+document.getElementById('gpx-import-button').onclick = function(event){ document.getElementById('filein').click();}
+
+// handler for when user finishes choosing a file after clicking gpx-import-button
 document.getElementById('filein').onchange = handleGpxFileSelectionCombineAndConvertToGeoJson;
 
 // event handler for text inputs and radio buttons in the Ride Info section
@@ -42,7 +49,7 @@ document.getElementById('ride-info-form').onchange = handleFormChanges;
 // click handler for the save changes button
 document.getElementById('save-changes-button').onclick = saveChangesButtonHandler;
 
-// click handlers for download buttons
+// click handlers for GeoJSON and GPX download buttons
 document.getElementById('geojson-download-button').onclick = downloadButtonHandler;
 document.getElementById('gpx-download-button').onclick = downloadButtonHandler;
 

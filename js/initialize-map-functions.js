@@ -60,7 +60,7 @@ function createBaseMapsAndUI(mapboxTilesAvailable){
     // The API_KEY will allow you to access the tiles for free up to a certain amount of usage per month
     // it should be sufficient for any small website with minimal usage
     // darkmap -- this map feels like "night time". Later on in the code there is logic to use the darkmap as the initially loaded tile layer if your local time is betwee 8pm and 6am
-        let darkmap = L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
+    let darkmap = L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
         attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\" target=\"_blank\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\" target=\"_blank\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\" target=\"_blank\">Mapbox</a>",
         maxZoom: maximumZoom,
         minZoom: minimumZoom,
@@ -93,10 +93,9 @@ function createBaseMapsAndUI(mapboxTilesAvailable){
 
 
     // *************************************************************************
-    // ADD OUR BASELAYERS (TILESETS) TO THE LAYER CONTROL
-    // AND ADD ONE OF THEM TO THE MAP AS THE INITIAL BASEMAP
+    // ADD BASEMAP LAYER CONTROL -- 
+    //      THE LAYER CONTROL THAT HOLDS OUR BASELAYERS (TILESETS)
     // *************************************************************************
-    
     // Define a baseMaps object to hold our initial set of base layers from Stamen.com
     var baseMaps = {
         "Terrain": terrainmap,
@@ -131,7 +130,7 @@ function createBaseMapsAndUI(mapboxTilesAvailable){
     
 
     // *************************************************************
-    //  ADD LAYER CONTROL TO ACT AS A LEGEND - 
+    //  ADD LEGEND -- LEAFLET CONTROL OBJECT
     //      set the location to mapUISettings.legend.position
     //      set the "onAdd" function to create some HTML to display
     // *************************************************************
@@ -145,7 +144,7 @@ function createBaseMapsAndUI(mapboxTilesAvailable){
 
 
     // *************************************************************
-    //  ADD OUR ELEVATION CONTROL LAYER TO MAP TO INITIALIZE IT
+    //  ADD ELEVATION DISPLAY -- ELEVATION CONTROL LAYER
     //      then either remove it - if we are loading the index page
     //      or move it to a separate div - if we are loading the create-ride page
     // *************************************************************
@@ -174,23 +173,23 @@ function createBaseMapsAndUI(mapboxTilesAvailable){
 
 
 /* ################################################################################################
-   ****  ON ADD FUNCTION FOR OUR LEGEND
+   ****  LEGEND "ON ADD" FUNCTION 
    ****     THIS IS OUR CUSTOM FUNCTION TO GENERATE A LEGEND WITHIN A CONTROL LAYER
+   ****     IT IS CALLED WHEN WE ADD THE LEGEND CONTROL LAYER TO THE MAP
 ################################################################################################### */
 function legendOnAdd(map) {
   
     // create a div for the legend
     let div = L.DomUtil.create('div', 'info legend');
 
-    labels = ['<strong>Markers</strong>'],
+    labels = ['<strong>Markers</strong>'];
 
     mapIconsKeys.map( (key, i) => {
 
-    labels.push('<i class="' + mapIcons[key].iconURLorClass + '"></i>' + (key ? key : undefined));
+        labels.push('<i class="' + mapIcons[key].iconURLorClass + '"></i>' + (key ? key : undefined));
 
-    // this is how we'd do it if we didn't want to use the <i> (bullet) element
-    // labels.push('<span class="' + mapIcons[key].iconURLorClass + ' legend-icon-positioning"></span>' + (key ? key : 'undefined'));
-
+        // this is how we'd do it if we didn't want to use the <i> (bullet) element
+        // labels.push('<span class="' + mapIcons[key].iconURLorClass + ' legend-icon-positioning"></span>' + (key ? key : 'undefined'));
     });
     
     // takes the "labels" list and turns it into a single string with "<br>" appended between each item in the list
