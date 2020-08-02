@@ -106,7 +106,7 @@ function createBaseMapsAndUI(mapboxTilesAvailable){
     // create a Layer Control element specifically for our baselayer
     // we will add additional base layers (tilesets) and overlay layers (json data) as we load the data
     let baseLayerControl = L.control.layers(baseMaps, undefined, {
-        collapsed: false,
+        collapsed: mapUISettings.baseLayerCtl.collapsed,
         position: mapUISettings.baseLayerCtl.position
     }).addTo(map);
 

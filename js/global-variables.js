@@ -23,8 +23,8 @@ let defaultRideViewZoom = 12;
 
 // settings for map UI elements
 let mapUISettings = {
-  "baseLayerCtl": {"position": "topright"},
-  "overlayLayerCtl": {"position": "topleft"},
+  "baseLayerCtl": {"position": "topright", "collapsed": true},
+  "overlayLayerCtl": {"position": "topleft", "collapsed": false},
   "legend": {"position": "bottomright"},
   "ele": {"position": "bottomleft"}
 };
@@ -158,4 +158,4 @@ class AsyncCounter {
    ****  UNUSED OBJECTS - ORIGINALLY FOR A LEGEND THAT USED COLOR CODES ***  rgba(62, 146, 204, 1)
 ############################################################################## */
 // returns a string for the current time in "HH:MM" format
-let currentTime = getCurrentTime();
+// let currentTime = getCurrentTime();
