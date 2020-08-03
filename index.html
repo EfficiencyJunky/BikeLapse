@@ -125,16 +125,18 @@
       font: 8px/10px Arial, Helvetica, sans-serif;
     } */
 
-    /* media query that acts only if the screen is greater than 320px and less than 812px */
-    /* this will make the nav-bar much taller than it would be otherwise for mobile devices */
+    /* if we try to use the "viewport" meta tag to make this page responsive, it doesn't work well */
+    /* so we need to manually make the navbar taller on mobile or smaller screen devices */
+    /* this media query acts only if the screen is greater than 320px and less than 812px */
     /* @media screen and (max-width: 800px)  */
     @media only screen 
     and (min-device-width : 320px) 
     and (max-device-width : 800px)
     {
 
+      /* this needs to be 70pt to work for some reason */
       body {
-        padding-top: 80pt;
+        padding-top: 70pt;
       }
 
       .navbar {
@@ -190,6 +192,7 @@
 <body>
 
   <nav class="navbar fixed-top navbar-expand-lg navbar-light bg-light">
+  <!-- <nav class="navbar fixed-top navbar-expand-lg navbar-light bg-light">   -->
     <a class="navbar-brand" href="index.html">BikeLapse</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>

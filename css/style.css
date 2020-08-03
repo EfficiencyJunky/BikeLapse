@@ -79,6 +79,11 @@
 } 
 */
 
+/* make the legend display underneath UI elements like elevation and layer control */
+.leaflet-bottom.leaflet-right {
+  z-index: 800 !important;
+
+}
 
 .legend {
   line-height: 25px;
