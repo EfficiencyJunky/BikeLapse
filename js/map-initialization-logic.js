@@ -68,7 +68,7 @@ function createBaseMapsAndUI(mapboxTilesAvailable){
     // it should be sufficient for any small website with minimal usage
     if(mapboxTilesAvailable){
         // darkmap -- this map feels like "night time". Later on in the code there is logic to use the darkmap as the initially loaded tile layer if your local time is betwee 8pm and 6am
-        let darkmap = L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
+        var darkmap = L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
             attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\" target=\"_blank\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\" target=\"_blank\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\" target=\"_blank\">Mapbox</a>",
             maxZoom: maximumZoom,
             minZoom: minimumZoom,
@@ -78,7 +78,7 @@ function createBaseMapsAndUI(mapboxTilesAvailable){
         });
 
         // streetmap -- the type of default map we are used to seeing on services like google maps
-        let streetmap = L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
+        var streetmap = L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
             attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\" target=\"_blank\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\" target=\"_blank\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\" target=\"_blank\">Mapbox</a>",
             maxZoom: maximumZoom,
             minZoom: minimumZoom,
@@ -89,7 +89,7 @@ function createBaseMapsAndUI(mapboxTilesAvailable){
 
 
         // satellite -- self explanitory
-        let satellite = L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
+        var satellite = L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
             attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\" target=\"_blank\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\" target=\"_blank\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\" target=\"_blank\">Mapbox</a>",
             maxZoom: maximumZoom,
             minZoom: minimumZoom,
@@ -105,7 +105,7 @@ function createBaseMapsAndUI(mapboxTilesAvailable){
     //      THE LAYER CONTROL THAT HOLDS OUR BASELAYERS (TILESETS)
     // *************************************************************************
     // Define a baseMaps object to hold our initial set of base layers from Stamen.com
-    var baseMaps = {
+    let baseMaps = {
         "Terrain": terrainmap,
         "Light Map": tonerlitemap
     };    
