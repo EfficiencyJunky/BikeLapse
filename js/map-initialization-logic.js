@@ -19,8 +19,8 @@ function initializeMap(){
                 mapboxTilesAvailable = true;
             }
             else{
-                console.log("map load response status code:", response.status);
-                console.log("check to make sure your mapbox API_KEY is setup and has the correct permissions");
+                console.log('testing mapbox tileset "GET" request\nResponse status code:', response.status, response.statusText);
+                console.log("check to make sure your mapbox API_KEY is setup correctly and has the correct permissions");
                 mapboxTilesAvailable = false;
             }
             
@@ -152,16 +152,16 @@ function createBaseMapsAndUI(mapboxTilesAvailable){
     elevationControl.addTo(map);
 
     // SET THE DEFAULT STATE OF THE ELEVATION CONTROL LAYER
-    // if we haven't created a separate div for displaying the elevation control
-    // then we will display the elevation control layer within the actual map (default behavior)
-    // so we want to remove the elevation control layer until the user selects a ride at which point we will display it
-    // if(elevationDisplayDiv){
+    // for the 'index.html' page, we haven't created a separate div for displaying the elevation control
+    // so we will display the elevation control layer within the actual map (default behavior)
+    // in this case we want to remove the elevation control layer until the user selects a ride at which point we will display it
     if(typeof(elevationDisplayDiv) === 'undefined'){
-        console.log("elevation display div undefined");
+        // console.log("elevation display div undefined");
         // console.log(elevationDisplayDiv);
         elevationControl.remove();
     }
     // else if we have a div setup to display the elevation control layer
+    // (which is what we are doing on the 'create-ride.html' page)
     // we want to move the elevation control layer into that div
     else{
         // grab the elevationControl container and move it to the elevationDisplayDiv
@@ -209,3 +209,8 @@ function legendOnAdd(map) {
     
     return div;
 }
+
+
+
+
+  

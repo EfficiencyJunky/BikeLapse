@@ -13,7 +13,7 @@ let elevationRideID = "";
 ###################################################################### */
 // Create our map using the div with id="map"
 let map = L.map("map", {
-  center: [37.77, -122.42], // san francisco
+  center: [37.67, -122.42], // san francisco
   zoom: 10
 });
 
@@ -150,3 +150,30 @@ class AsyncCounter {
   }
 }
 
+
+// **************** NON MAPPING HELPER FUNCTIONS ******************
+// **************** NON MAPPING HELPER FUNCTIONS ******************
+// **************** NON MAPPING HELPER FUNCTIONS ******************
+
+  // this is the function for creating rideIDs based off of the unique number being passed in
+  // we're putting it in this file so that we can easily modify it if need be
+  // it doesn't really matter what the rideID generation method is as long as they are all unique
+function getRideID(numToPadd){
+  return "ride" + String(numToPadd).padStart(4, '0');;
+}
+
+
+
+// **************** RETURN "true" IF IT'S NIGHT OR NOT ******************
+  // checks to see if the local time is between 8pm and 6am
+  // if so, we are considering it to be night time
+function getIsNight(){
+  let todaysDate = new Date();
+
+  let HH = String(todaysDate.getHours()).padStart(2, '0');
+
+  // if the current hour is between 8pm (20:00) and 6am, set isNight to true
+  let isNight = (HH >= 20 || HH <= 6);
+
+  return isNight;
+}

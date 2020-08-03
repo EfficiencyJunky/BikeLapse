@@ -1,7 +1,7 @@
 /* ###################################################################
    ****  DEFINE VARIOUS GLOBAL VARIABLES LIKE OUR MAP AND ZOOM SETTINGS ****
 ###################################################################### */
-let initialRideIDsToDisplay = ["ride0001", "ride0003"];
+let initialRideIDsToDisplay = ["ride0001", "ride0003", "ride0007"];
 
 let overlayLayerControl = L.control.layers(undefined, undefined, {
   collapsed: mapUISettings.overlayLayerCtl.collapsed,
@@ -42,13 +42,11 @@ bikeRideJSONFileNames.forEach( (jsonFileName, i) => {
 
       // create a new rideID that gets incremented by 1 for each file we read in
       // this way we can store the rideJSONs by rideID and not file name
-      let newRideID = "ride" + pad(i+1, 4);
-
-      // set the global variable "currentRideID" to be the rideID for this ride
+      // we set the global variable "currentRideID" to be the rideID for this ride
       // this global variable will be used to access the correct data for this ride
       // in the 'filter', 'pointToLayer', 'onEachFeature', and 'style'
       // functions used to create the geoJson layer below
-      currentRideID = newRideID;
+      currentRideID = getRideID(i+1);
       
       // save the rideID in the "metadata" of the rideJSON
       rideJSON.metadata["rideID"] = currentRideID;
@@ -81,6 +79,7 @@ bikeRideJSONFileNames.forEach( (jsonFileName, i) => {
                                                 style: styleFunction
                                                 // style: { fillOpacity: 0.0, weight: 4, opacity: 1, color: rideMetadata.lineColor}
                                               });
+
 
       // when we click on the layer, we want to show the elevation data
       // by adding it to the elevation control layer
