@@ -3,10 +3,17 @@
 ################################################################################################### */
 
 // Prior to setting up the basemaps and UI for our map, we want to
-// check and see if we have permission to access the mapbox tilesets
+// check and see if the API_KEY even exists (did they include a file with one?)
+// and if it exists, we need to verify it works and so we have permission to access the mapbox tilesets
 // if we can access them, then we set "mapboxTilesAvailable" to true
 // if we can't access them for some reason then we set it to false and print out the response status code
 function initializeMap(){
+
+    // check to make sure the MAPBOX_API_KEY actually exists (typeofand assign it to the API_KEY global variable. 
+    // If the MAPBOX_API_KEY doesn't exist, set it to an empty string
+    // this will allow the rest of the program to function and gracefully handle
+    // the fact that the API_KEY never existed
+    let API_KEY = (typeof(MAPBOX_API_KEY) === 'undefined') ? '' : MAPBOX_API_KEY;
 
     let mapboxTestURL = 'https://api.mapbox.com/styles/v1/mapbox/dark-v9/tiles/1/1/1?access_token=' + API_KEY;
     
@@ -54,42 +61,43 @@ function createBaseMapsAndUI(mapboxTilesAvailable){
         minZoom: minimumZoom
     });
 
-    // CREATE THE MAPBOX.COM TILE LAYERS
+    // IF THE MAPBOX.COM TILES ARE AVAILABLE (FROM OUR CHECK ABOVE), THEN CREATE THE TILE LAYERS
     // These are developed by Mapbox.com
     // In order to use these tiles, you have to create an account on Mapbox.com and generate an API_KEY
     // The API_KEY will allow you to access the tiles for free up to a certain amount of usage per month
     // it should be sufficient for any small website with minimal usage
-    // darkmap -- this map feels like "night time". Later on in the code there is logic to use the darkmap as the initially loaded tile layer if your local time is betwee 8pm and 6am
-    let darkmap = L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
-        attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\" target=\"_blank\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\" target=\"_blank\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\" target=\"_blank\">Mapbox</a>",
-        maxZoom: maximumZoom,
-        minZoom: minimumZoom,
-        id: "mapbox/dark-v9",      
-        // id: "mapbox.dark",
-        accessToken: API_KEY
-    });
+    if(mapboxTilesAvailable){
+        // darkmap -- this map feels like "night time". Later on in the code there is logic to use the darkmap as the initially loaded tile layer if your local time is betwee 8pm and 6am
+        let darkmap = L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
+            attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\" target=\"_blank\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\" target=\"_blank\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\" target=\"_blank\">Mapbox</a>",
+            maxZoom: maximumZoom,
+            minZoom: minimumZoom,
+            id: "mapbox/dark-v9",      
+            // id: "mapbox.dark",
+            accessToken: MAPBOX_API_KEY
+        });
 
-    // streetmap -- the type of default map we are used to seeing on services like google maps
-    let streetmap = L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
-        attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\" target=\"_blank\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\" target=\"_blank\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\" target=\"_blank\">Mapbox</a>",
-        maxZoom: maximumZoom,
-        minZoom: minimumZoom,
-        id: "mapbox/streets-v11",
-        // id: "mapbox.streets",
-        accessToken: API_KEY
-    });
+        // streetmap -- the type of default map we are used to seeing on services like google maps
+        let streetmap = L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
+            attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\" target=\"_blank\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\" target=\"_blank\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\" target=\"_blank\">Mapbox</a>",
+            maxZoom: maximumZoom,
+            minZoom: minimumZoom,
+            id: "mapbox/streets-v11",
+            // id: "mapbox.streets",
+            accessToken: MAPBOX_API_KEY
+        });
 
 
-    // satellite -- self explanitory
-    let satellite = L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
-        attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\" target=\"_blank\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\" target=\"_blank\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\" target=\"_blank\">Mapbox</a>",
-        maxZoom: maximumZoom,
-        minZoom: minimumZoom,
-        id: "mapbox/satellite-v9",
-        // id: "mapbox.streets-satellite",
-        accessToken: API_KEY
-    });  
-
+        // satellite -- self explanitory
+        let satellite = L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
+            attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\" target=\"_blank\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\" target=\"_blank\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\" target=\"_blank\">Mapbox</a>",
+            maxZoom: maximumZoom,
+            minZoom: minimumZoom,
+            id: "mapbox/satellite-v9",
+            // id: "mapbox.streets-satellite",
+            accessToken: MAPBOX_API_KEY
+        });  
+    }
 
 
     // *************************************************************************
