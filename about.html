@@ -55,18 +55,17 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="nav navbar-nav ml-auto">
             <li class="nav-item">
-                <a class="nav-link" href="index.html">Map <span class="sr-only">(current)</span></a>
+                <a class="nav-link" href="index.html">Map</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="create-ride.html">Create Ride</a>
             </li>
             <li class="nav-item active">
-                <a class="nav-link" href="#">Project Description</a>
+                <a class="nav-link" href="#">Project Overview</a>
             </li>
             </ul>
         </div>
     </nav>
-
-
-
-
 
 
 
@@ -81,12 +80,11 @@
         <div class="row justify-content-center" style="margin-top: 55pt">
             <div class="col-md-5" style="margin-top: 15pt; margin-bottom: 20pt; padding-right:20pt">
                 <h4 style="padding-bottom:20pt">The Problem</h4>
-                <p>Anyone who's had to rely on SF Muni as a means of transport has fallen victim to hopelessly late buses. As regular Muni users, we wanted to see if we could determine which stops on which lines were more likely to be late at varying times of day.</p>
+                <p>Need to finish this.</p>
             </div>
             <div class="col-md-5" style="margin-top: 15pt; margin-bottom: 20pt; padding-left:20pt">
-                <h4 style="padding-bottom:20pt">Our Solution</h4>
-                <p>We pulled data from 511.org, including bus expected arrival vs actual arrival time every 10 minutes for a week. Using this data, we created a multi-label classification model to help us give a prediction score as to how likely it will be that a bus will be late at a particular time at a particular stop. With this information, a Muni user could decide to adjust their preferred stop or commuting schedule to a stop/time of day that was more reliable.</p>
-                <!-- <div style="padding-left: 20pt"><img src="Muni_Logo.png" class="img-center" style="max-width:10%"></div> -->
+                <h4 style="padding-bottom:20pt">The Solution</h4>
+                <p>Need to finish this</p>
             </div>
         </div>
             <div class="container text-center">
@@ -102,64 +100,41 @@
             </div> 
         </div>
         <div class="row justify-content-center" style="margin-top: 35pt">
-            <div class="col-md-2"><img src="Matt.png" class="img-center" style="max-width:100%"></div>
+            <div class="col-md-2"><img src="Turner.png" class="img-center" style="max-width:100%"></div>
             <div class="col-md-3">
-                <span class="font-weight-bold" id="teamname">Matt Cooley</span>
-                <span id="teamrole">| Back End</span>                
-                <p id="teamparagraph">The genius behind our data. Wrote a script to perform data pulls at regular intervals from the 511 site and packaged it up. Pickled Laura's model.</p>
+                <span class="font-weight-bold" id="teamname">Turner Kirk</span>
+                <span id="teamrole">| Front End, PCB Design, Product Design, 3D Modeling</span>                
+                <p id="teamparagraph">Description of what I did</p>
                 
             </div>
-            <div class="col-md-2"><img src="Laura.jpg" class="img-center" style="max-width:100%"></div>
+            <div class="col-md-2"><img src="Mark.jpg" class="img-center" style="max-width:100%"></div>
             <div class="col-md-3">
-                <span class="font-weight-bold" id="teamname">Laura Wensley</span>
-                <span id="teamrole">| Machine Learning</span>   
-                <p id="teamparagraph">Cleaned data, created a machine learning model and performed some data analysis through tableau.</p>
-            </div>
-        </div>
-        <div class="row justify-content-center" style="margin-top: 35pt">
-            <div class="col-md-2"><img src="Turner.jpeg" class="img-center" style="max-width:100%"></div>
-            <div class="col-md-3" style="margin-top: 15pt;">
-                <span class="font-weight-bold" id="teamname">Turner Kirk</span>
-                <span id="teamrole">| Front End</span>       
-                <p id="teamparagraph">Responsible for creating our amazing map with all of its features along with sending the API call based on time chosen to Matt's back end.</p>
-            </div>
-            <div class="col-md-2"><img src="Hilary.JPG" class="img-center" style="max-width:100%"></div>
-            <div class="col-md-3" style="margin-top: 15pt">
-                    <span class="font-weight-bold" id="teamname">Hilary Wall</span>
-                    <span id="teamrole">| The In Between</span> 
-                    <p id="teamparagraph">Everything else. Gathered muni stops/lines through next bus for use in front end, documentation/user stories, html support (like creating this page)</p>
+                <span class="font-weight-bold" id="teamname">Mark</span>
+                <span id="teamrole">| Mobile App</span>   
+                <p id="teamparagraph">Description of what mark did.</p>
             </div>
         </div>
         <div class="container text-center">
             <a id="next" href="#slide2">&#9663</a>
         </div>
     </div>
-    <!-- Matt's Section -->
+    <!-- Front End Section -->
     <div class="container-fluid" id="section">
         <a name="slide2"></a>
         <div class="row">
             <div class="col-md-12">
-                <h1 class="header text-center" id="section-header">Back End</h1>
+                <h1 class="header text-center" id="section-header">Front End Web App</h1>
             </div> 
         </div>
         <div class="row justify-content-center">
             <div class="col-md-8" style="margin-top: 15pt; margin-bottom: 20pt">
-                <h4 class="section-body">Getting the Data</h4>
+                <h4 class="section-body">Title</h4>
                 <ul style="margin-top: 15pt">
-                    <li>Where: Data was pulled from <a href="https://511.org/developers/list/apis/">511.org</a></li>
-                    <li>What: APScheduler, Heroku, SQLAlchemy, Postgres</li>
+                    <li>Bullet 1</a></li>
                     <li>How: 
                         <ul>
-                            <li>Using the python library APScheduler, we ran a python script hosted on Heroku every 10 min for approx. one week.</li>
-                            <li>We used SQLAlchemy to organize the days into a data model, clean it, and commit it to a PostgresDB.</li>
-                        </ul>
-                    </li>
-                    <li>Challenges: 
-                        <ul>
-                            <li>The free version of Postgres on Heroku only allows a maximum of 10,000 rows. We were able to collect more but we will have our database shut off soon if we don't get under the 10,000 row limit.</li>
-                            <li>Making sure the SQLAlchemy was closing the connections.</li>
-                            <li>Duplicate data crept in due to the lack of uniformity between the API calls and the bus schedules.</li>
-                            <li>Current API calls are SLOW.</li>
+                            <li>Bullet</li>
+                            <li>Bullet</li>
                         </ul>
                     </li>
                 </ul>
@@ -169,66 +144,57 @@
             <a id="next" href="#slide3">&#9663</a>
         </div>
     </div>
-    <!-- Laura's Section -->
+    <!-- Section 2 Section -->
     <div class="container-fluid" id="section">
         <a name="slide3"></a>
         <div class="row">
             <div class="col-md-12">
-                <h1 class="header text-center" id="section-header">Cleaning the Data/Building the Model</h1>
+                <h1 class="header text-center" id="section-header">Section 2</h1>
             </div> 
         </div>
         <div class="row justify-content-center" style="margin-top: 35pt">
             <!-- <div class="col-md-1" style="margin-top: 15pt; margin-bottom: 20pt"></div> -->
             <div class="col-md-4" style="margin-right: 20pt">
-                <span>From the data we selected 4 predictor labels:</span>
+                <span>part 1</span>
                 <ul style="padding-top:10pt">
-                    <li>The muni line (‘2’, ‘38’, ‘M’, ‘N’, ‘14’, or ‘7’)</li>
-                    <li>The direction (inbound or outbound)</li>
-                    <li>The stop number</li>
-                    <li>The scheduled time of arrival</li>
+                    <li>bullet</li>
+                    <li>bullet</li>
                 </ul>
-                <span>Using the difference between the scheduled arrival time and the estimated arrival time, we created 5 output classes:</span>
+                <span>part 2</span>
                 <ul style="padding-top:10pt">
-                    <li>On Time or Early</li>
-                    <li>0-5 Minutes Late</li>
-                    <li>5-10 Minutes Late</li>
-                    <li>10-20 Minutes Late</li>
-                    <li>More than 20 Minutes Late</li>
+                    <li>bullet</li>
+                    <li>bullet</li>
                 </ul>
-                <span>Given our “multi-label classification” data set, we selected to run our data through the Neural Networks machine learning model.</span>
+                <span>Part 3</span>
             </div>
             <div class="col-md-4" style="margin-right: 20pt">
-                <span>We were able to achieve model loss of 1.10, and model accuracy of 0.50. While the best case is loss of 0, and accuracy of 1, we were happy with these results given the level of variability within the data.</span>
-                <span>The details behind the machine learning component:</span>
+                <span>Paragraph</span>
+                <span>Paragraph</span>
                 <ul style="padding-top:10pt">
-                    <li>We used both a label-encoder and one-hot encoder to put the data into categories</li>
-                    <li>We selected to use 5 hidden nodes</li>
-                    <li>Given that we were using classification, we used the ‘softmax’ activation model</li>
-                    <li>When compiling the model, we used loss=‘categorical_crossentropy’ (rather than mean squared error, as the data was non-linear)</li>
-                    <li>To train the model, we used 5000 iterations. Even with 5000 iterations, we could not improve the quality of our model</li>
-                    <li>Cleaning the data (using datetime, filtering anomalies, creating bins) took the most time.</li>
+                    <li>bullet</li>
+                    <li>bullet</li>
                 </ul>
             </div>
             <div class="col-md-3" style="padding-top: 30pt">
-                <span class="font-italic" style="font-size: 11pt">A brief reminder of how the Neural Network model works: “It’s a technique for building a computer program that learns from data. It is based very loosely on how we think the human brain works. First, a collection of software “neurons” are created and connected together, allowing them to send messages to each other. Next, the network is asked to solve a problem, which it attempts to do over and over, each time strengthening the connections that lead to success and diminishing those that lead to failure.”</span>
-                <span style="font-size: 10pt"><a href="http://playground.tensorflow.org/#activation=tanh&batchSize=24&dataset=xor&regDataset=reg-plane&learningRate=0.03&regularizationRate=0&noise=30&networkShape=4,2,2,2&seed=0.28518&showTestData=false&discretize=false&percTrainData=60&x=false&y=false&xTimesY=false&xSquared=false&ySquared=true&cosX=false&sinX=false&cosY=false&sinY=true&collectStats=false&problem=classification&initZero=false&hideText=false">Read more here!</a></span>
+                <span class="font-italic" style="font-size: 11pt">more information here</span>
+                <span style="font-size: 10pt"><a href="http://www.turnerkirk.com">Read more here!</a></span>
             </div>
             <div class="container text-center">
                 <a id="next" href="#slide4">&#9663</a>
             </div>
         </div>
     </div>
-    <!-- Laura's Section pt 2 - Data Slide -->
+    <!-- Section 2 pt 2 slides -->
     <div class="container-fluid" id="section">
             <a name="slide4"></a>
             <div class="row">
                 <div class="col-md-12">
-                    <h2 class="header text-center" id="section-header">An Quick Look at the Data</h2>
+                    <h2 class="header text-center" id="section-header">An Quick Look at the Product</h2>
                 </div>
             </div>
             <div class="row justify-content-center">
                 <div class="col-md-6">
-                    <div class="text-center"><img src="Data_Charts.png" class="img-center" style="max-width:100%"></div>
+                    <div class="text-center"><img src="image.png" class="img-center" style="max-width:100%"></div>
                 </div>
                 <div class="container text-center">
                     <a id="next" href="#slide5">&#9663</a>
@@ -236,7 +202,7 @@
             </div>
             </div>
         </div>
-    <!-- Turner's Section -->
+    <!-- Another Section -->
     <div class="container-fluid" id="section">
         <a name="slide5"></a>
         <div class="row">
@@ -248,24 +214,18 @@
             <div class="col-md-6">
                 <h6>Tools Used</h6>
                 <ul>
-                    <li>Leaflet.js, D3, GeoJSONs from Transitland</li>
+                    <li>Leaflet.js, D3, GPX to GeoJSON converter</li>
                     <li>Leaflet.js: used for the mapping</li>
-                    <li>GeoJSONs from TransitLand: used to place stop markers and muni lines</li> 
-                    <li>D3: D3 for the API call, UI Event Handling as well as an extra TimePicker js library from a good sumaritan on github.</li> 
+                    <li>toGeoJson: used to convert GeoJSON</li> 
+                    <li>D3: to support elevation plugin</li> 
                 </ul>
                 <h6>How it works:</h6>
-                <span>To get refreshed data, the site makes a simple API call with the user selected time of day as a parameter in the URL. 
-                    Once the data has been retrieved, the map is built, checkboxes laid out based on what Muni Lines were included in the API response, 
-                    markers placed in Muni Stop locations and color set based on the shame score for each stop. the popups bound to each marker show all 
-                    the relevant information for each muni line stopping at each stop. In the case that multiple muni lines stop at a single Muni Stop, the 
-                    worst shame score is used as the color for that marker.</span>
+                <span>Blah blah blah blahblahhhhhh blahb blah</span>
                 <h6 style="padding-top:15pt">Challenges:</h6>
-                <span>It was challenging to read the leaflet.js developer docs! This site is currently deleting and re-creating the entire map 
-                    anytime someone toggles any of the UI because we couldn't figure out how to use layers correctly (and didn't have time to fool around with 
-                    all them silly docs!)</span>
+                <span>It was challenging because challenges are as such challenging</span>
             </div>
             <div class="col-md-6">
-                <div class="text-center"><img src="Diagram.jpeg" class="img-center" style="max-width:100%"></div>
+                <div class="text-center"><img src="image.jpeg" class="img-center" style="max-width:100%"></div>
             </div>
             <div class="container text-center">
                 <a id="next" href="#slide6">&#9663</a>
@@ -281,11 +241,11 @@
             </div>
             <div class="row justify-content-center" style="margin-top: 35pt">
                 <div class="col-md-8 align-self-center" style="margin-top: 15pt; margin-bottom: 20pt">
-                    <h4 class="section-body">If we had more time and resources...</h4>
+                    <h4 class="section-body">BikeLapse 2.0</h4>
                     <ul style="margin-top: 15pt">
-                        <li>Gather several weeks worth of data</li>
-                        <li>Be able to predict weekend vs weekday probability</li>
-                        <li>Add more lines</li>
+                        <li>Make the mobile app public</li>
+                        <li>Make it into a full fledged webapp by developing with node.js</li>
+                        <li>Make it possible to playback the video and show where on the map each frame was taken</li>
                     </ul>
                 </div>
 
