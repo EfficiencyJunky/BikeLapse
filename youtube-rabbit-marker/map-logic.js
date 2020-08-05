@@ -24,6 +24,10 @@ let mapUISettings = {
   
 
 let rabbitMarker;
+let rabbitIconWidth = 200;
+let rabbitIconHeight = 167;
+let rabbitIconScale = 0.2;
+
 let coordsArray =   (rideJSON.features.find ( (feature) => 
                                                 feature.properties.name === "ROUTE"
                                                 && feature.geometry.type === "LineString"
@@ -148,7 +152,26 @@ function showRabbitMarker(value, valType){
     // if the rabbitMarker hasn't been instantiated yet, create it
     // otherwise, simply update its latlon
     if (!rabbitMarker) {
-        rabbitMarker = new L.Marker(latlon).addTo(map);
+
+        let iconW = Math.round(rabbitIconWidth*rabbitIconScale);
+        let iconH = Math.round(rabbitIconHeight*rabbitIconScale);
+
+        let iconSize = [iconW, iconH];
+        let iconAnchor = [Math.round(iconW/2), iconH];
+
+        var rabbitIcon = L.icon({
+            iconUrl: '../img/rabbit-marker.png',
+            shadowUrl: '../img/rabbit-marker-shadow.png',
+        
+            iconSize:     iconSize, // size of the icon
+            shadowSize:   iconSize, // size of the shadow
+            iconAnchor:   iconAnchor, // point of the icon which will correspond to marker's location
+            shadowAnchor: [3, iconH],  // the same for the shadow
+            popupAnchor:  [-3, -iconSize] // point from which the popup should open relative to the iconAnchor
+        });
+
+        rabbitMarker = new L.Marker(latlon, {icon:rabbitIcon}).addTo(map);
+
     } else {
         rabbitMarker.setLatLng(latlon);
     }
