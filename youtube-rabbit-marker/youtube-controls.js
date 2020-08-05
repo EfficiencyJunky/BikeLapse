@@ -9,12 +9,17 @@ let videoWidth = Math.round(videoHeight * 1.777777);
 let bindPopupProperties = {maxWidth: videoWidth + 40};
 let videoEmbedCode = rideJSON.metadata.videoEmbedID;
 
-
 // embed HTML code used to create the embeded video objects
 let videoEmbedParams = {
   firstHalf: '<iframe width="' + videoWidth + '" height="' + videoHeight + '" src="https://www.youtube.com/embed/',
   secondHalf: '" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>'
 };
+
+
+let playButtonClass = "play";
+let pauseButtonClass = "pause";
+let stopButtonID = "stop";
+
 
 
 // YOUTUBE CODE
@@ -55,78 +60,81 @@ function onPlayerReady(event) {
 }
 
 // 5. The API calls this function when the player's state changes.
-//    The function indicates that when playing a video (state=1),
-//    the player should play for six seconds and then stop.
-// -1 (unstarted)
-// 0 (ended)
-// 1 (playing)
-// 2 (paused)
-// 3 (buffering)
-// 5 (video cued)
+//    event.data gives the state of the player (state=1),
+//    these are the possible states 
+//    (use static member "YT.PlayerState.{STATE_NAME}" to make code more readable when identifying the state returned by event.data )
+        // -1 (unstarted)
+        // 0 (ended)
+        // 1 (playing)
+        // 2 (paused)
+        // 3 (buffering)
+        // 5 (video cued)
 function onPlayerStateChange(event) {
 
-    if (event.data === YT.PlayerState.PLAYING){
-        // console.log("playing");
-        startInterval();
+    // event.data in this case is one of the state=
+    switch(event.data){
+        case YT.PlayerState.PLAYING:
+            updatePlayPauseButtonClass("playing", pauseButtonClass);
+            startInterval();
+            break;
+        case YT.PlayerState.BUFFERING:
+            updatePlayPauseButtonClass("buffering", pauseButtonClass);
+            break;
+        case YT.PlayerState.PAUSED:
+            updatePlayPauseButtonClass("paused", playButtonClass);
+            stopInterval();
+            break;
+        case YT.PlayerState.ENDED:            
+            updatePlayPauseButtonClass("ended", playButtonClass);
+            stopInterval();
+            printRabbitInfo();
+            break;
+        case -1:
+            updatePlayPauseButtonClass("unstarted", playButtonClass);
+            stopInterval();
+            showRabbitMarker(0, "frameNum");
+            break;
+        case YT.PlayerState.CUED:
+            console.log("cued");
+            break;
+        default:
+            console.log("GetPlayerState:", player.getPlayerState());
+            break;
     }
-    else if (event.data === YT.PlayerState.PAUSED){
-        // console.log("paused");
-        stopInterval();
+
+    function updatePlayPauseButtonClass(logText, buttonClass){
+
+        console.log(logText);
+        document.getElementById('play-pause').className = buttonClass;
+        
     }
-    else if (event.data === YT.PlayerState.ENDED){
-        console.log("ended");
-        stopInterval();
-        // getRabbitCoords();
-        printRabbitInfo();
-    }
-    else if (event.data === YT.PlayerState.BUFFERING){
-        console.log("buffering");
-        // console.log("video duration:", player.getDuration());
-        // console.log("Current time:", player.getCurrentTime());
-    }
-    else if (event.data === YT.PlayerState.CUED){
-        console.log("cued");
-    }
-    else if (event.data === -1){
-        console.log("unstarted");
-        stopInterval();
-    }
-    else{
-        console.log("GetPlayerState:", player.getPlayerState());
-        // console.log("Event.data:", event.data);
-        // console.log("event", event);
-    }
+
 
 }
 
 
 
-// ################## BUTTONS: VIDEO CONTROL FUNCTIONS ##################
+// ################## VIDEO CONTROL BUTTON HANDLERS ##################
+document.getElementById('play-pause').onclick = videoTransportButtonsHandler;
+document.getElementById('stop').onclick = videoTransportButtonsHandler;
 
-document.getElementById('play').onclick = play;;
-document.getElementById('pause').onclick = pause;;
-document.getElementById('stop').onclick = stop;;
+function videoTransportButtonsHandler(event) {
 
-function play() {
-    player.playVideo();
+    let button = event.target;
+    
+    if(button.className === playButtonClass){
+        player.playVideo();
+    }
+    else if(button.className === pauseButtonClass){
+        player.pauseVideo();
+    }
+    else if(button.id === stopButtonID){
+        player.stopVideo();
+    }
+
 }
 
-function pause() {
-    player.pauseVideo();
-}
-
-function stop() {
-    player.stopVideo();
-}
-
-
-// ################## BUTTONS: OTHER FUNCTIONS ##################
-
-
-document.getElementById('startIntervalButton').onclick = startInterval;
-document.getElementById('stopIntervalButton').onclick = stopInterval;
-document.getElementById('logButton').onclick = printRabbitInfo;
-
+// ################## OTHER FUNCTIONS ##################
 
 function startInterval(e) {
     console.log("starting interval timer");
@@ -149,11 +157,8 @@ function updateRabbitPosition(e){
     
     showRabbitMarker(vCurrentFrame, "frameNum");
     // showRabbitMarker(percentWatched, "percentComplete");
-    // showRabbitMarker(vCurrentTime);
 
 }
-
-
 
 
 function printRabbitInfo(){
