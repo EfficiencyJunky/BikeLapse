@@ -37,7 +37,9 @@ let elevationDisplayDiv = document.getElementById('elevation-display');
 // so we create a file input element in the HTML file, make it hidden
 // then put a nice looking button in its place
 // when that button is clicked we just send a click message to the file input element
-document.getElementById('gpx-import-button').onclick = function(event){ document.getElementById('filein').click();}
+document.getElementById('gpx-import-button').onclick = function(event){
+   document.getElementById('filein').click();
+}
 
 // handler for when user finishes choosing a file after clicking gpx-import-button
 document.getElementById('filein').onchange = handleGpxFileSelectionCombineAndConvertToGeoJson;

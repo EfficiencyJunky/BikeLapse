@@ -1,4 +1,4 @@
-{
+let rideJSON = {
     "type": "FeatureCollection",
     "features": [
         {
@@ -19315,6 +19315,7 @@
         "videoEmbedID": "XG7EWQNuP18",
         "stravaURL": "https://www.strava.com/activities/3809443302",
         "googleMapURL": "",
+        "frameOffset": 12,
         "lineColor": "rgba(62, 146, 204, 1)",
         "lineColorEasy": "green",
         "lineColorHard": "red"
