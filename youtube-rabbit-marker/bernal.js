@@ -1,4 +1,4 @@
-let rideJSON = {
+let bernalJSON = {
     "type": "FeatureCollection",
     "features": [
         {

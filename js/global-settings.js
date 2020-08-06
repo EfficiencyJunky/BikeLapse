@@ -27,6 +27,7 @@ let mapUISettings = {
   "baseLayerCtl":     { "position": "topright",        "collapsed": true   },
   "overlayLayerCtl":  { "position": "topleft",         "collapsed": false  },
   "legend":           { "position": "bottomright"                          },
+  "videoViewer":      { "position": "bottomleft"                           },
   "elevation":        { "position": "bottomleft"                           },
   "zoomCtl":          { "position": "topright"                             },
 };

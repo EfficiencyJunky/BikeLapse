@@ -24,8 +24,8 @@
             height: 100%;
         } */
         #map { 
-            height: 400px;
-            max-width: 600px;
+            height: 700px;
+            max-width: 800px;
         }
 
         #play-pause{
@@ -50,36 +50,50 @@
             content: "⎮⎮";
         }
 
+        #player-parent{
+            padding: 6px 8px;
+            /* font: 12px/14px Arial, Helvetica, sans-serif; */
+            background: white;
+            background: rgba(255,255,255,0.8);
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            border-radius: 5px;
+        }
+
+
     </style>
 
 </head>
 <body>
-    <!-- <iframe width="560" height="315" src="https://www.youtube.com/embed/Kb1YkCAQzmo" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe> -->
-
-    <!-- 1. The <iframe> (and video player) will replace this <div> tag. -->
-    <div id="player"></div>
-
-    <br><br>
     <div>
-        <button id="play-pause" class="play"></button>
-        <button id="stop">Stop</button>
+        <button id="swap">Swap Video</button>
+        <button id="hide-unhide">Hide Unhide Video Div</button>
         <button id="logButton" hidden>Print Rabbit Coords</button>
-        <!-- <button id="play" hidden>Play</button>
-        <button id="pause" hidden>Pause</button> -->
-        <!-- <button id="startIntervalButton" hidden>Start Interval Timer</button>
-        <button id="stopIntervalButton" hidden>Stop Interval Timer</button> -->
     </div>
 
     <br><br>    
     <div id="map"></div>
 
-    <!-- <script type="text/javascript" src="js/lib/leaflet.elevation-0.0.4.min.js"></script>   -->
+    <!-- The YouTube API requires that we place an empty div with id="player" on the page.
+         When the YouTube API is first initialized, it will steal this "player" div, and
+         transform it into an iFrame with a video player inside it that we can control with the API.
+         BUT....in order to hide/unhide the iFrame that the YouTube API creates (as well as style it), 
+         we need to wrap it in this "player-parent" div and reference the "player-parent"
+         in our logic whenever we want to hide/unhide the video player -->
+    <div id="player-parent" >
+        <div id="player">This is the player div</div>
+        <br>
+        <div>
+            <button id="play-pause" class="play"></button>
+            <button id="stop">Stop</button>
+        </div>        
+    </div>
 
 
-    <!-- <script type="text/javascript" src="lahonda.js"></script> -->
+    <script type="text/javascript" src="lahonda.js"></script>
     <script type="text/javascript" src="bernal.js"></script>
     <script type="text/javascript" src="map-logic.js"></script>
-    <script type="text/javascript" src="youtube-controls.js"></script>
+    <script type="text/javascript" src="youtube-test.js"></script>
+    <script type="text/javascript" src="youtube-logic.js"></script>
 
 </body>
 </html>

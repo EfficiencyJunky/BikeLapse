@@ -1,14 +1,15 @@
+let mycount = 0;
 let framesPerSecond = 15;
-let frameOffset = rideJSON.metadata.frameOffset;
+let frameOffset = initialRideJSON.metadata.frameOffset;
 frameOffset = 0;
 let rabbitUpdateInterval = 250; // time in milliseconds between updating the rabbit
-let rabbitSyncIntervalTimer;
+let rabbitSyncIntervalTimerID;
 
 // youtube video embed size variables
 let videoHeight = 250;
 let videoWidth = Math.round(videoHeight * 1.777777);
 let bindPopupProperties = {maxWidth: videoWidth + 40};
-let videoEmbedCode = rideJSON.metadata.videoEmbedID;
+let videoEmbedCode = initialRideJSON.metadata.videoEmbedID;
 
 // embed HTML code used to create the embeded video objects
 let videoEmbedParams = {
@@ -26,8 +27,8 @@ let stopButtonID = "stop";
 // YOUTUBE CODE
 // 2. This code loads the IFrame Player API code asynchronously.
 var tag = document.createElement('script');
-
 tag.src = "https://www.youtube.com/iframe_api";
+
 var firstScriptTag = document.getElementsByTagName('script')[0];
 firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
@@ -35,6 +36,13 @@ firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 //    after the API code downloads.
 var player;
 function onYouTubeIframeAPIReady() {
+    
+    console.log("YOUTUBE IFRAME API READY");
+
+
+}
+
+function createYouTubeVideoPlayer(){
     player = new YT.Player('player', {
         height: String(videoHeight),
         width: String(videoWidth),
@@ -48,17 +56,63 @@ function onYouTubeIframeAPIReady() {
                         'rel': 0
                     },
         events: {
-        'onReady': onPlayerReady,
-        'onStateChange': onPlayerStateChange
+            'onReady': onPlayerReady,
+            'onStateChange': onPlayerStateChange,
+            'onError': onPlayerError
         },
         // controls: 0
     });
 }
 
+
+
+
+
+function onPlayerError(e){
+    console.log("ERROR ERROR ERROR");
+    console.log(e);
+
+}
+
+
+
+// YOUTUBE CODE
+// 2. This code loads the IFrame Player API code asynchronously.
+// var tag = document.createElement('script');
+
+// tag.src = "https://www.youtube.com/iframe_api";
+// var firstScriptTag = document.getElementsByTagName('script')[0];
+// firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+// // 3. This function creates an <iframe> (and YouTube player)
+// //    after the API code downloads.
+// var player;
+// function onYouTubeIframeAPIReady() {
+//     player = new YT.Player('player', {
+//         height: String(videoHeight),
+//         width: String(videoWidth),
+//         videoId: videoEmbedCode,
+//         playerVars: { 
+//                         // 'autoplay': 1, 
+//                         'controls': 1, 
+//                         'disablekb': 1,
+//                         'modestbranding': 1,
+//                         'playsinline': 1,
+//                         'rel': 0
+//                     },
+//         events: {
+//         'onReady': onPlayerReady,
+//         'onStateChange': onPlayerStateChange
+//         },
+//         // controls: 0
+//     });
+// }
+
 // 4. The API will call this function when the video player is ready.
 function onPlayerReady(event) {
-    event.target.hideVideInfo = true;
-    event.target.playVideo();
+    // event.target.hideVideInfo = true;
+    console.log("PLAYER READY");
+    // event.target.playVideo();
 }
 
 // 5. The API calls this function when the player's state changes.
@@ -91,6 +145,10 @@ function onPlayerStateChange(event) {
     switch(playerState){
         // notice we don't have a "break;" for the "PLAYING" state below because we want to update the button in both the ended and paused states. Leaving out the break means the code in both cases will execute if the state is "PLAYING"
         case YT.PlayerState.PLAYING:
+            if(mycount === 0){
+                startRabbitSyncronizer();
+                mycount += 1;
+            }
             startRabbitSyncronizer();
         case YT.PlayerState.BUFFERING:
             playPauseButton.className = pauseButtonClass;
@@ -114,6 +172,7 @@ function onPlayerStateChange(event) {
             break;
         // (cued) -- also happens when video is "stopped" by the player.stopVideo(); command (not currently making use of this obviously!)
         case YT.PlayerState.CUED:
+            playPauseButton.className = playButtonClass;
             break;
         default:
             break;
@@ -124,11 +183,13 @@ function onPlayerStateChange(event) {
 
 
 
-// ################## VIDEO CONTROL BUTTON HANDLERS ##################
+// ################## VIDEO CONTROL BUTTONS & HANDLERS ##################
 let playPauseButton = document.getElementById('play-pause');
+let stopButton = document.getElementById('stop')
+
+
 playPauseButton.onclick = videoTransportButtonsHandler;
-document.getElementById('stop').onclick = videoTransportButtonsHandler;
-document.getElementById('logButton').onclick = getRabbitCoords;
+stopButton.onclick = videoTransportButtonsHandler;
 
 
 function videoTransportButtonsHandler(event) {
@@ -136,6 +197,7 @@ function videoTransportButtonsHandler(event) {
     let button = event.target;
     
     if(button.className === playButtonClass){
+        // console.log("attempting to play");
         player.playVideo();
     }
     else if(button.className === pauseButtonClass){
@@ -150,14 +212,27 @@ function videoTransportButtonsHandler(event) {
 // ################## OTHER FUNCTIONS ##################
 
 function startRabbitSyncronizer() {
-    console.log("starting rabbit syncronization (interval timer)");
-    rabbitSyncIntervalTimer = window.setInterval( updateRabbitPosition, rabbitUpdateInterval);
+
+    // this "if" statement prevents us from generating additional interval timers in the case that we already have one running
+    // we want to be careful not to generate more than one due to the way garbage collection works with these timers
+    // we just have to make sure that everytime we call clearInterval(ID) we need to set "rabbitSyncIntervalTimerID" to undefined
+    if(rabbitSyncIntervalTimerID === undefined){
+        console.log("starting rabbit syncronization (interval timer)");
+        
+        rabbitSyncIntervalTimerID = window.setInterval( updateRabbitPosition, rabbitUpdateInterval);
+        // console.log(rabbitSyncIntervalTimerID);
+    }
+
 }
 
 function stopRabbitSyncronizer(){
-    console.log("stopping rabbit syncronization (interval timer)"); 
-    console.log(rabbitSyncIntervalTimer);  
-    clearInterval(rabbitSyncIntervalTimer);
+    console.log("stopping rabbit syncronization (interval timer)");
+    
+    // garbage collection
+    clearInterval(rabbitSyncIntervalTimerID);
+    
+    // this lets our "startRabbitSyncronizer()" function know we need a new one
+    rabbitSyncIntervalTimerID = undefined;
     // updateRabbitPosition();
 }
 
@@ -175,30 +250,3 @@ function updateRabbitPosition(){
 }
 
 
-function printRabbitInfo(){
-
-    let vDuration = player.getDuration();
-    let vCurrentTime = player.getCurrentTime();    
-    let currentFrameNum = Math.round(vCurrentTime * framesPerSecond) + frameOffset;
-    // let currentFrame = Math.round(vCurrentTime * framesPerSecond);
-    let percentWatched = vCurrentTime/vDuration;
-    let calculatedCurrentFrame = Math.round(percentWatched * coordsArrayLength);
-
-    syncRabbitMarkerToVideo("frameIndex", currentFrameNum);
-    // syncRabbitMarkerToVideo("percentWatched", percentWatched);
-
-    console.log("######### STATS 1 ###########");
-    console.log("video duration:", vDuration);
-    console.log("current time:", vCurrentTime);
-    console.log("% watched:", (percentWatched * 100).toFixed(2) + "%");
-    
-    
-    console.log("######### STATS 2 ###########");
-    console.log("current frame index (fps):", currentFrameNum);
-    console.log("coords length:", coordsArrayLength);
-    console.log("calculated frame index (% watched * coordslength):", calculatedCurrentFrame);
-    
-    console.log("difference ((% watched * coords length) - (frame index * 15fps)):", calculatedCurrentFrame - currentFrameNum);
-
-    getRabbitCoords();
-}

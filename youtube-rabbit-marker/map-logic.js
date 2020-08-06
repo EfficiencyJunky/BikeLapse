@@ -8,6 +8,16 @@ let map = L.map("map", {
     zoom: 11
 });
 
+let videoViewer;
+
+
+
+let showBernalRide = true;
+let initialRideJSON = (showBernalRide) ? bernalJSON : lahondaJSON;
+
+let geoJsonLayer = undefined;
+
+
 // map zoom parameters
 let minimumZoom = 10;
 let maximumZoom = 18;
@@ -18,6 +28,7 @@ let mapUISettings = {
     "baseLayerCtl":     { "position": "topright",        "collapsed": true   },
     "overlayLayerCtl":  { "position": "topleft",         "collapsed": false  },
     "legend":           { "position": "bottomright"                          },
+    "videoViewer":      { "position": "topleft"                           },    
     "elevation":        { "position": "bottomleft"                           },
     "zoomCtl":          { "position": "topright"                             },
 };
@@ -28,17 +39,24 @@ let rabbitIconWidth = 200;
 let rabbitIconHeight = 167;
 let rabbitIconScale = 0.2;
 
-let coordsArray =   (rideJSON.features.find ( (feature) => 
-                                                feature.properties.name === "ROUTE"
-                                                && feature.geometry.type === "LineString"
-                                            )
-                    ).geometry.coordinates ;
+let coordsArray = getCoordsArrayFromGeoJson(initialRideJSON);
 let coordsArrayLength = coordsArray.length;
-let coordsArrayHalfway = Math.round(coordsArray.length / 3);
+
 let rabbitInitialLatLon = coordsArray[0].slice(0, 2).reverse();
 
+let playerParentDiv;
+
+
+// let coordsArrayHalfway = Math.round(coordsArray.length / 2);
+// let rabbitInitialLatLon = coordsArray[coordsArrayHalfway].slice(0, 2).reverse();
 
 map.flyTo(rabbitInitialLatLon, defaultRideViewZoom, {animate: true, duration: 1});
+
+createBaseMap();
+displayGeoJsonLayer(initialRideJSON);
+syncRabbitMarkerToVideo('latlon', rabbitInitialLatLon);
+
+
 
 
 function createBaseMap(){
@@ -84,16 +102,43 @@ function createBaseMap(){
     terrainmap.addTo(map);
 
 
+
+    videoViewer = L.control({position: mapUISettings.videoViewer.position});
+    videoViewer.onAdd = videoViewerOnAdd;
+    videoViewer.addTo(map);
+    // console.log(playerParentDiv);
 }
 
 
+// function videoViewerOnAdd(thismap){
+
+//     let div = L.DomUtil.create('div', 'player-parent');
+
+//     // div.innerHTML += '<div id="player-parent">';
+//     div.innerHTML += '<div id="player">This is the player div</div>';
+//     // div.innerHTML += '<br><br>';
+//     // div.innerHTML += '<div>';
+//     // div.innerHTML += '<button id="play-pause" class="play"></button>';
+//     // div.innerHTML += '<button id="stop">Stop</button>';
+//     // div.innerHTML += '</div>';
+//     // div.innerHTML += '</div>';
+
+//     //  = document.getElementsByClassName('player-parent');
+//     return div;
+
+// }
 
 
 
+function videoViewerOnAdd(thismap){
 
-createBaseMap();
-loadMapData();
-syncRabbitMarkerToVideo('latlon', rabbitInitialLatLon);
+    // get 'player-parent' div
+    let div = L.DomUtil.get('player-parent');
+
+    // L.DomUtil.setClass(div, 'hiddenClass');
+
+    return div;
+}
 
 
 
@@ -104,14 +149,21 @@ syncRabbitMarkerToVideo('latlon', rabbitInitialLatLon);
 ################################################################################## */
 
 // "bikeRideJSONFileNames" is a variable found in the "all_ride_file_names.js" file
-function loadMapData(){
+function displayGeoJsonLayer(geoJson){
       
     // ****************************************************************************
     // CREATE A GEOJSON LAYER FOR THE 'rideJSON'
     //    ATTACH EVENT LISTENER FOR WHEN WE CLICK ON THE LAYER IN THE MAP
     //    ATTACH EVENT LISTENER FOR WHEN WE REMOVE THE LAYER FROM THE MAP (UNCHECK IT)
     // ****************************************************************************
-    let geoJsonLayer = L.geoJson(rideJSON, { 
+    if(geoJsonLayer){
+        // map.removeLayer(geoJsonLayer);
+        geoJsonLayer.remove();
+    }
+
+
+
+    geoJsonLayer = L.geoJson(geoJson, { 
                                                 // pane: 'bikeRidesPane', // the "pane" option is inherited from the "Layer" object
                                                 filter: function(feature){
                                                     return feature.properties.name === "ROUTE";
@@ -181,5 +233,18 @@ function syncRabbitMarkerToVideo(valType, value){
 
 // simple method to print out the rabbit Marker object for debugging
 function getRabbitCoords(){    
-    return console.log(rabbitMarker._latlng);
+    return rabbitMarker._latlng;
 }
+
+
+
+function getCoordsArrayFromGeoJson(geoJson){
+
+    return (geoJson.features.find   ( (feature) => 
+                                        feature.properties.name === "ROUTE"
+                                        && feature.geometry.type === "LineString"
+                                    )
+            ).geometry.coordinates;
+}
+
+
