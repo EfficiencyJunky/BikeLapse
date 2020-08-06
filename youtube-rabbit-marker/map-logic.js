@@ -93,7 +93,7 @@ function createBaseMap(){
 
 createBaseMap();
 loadMapData();
-showRabbitMarker(rabbitInitialLatLon, 'latlon');
+syncRabbitMarkerToVideo('latlon', rabbitInitialLatLon);
 
 
 
@@ -129,7 +129,7 @@ function loadMapData(){
 
 
 
-function showRabbitMarker(value, valType){
+function syncRabbitMarkerToVideo(valType, value){
 
     let latlon;
 
@@ -139,13 +139,13 @@ function showRabbitMarker(value, valType){
         case "latlon":
             latlon = value;
             break;
-        // notice we don't use a break for "percentComplete" 
-        // because we also want the logic from "frameNum" to be executed
-        case "percentComplete":
+        // notice we don't use a break for "percentWatched" 
+        // because we also want the logic from "frameIndex" to be executed
+        case "percentWatched":
             value = Math.round(value * coordsArrayLength);
-        case "frameNum":
-            let frameNumber = (value < coordsArrayLength) ? value : coordsArrayLength - 1;
-            latlon = coordsArray[frameNumber].slice(0, 2).reverse();
+        case "frameIndex":
+            let frameIndex = (value < coordsArrayLength) ? value : coordsArrayLength - 1;
+            latlon = coordsArray[frameIndex].slice(0, 2).reverse();
             break;
     }
 
@@ -167,7 +167,7 @@ function showRabbitMarker(value, valType){
             shadowSize:   iconSize, // size of the shadow
             iconAnchor:   iconAnchor, // point of the icon which will correspond to marker's location
             shadowAnchor: [3, iconH],  // the same for the shadow
-            popupAnchor:  [-3, -iconSize] // point from which the popup should open relative to the iconAnchor
+            popupAnchor:  [-3, -iconH] // point from which the popup should open relative to the iconAnchor
         });
 
         rabbitMarker = new L.Marker(latlon, {icon:rabbitIcon}).addTo(map);
@@ -181,5 +181,5 @@ function showRabbitMarker(value, valType){
 
 // simple method to print out the rabbit Marker object for debugging
 function getRabbitCoords(){    
-    return console.log(rabbitMarker);
+    return console.log(rabbitMarker._latlng);
 }
