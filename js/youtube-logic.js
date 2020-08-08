@@ -1,21 +1,4 @@
-let framesPerSecond = 15;
-// let frameOffset = initialRideJSON.metadata.frameOffset;
-let frameOffset = 0;
-let rabbitUpdateInterval = 250; // time in milliseconds between updating the rabbit
-let rabbitSyncIntervalTimerID;
-
-// youtube video embed size variables
-let videoHeight = 200;
-let videoWidth = Math.round(videoHeight * 1.777777);
-let bindPopupProperties = {maxWidth: videoWidth + 40};
-let videoEmbedCode = initialRideJSON.metadata.videoEmbedID;
-
-
-// for selecting/modifying buttons
-let playButtonClass = "play";
-let pauseButtonClass = "pause";
-let stopButtonID = "stop";
-
+let player;
 
 
 // YOUTUBE CODE
@@ -26,24 +9,15 @@ tag.src = "https://www.youtube.com/iframe_api";
 var firstScriptTag = document.getElementsByTagName('script')[0];
 firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
-// 2.1 This function creates an <iframe> (and YouTube player)
+// 2. This function creates an <iframe> (and YouTube player)
 //    after the API code downloads. It fires automatically.
-var player;
 function onYouTubeIframeAPIReady() {
     
     console.log("YOUTUBE IFRAME API READY");
-    createYouTubeVideoPlayer();
-
-}
-
-
-// 2.2. This function creates an actual YT.Player object
-//      and loads the video stored in "videoEmbedCode"
-function createYouTubeVideoPlayer(){
     player = new YT.Player('player', {
         height: String(videoHeight),
         width: String(videoWidth),
-        videoId: videoEmbedCode,
+        videoId: "Kb1YkCAQzmo",
         playerVars: { 
                         // 'autoplay': 1, 
                         'controls': 0,
@@ -60,6 +34,7 @@ function createYouTubeVideoPlayer(){
         },
         
     });
+
 }
 
 
@@ -71,6 +46,8 @@ function onPlayerReady(event) {
     // (although we could set 'autoplay': 1 in the "playerVars" of the YT.Player object)
     // event.target.playVideo();
 }
+
+
 
 // 5. The API calls this function when the player's state changes.
 function onPlayerStateChange(event) {
@@ -92,6 +69,7 @@ function onPlayerStateChange(event) {
     // let the people know what our lovely YouTube player is up to
     console.log(logText);
 
+    return;
     // playerState (event.data) gives us the state of the player (i.e. state=1 (playing), state=2 (paused)),
     // we use static member "YT.PlayerState.{STATE_NAME}" to make code more readable when identifying the state returned by playerState (event.data)
     // these are the possible states 
@@ -136,9 +114,10 @@ function onPlayerStateChange(event) {
 }
 
 
-// NOT EXACTLY SURE WHAT WOULD CAUSE THIS TO HAPPEN, BUT IT CAN HAPPEN APPARENTLY
+
+// THIS HAPPENS VERY RARELY. LIKE WHEN THE PLAYER LOADS AN INVALID VIDEO ID AND THEN THE USER PRESSES PLAY
 function onPlayerError(e){
-    console.log('ERROR YouTube API "onPlayerError" has been called ERROR');
+    console.log('ERROR YouTube API "onPlayerError"');
     console.log(e);
 
 }
@@ -146,12 +125,33 @@ function onPlayerError(e){
 
 
 
-// ################## HELPER FUNCTIONS ##################
-// ################## HELPER FUNCTIONS ##################
-// ################## HELPER FUNCTIONS ##################
+
+
+// ################## YOUTUBE API HELPER FUNCTIONS ##################
+// ################## YOUTUBE API HELPER FUNCTIONS ##################
+// ################## YOUTUBE API HELPER FUNCTIONS ##################
+
+function loadYouTubeVideo(youTubeVideoID){
+    player.cueVideoById(youTubeVideoID);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+// ################## RABBIT FUNCTIONS ##################
+// ################## RABBIT FUNCTIONS ##################
+// ################## RABBIT FUNCTIONS ##################
 
 function startRabbitSyncronizer() {
-
     // this "if" statement prevents us from generating additional interval timers in the case that we already have one running
     // we want to be careful not to generate more than one due to the way garbage collection works with these timers
     // we just have to make sure that everytime we call clearInterval(ID) we need to set "rabbitSyncIntervalTimerID" to undefined
@@ -209,44 +209,6 @@ function updateRabbitPosition(){
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-// ################## VIDEO CONTROL BUTTONS & HANDLERS ##################
-let playPauseButton = document.getElementById('play-pause');
-let stopButton = document.getElementById('stop')
-
-
-playPauseButton.onclick = videoTransportButtonsHandler;
-stopButton.onclick = videoTransportButtonsHandler;
-
-
-function videoTransportButtonsHandler(event) {
-
-    let button = event.target;
-    
-    if(button.className === playButtonClass){
-        // console.log("attempting to play");
-        player.playVideo();
-    }
-    else if(button.className === pauseButtonClass){
-        player.pauseVideo();
-    }
-    else if(button.id === stopButtonID){
-        player.stopVideo();
-    }
-
-}
 
 
 

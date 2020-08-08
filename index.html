@@ -181,8 +181,43 @@
       .nav-link{
         margin-left: 30px;
       }
- 
     }
+
+    /* ELEVATION CONTROL CSS OVERRIDES */
+    .steelblue-theme.leaflet-control.elevation .background {
+      background-color:rgba(70,130,180,0);
+
+      /* Original Value from "leaflet.elevation-0.0.4.css" */
+      /* background-color:rgba(70,130,180,0.2); */
+    }
+
+    .steelblue-theme.leaflet-control.elevation {
+      /* background-color:rgba(70,130,180,0); */
+      margin-left: -30px;
+      margin-bottom: -10px;
+      padding-top: -10px;
+    }
+
+
+    .elevation-container{
+      padding: 10px 0px 10px 10px;
+      font: 14px/16px Arial, Helvetica, sans-serif;
+      /* background: white; */
+      background: rgba(255,255,255,0.8);
+      box-shadow: 0 0 15px rgba(0,0,0,0.2);
+      border-radius: 5px;      
+      overflow: hidden;
+    }
+
+    #player-parent{
+      padding: 8px 8px 4px 8px;
+      /* font: 12px/14px Arial, Helvetica, sans-serif; */
+      background: white;
+      background: rgba(255,255,255,0.8);
+      box-shadow: 0 0 15px rgba(0,0,0,0.2);
+      border-radius: 5px;
+    }
+
 
   </style>
 
@@ -198,6 +233,7 @@
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
+    <button id="test">Click</button>  
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="nav navbar-nav ml-auto">
         <li class="nav-item active">
@@ -210,20 +246,32 @@
     </div>
   </nav>
 
-  <!-- <div class="container-lg" id="main-container"> -->
-  <!-- <div class="container-fluid"> -->
-    <!-- <div class="row">
-      <div class="col-lg-12">
-        This is a test
-      </div>
-    </div>
-  </div> -->
-    
-    <!-- The div where we will inject our map -->
-    <div id="map"></div>
 
 
+
+  <!-- The div where we will inject our map -->
+  <div id="map">
+    <!-- you <em>should</em> see a map here...<br>
+    if you don't, try reloading the page.<br>
+    if that doesn't work, try opening the console on your browser to find the error and fix it! -->
   </div>
+
+  
+
+  <!-- The YouTube API requires that we place an empty div with id="player" on the page.
+        When the YouTube API is first initialized, it will steal this "player" div, and
+        transform it into an iFrame with a video player inside it that we can control with the API.
+        BUT....in order to hide/unhide the iFrame that the YouTube API creates (as well as style it), 
+        we need to wrap it in this "player-parent" div and reference the "player-parent"
+        in our logic whenever we want to hide/unhide the video player -->
+  <div id="player-parent" hidden>
+      <div id="player">
+        video iFrame will replace this div
+      </div>
+  </div>
+
+
+
 
 
 
@@ -249,15 +297,17 @@
 
 
   <!-- ########### OTHER PEOPLE'S MAPING RELATED LIBRARIES WE'RE USING ############ -->
-  <script type="text/javascript" src="js/lib/leaflet.elevation-0.0.4.min.js"></script>  
+  <script type="text/javascript" src='js/lib/geojson-tools.js'></script>
+  <script type="text/javascript" src="js/lib/leaflet.elevation-0.0.4.min.js"></script>
 
   <!-- API key -->
-  <script type="text/javascript" src="js/config/mapbox_api_key.js"></script>
-  <!-- <script type="text/javascript" src="js/config/mapbox_api_key_test.js"></script> -->
+  <!-- <script type="text/javascript" src="js/config/mapbox_api_key.js"></script> -->
+  <script type="text/javascript" src="js/config/mapbox_api_key_test.js"></script>
 
   <!-- Our JS -->
   <!-- shared JS functionality -->
   <script type="text/javascript" src="js/global-settings.js"></script>
+  <script type="text/javascript" src="js/youtube-logic.js"></script>
   <script type="text/javascript" src="js/leaflet-functions.js"></script>
   <script type="text/javascript" src="js/map-initialization-logic.js"></script>
   

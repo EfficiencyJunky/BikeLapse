@@ -8,17 +8,29 @@ let hideUnhideButt = document.getElementById('hide-unhide');
 logButt.onclick = function(){ console.log(getRabbitCoords()); };
 swapButt.onclick = swapFunc;
 hideUnhideButt.onclick = function(){
-    console.log("hideunhide");
+    // console.log("hideunhide");
 
-    let div = L.DomUtil.get('player-parent');
+    // get a reference to the div that contains our video player
+    let videoPlayerDiv = L.DomUtil.get('player-parent');
     
-    console.log("player-parent hidden attr:", div.hidden);
-    
-    let hidden = div.hidden;
-    div.hidden = !hidden;
-    // console.log(playerParentDiv);
+    // store the opposite of its current state in "newHiddenState"
+    let newHiddenState = !videoPlayerDiv.hidden;
 
-    // L.DomUtil.addClass(div, "hidden");
+    // set the div's hidden attribute to "newHiddenState"
+    videoPlayerDiv.hidden = newHiddenState;
+    
+    // if the newHiddenState is true, it wants to be hidden
+    // so we need to hide it AND the Rabbit Marker
+    if(newHiddenState){
+        console.log("hidden state is:", newHiddenState, "attempting to HIDE.");
+        rabbitMarker.remove();//map.removeLayer(rabbitMarker);
+    } 
+    // otherwise, if newHiddenState is false, we want to show it and the rabbit
+    else {
+        rabbitMarker.addTo(map);
+        console.log("hidden state is:", newHiddenState, "attempting to SHOW.");
+    }
+    
 }
 
 
@@ -71,26 +83,6 @@ function swapRideMapData(){
 
     return geoJsonToSwap;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

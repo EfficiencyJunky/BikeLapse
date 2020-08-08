@@ -224,12 +224,10 @@ function getUserInputsFromTextFields(){
 function createPointFeature(tempGeoJson, pointName, pointLocationName = 'Location Name'){
 
     // get the LineString Feature from the Features array in the GeoJSON object
-    // who's properties.name "ROUTE" and geometry.type is "LineString" 
-    let routeLineString = tempGeoJson.features.find( (feature) => 
-                                                            feature.properties.name === "ROUTE"
-                                                            && feature.geometry.type === "LineString"
-                                                    );
-    
+    // who's properties.name "ROUTE" and geometry.type is "LineString"     
+    let routeLineString = getROUTELineStringFromGeoJson(tempGeoJson);
+
+
     // get the coordTimes and coordinates arrays from the ROUTE LineString
     let routeCoordTimes = routeLineString.properties.coordTimes;
     let routeCoordinates = routeLineString.geometry.coordinates;
@@ -526,11 +524,9 @@ function downloadButtonHandler(event){
     if(ridesData[currentRideID] !== undefined){
 
         // get the routeLineString from the rideData 
-        let routeLineString = ridesData[currentRideID].features.find( (feature) => 
-                                                                            feature.properties.name === "ROUTE"
-                                                                            && feature.geometry.type === "LineString"
-                                                                    );
+        let routeLineString = getROUTELineStringFromGeoJson(ridesData[currentRideID]);
 
+                                                                    
         // pull the ISO date time so we can use for the file name later
         let rideTime = routeLineString.properties.time;
         let rideName = ridesData[currentRideID].metadata.rideName;

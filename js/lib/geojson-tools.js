@@ -1,5 +1,5 @@
 // ****************************************************************************
-// getDistance and _toRadian functions were originally sourced
+// _toRadian and getDistance functions were originally sourced
 // from this repository: https://github.com/MovingGauteng/GeoJSON-Tools
 // then modified to work for my own purposes
 // ****************************************************************************
@@ -124,7 +124,42 @@ function calcDistance(coord1, coord2, latLonReversed = false){
 // ****************************************************************
 //     MY GEOJSON TOOLS
 // ****************************************************************
-function getLatLonFromLineStringCoordsArray(lineStringCoordsArray){
+
+
+// get the LineString Feature from the Features array in the geoJson object
+// who's properties.name "ROUTE" and geometry.type is "LineString"  
+function getROUTELineStringFromGeoJson(geoJson){
+
+  return geoJson.features.find  ( (feature) => 
+                                      feature.properties.name === "ROUTE"
+                                      && feature.geometry.type === "LineString"
+                                );
+          
+}
+
+function getLatLonOfPointInGeoJson(geoJson, pointName){
+
+  let point = geoJson.features.find( (feature) => feature.properties.name === pointName);
+  let latLon = point.geometry.coordinates.slice(0, 2).reverse();
+  
+  return latLon;
+}
+
+
+
+
+function getCoordsArrayOfROUTELineStringInGeoJson(geoJson){
+
+  return (geoJson.features.find   ( (feature) => 
+                                      feature.properties.name === "ROUTE"
+                                      && feature.geometry.type === "LineString"
+                                  )
+          ).geometry.coordinates;
+}
+
+
+
+function getLatLonArrayFromLineStringCoordsArray(lineStringCoordsArray){
 
   const reversedLineStringCoordsArray = lineStringCoordsArray.map((point) => {
       return point.slice(0, 2).reverse();
@@ -132,6 +167,15 @@ function getLatLonFromLineStringCoordsArray(lineStringCoordsArray){
 
   return reversedLineStringCoordsArray;
 }
+
+
+
+
+
+
+
+
+
 
 
 /**

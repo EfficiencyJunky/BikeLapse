@@ -8,8 +8,18 @@ let map = L.map("map", {
     zoom: 11
 });
 
-let videoViewer;
+// settings for map UI elements
+let mapUISettings = {
+    "baseLayerCtl":     { "position": "topright",        "collapsed": true   },
+    "overlayLayerCtl":  { "position": "topleft",         "collapsed": false  },
+    "legend":           { "position": "bottomright"                          },
+    "videoViewer":      { "position": "bottomleft"                           },    
+    "elevation":        { "position": "bottomleft"                           },
+    "zoomCtl":          { "position": "topright"                             },
+};
 
+
+let videoViewer = L.control({position: mapUISettings.videoViewer.position});
 
 
 let showBernalRide = true;
@@ -23,15 +33,7 @@ let minimumZoom = 10;
 let maximumZoom = 18;
 let defaultRideViewZoom = 11;
 
-// settings for map UI elements
-let mapUISettings = {
-    "baseLayerCtl":     { "position": "topright",        "collapsed": true   },
-    "overlayLayerCtl":  { "position": "topleft",         "collapsed": false  },
-    "legend":           { "position": "bottomright"                          },
-    "videoViewer":      { "position": "topleft"                           },    
-    "elevation":        { "position": "bottomleft"                           },
-    "zoomCtl":          { "position": "topright"                             },
-};
+
   
 
 let rabbitMarker;
@@ -103,7 +105,7 @@ function createBaseMap(){
 
 
 
-    videoViewer = L.control({position: mapUISettings.videoViewer.position});
+    
     videoViewer.onAdd = videoViewerOnAdd;
     videoViewer.addTo(map);
     // console.log(playerParentDiv);

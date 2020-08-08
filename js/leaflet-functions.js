@@ -296,29 +296,32 @@ function createPopupHTMLBasicPoints(properties){
 // elevation control display and rabbit geojson overlay layer
 function showElevationForRideID(clickedRideID){
 
+  if(clickedRideID === undefined){
+    console.log("RIDE ID DOESN'T EXIST");
+    return false;
+  }
+
   // We only want to run this logic if we are clicking on a different
   // ride than we had previously clicked on, or if we haven't clicked
   // on a ride at all yet
-  if(elevationRideID !== clickedRideID && clickedRideID !== undefined){
+  if(elevationRideID !== clickedRideID){
     
-    elevationRideID = clickedRideID;
     // clear the display on the elevationControl
     elevationControl.clear();
 
-    // if a rabbit layer already exists, we need to remove it, otherwise it will stay on the map forever
-    if(elevationRabbitLayer !== undefined){
-      elevationRabbitLayer.clearLayers();
-      // elevationRabbitLayer.remove();
+    // if a highlight layer already exists, we need to remove it, 
+    // otherwise it will stay on the map forever
+    if(elevationHighlightLayer !== undefined){
+      elevationHighlightLayer.clearLayers();
+      // elevationHighlightLayer.remove();
     }
 
     // get the feature who's name is ROUTE and who's type is "LineString"
     // so we can use its coordinatesArray to create the rabbitLayerGeoJSON we'll use to create the RabbitLayer
-    let routeLineString = ridesData[elevationRideID].features.find( (feature) => 
-                                                                    feature.properties.name === "ROUTE"
-                                                                    && feature.geometry.type === "LineString"
-                                                                );
+    let routeLineString = getROUTELineStringFromGeoJson(ridesData[clickedRideID]);
 
-    let rabbitLayerGeoJSON = {
+
+    let elevationHighlightGeoJSON = {
       "name":"RabbitLayerOverlay",
       "type":"FeatureCollection",
       "features":[
@@ -334,8 +337,9 @@ function showElevationForRideID(clickedRideID){
       ]
     };        
 
-    // assign a new geoJson layer with the 'rabbitLayerGeoJSON' data to the 'elevationRabbitLayer' object
-    elevationRabbitLayer = L.geoJson(rabbitLayerGeoJSON,{
+    // assign a new geoJson layer with the 'elevationHighlightGeoJSON' data to the 'elevationHighlightLayer' object
+    // this also adds the data to display in the elevationControl
+    elevationHighlightLayer = L.geoJson(elevationHighlightGeoJSON,{
       // pane: 'elevationPane', // panes don't seem to work
       onEachFeature: elevationControl.addData.bind(elevationControl),
       // filter: function(feature, layer) {  // the filter function doesn't seem to work either
@@ -344,16 +348,11 @@ function showElevationForRideID(clickedRideID){
       style: { fillOpacity: 0.0, weight: routeLineProperties.rabbitLayer.lineWeight, opacity: 1, color: routeLineProperties.rabbitLayer.lineColor}
     });
 
-    // if the elevationControl Layer's container is null, 
-    // then that means it has previously been removed from the map
-    // so we need to add it back before we add the rabbit layer
-    if(elevationControl.getContainer() === null){
-        elevationControl.addTo(map);
-    }
+    // add the highlight layer to the map
+    elevationHighlightLayer.addTo(map);
 
-    // add the rabbitLayer to the map
-    elevationRabbitLayer.addTo(map);
-      
+    // lastly, set our elevationRideID to the clickedRideID
+    elevationRideID = clickedRideID;
   }
   else{
       console.log('clicked on ride with same "elevationRideID" as before: ', elevationRideID); 
@@ -366,14 +365,14 @@ function showElevationForRideID(clickedRideID){
 // everytime we click on a different ride than we had previously selected
 // and everytime we remove the ride from the map that is currently showing its elevation
 // in that case we want to remove the elevation control along with the layer
-function clearElevationDisplay(operation){
+function clearElevationDisplay(){
 
   if(elevationControl.getContainer() !== null){
-      // first remove the elevationRabbitLayer
-      elevationRabbitLayer.remove();
+      // first remove the elevationHighlightLayer
+      elevationHighlightLayer.remove();
 
       // set it to undefined so we know it needs to be re-initialized
-      elevationRabbitLayer = undefined;
+      elevationHighlightLayer = undefined;
 
       // reset the elevationRideID
       elevationRideID = "";
@@ -381,10 +380,6 @@ function clearElevationDisplay(operation){
       // clear the elevationControl display
       elevationControl.clear();
 
-      // if the operation string passed in is set to "remove" then we should remove it all together
-      if(operation === "remove"){
-        elevationControl.remove();
-      }
   }
   else{
     // console.log("rideIDs are equal? ", removedRideID === elevationRideID);
@@ -394,6 +389,45 @@ function clearElevationDisplay(operation){
 }
 
 
+// *********************************************************
+// YOUTUBE VIDEO DISPLAY FUNCTIONS
+// This function manages the adding and removing of the
+// youtube video and rabbit marker
+function loadYouTubeVideoForRideID(clickedRideID){
+
+  if(clickedRideID === undefined){
+    console.log("RIDE ID DOESN'T EXIST");
+    return;
+  }
+
+  let youTubeVideoID = ridesData[clickedRideID].metadata.videoEmbedID;
+
+  let hasValidVideoID = (youTubeVideoID !== "");
+  console.log('has valid video id:', hasValidVideoID);
+
+  // We only want to run this logic if we are clicking on a different
+  // ride than we had previously clicked on, or if we haven't clicked
+  // on a ride at all yet and the videoID is valid
+  if(youTubeRideID !== clickedRideID && hasValidVideoID){
+
+    loadYouTubeVideo(youTubeVideoID);
+
+    youTubeRideID = clickedRideID;
+  }
+
+  return hasValidVideoID;
+}
+
+
+
+
+
+
+
+
+
+
+
 
 
 // *****************************************************************
@@ -401,9 +435,8 @@ function clearElevationDisplay(operation){
 // *****************************************************************
 
 function reCenterMap(rideIDtoCenterOn){
-  // find the DETAILS pin in the Features array for the GeoJSON
-  let detailsPoint = ridesData[rideIDtoCenterOn].features.find( (feature) => feature.properties.name === "DETAILS");
-  let centerLatLon = detailsPoint.geometry.coordinates.slice(0, 2).reverse();
+  // get the latlon of the DETAILS point in the Features array of the GeoJSON
+  let centerLatLon = getLatLonOfPointInGeoJson(ridesData[rideIDtoCenterOn], "DETAILS");
 
   // this is supposed to animate the pan and zoom but doesn't always seem to do this
   map.flyTo(centerLatLon, defaultRideViewZoom, {animate: true, duration: 1});

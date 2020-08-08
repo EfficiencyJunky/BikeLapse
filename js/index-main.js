@@ -1,8 +1,10 @@
 /* ###################################################################
    ****  DEFINE VARIOUS GLOBAL VARIABLES LIKE OUR MAP AND ZOOM SETTINGS ****
 ###################################################################### */
-let initialRideIDsToDisplay = ["ride0001", "ride0003", "ride0007"];
 
+// "overlayLayerControl" layer is the L.control with checkboxes to hide/unhide rides on the map
+// we can add it to the map first with baseLayer and overlayLayer arguments set as "undefined"
+// then as we asyncronously read in the rideJSON files we will add the rides to it
 let overlayLayerControl = L.control.layers(undefined, undefined, {
   collapsed: mapUISettings.overlayLayerCtl.collapsed,
   position: mapUISettings.overlayLayerCtl.position
@@ -15,8 +17,8 @@ map.zoomControl.setPosition(mapUISettings.zoomCtl.position);
 /* ###############################################################################
    ****  INITIALIZE OUR MAP WITH AVAILABLE BASEMAPS AND UI OVERLAYS ELEMENTS ****
 ################################################################################## */
-initializeMap();
-
+initializeBaseMaps();
+initializeMapOverlaysAndUI(hideElevationDisplayDiv = true);
 
 /* ###############################################################################
    ****  LOAD THE JSON FILES FOR EACH RIDE                  ****
@@ -88,6 +90,17 @@ bikeRideJSONFileNames.forEach( (jsonFileName, i) => {
         let clickedRideID = event.target.getLayers()[0].feature.properties.rideID;
         // let clickedRideID = event.layer.feature.properties.rideID; // does the same thing as the one above
         showElevationForRideID(clickedRideID);
+        
+        // make sure the div that contains the elevationControl display is not hidden
+        elevationDisplayDiv.hidden = false;
+
+
+        // we need to test to see if a video exists in the ride
+        // also need to test to see if we should show the rabbit
+        let hasValidVideoID = loadYouTubeVideoForRideID(clickedRideID);
+        
+        // make sure the div that contains the elevationControl display is not hidden
+        videoDisplayDiv.hidden = !hasValidVideoID;
       });
 
       // when we remove a layer we want to check and see if it is currently being used
@@ -100,7 +113,8 @@ bikeRideJSONFileNames.forEach( (jsonFileName, i) => {
         let removedRideID = event.target.getLayers()[0].feature.properties.rideID;
         
         if(removedRideID === elevationRideID) {
-          clearElevationDisplay("remove");
+          clearElevationDisplay();
+          elevationDisplayDiv.hidden = true;
         }
       });
 

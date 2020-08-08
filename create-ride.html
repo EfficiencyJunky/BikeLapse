@@ -204,6 +204,29 @@
       display: none;  
     }
 
+
+    /* ELEVATION CONTROL CSS OVERRIDES */
+    /* .steelblue-theme.leaflet-control.elevation .background {
+      background-color:rgba(70,130,180,0);
+    }
+
+    .steelblue-theme.leaflet-control.elevation {
+      margin-left: -30px;
+      margin-bottom: -10px;
+      padding-top: -10px;
+    } */
+
+    /* .elevation-container {
+      padding: 10px 0px 10px 10px;
+      font: 14px/16px Arial, Helvetica, sans-serif;
+      background: white; */
+      /* background: rgba(255,255,255,0.8); */
+      /* box-shadow: 0 0 15px rgba(0,0,0,0.2);
+      border-radius: 5px;
+    } */
+
+
+
     </style>
 </head>
 
@@ -341,13 +364,30 @@
       <div class="col-lg-8">
         <div id="map" class="map-div"><h1 class="map-placeholder-text">You <i>should</i> see a map here...</h1></div>
         
-        <h5>Elevation</h5>
-        <div id="elevation-display" class="elevation-display-div"></div><br>
-        <!-- <div id="elevation-display" class="leaflet-bar leaflet-control elevation-div"></div> -->
+
+        <div id="elevation-display-div" class="elevation-container">
+          <div><h5>Elevation</h5></div>
+          
+        </div>
+          
+        <br>
+        <!-- <div id="elevation-display-div" class="leaflet-bar leaflet-control elevation-div"></div> -->
       </div>
 
-
     </div>
+
+    <!-- The YouTube API requires that we place an empty div with id="player" on the page.
+          When the YouTube API is first initialized, it will steal this "player" div, and
+          transform it into an iFrame with a video player inside it that we can control with the API.
+          BUT....in order to hide/unhide the iFrame that the YouTube API creates (as well as style it), 
+          we need to wrap it in this "player-parent" div and reference the "player-parent"
+          in our logic whenever we want to hide/unhide the video player -->
+    <div id="player-parent" hidden>
+      <div id="player">
+        video iFrame will replace this div
+      </div>
+    </div>
+
 
     <!-- ########### ROW 3 - GPX/XML AND GEOJSON FILE PREVIEW ############ -->
     <div class="row">

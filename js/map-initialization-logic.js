@@ -2,12 +2,13 @@
    ****  THIS IS THE SHARED CODE FOR INITIALIZING OUR MAP
 ################################################################################################### */
 
+
 // Prior to setting up the basemaps and UI for our map, we want to
 // check and see if the API_KEY even exists (did they include a file with one?)
 // and if it exists, we need to verify it works and so we have permission to access the mapbox tilesets
 // if we can access them, then we set "mapboxTilesAvailable" to true
 // if we can't access them for some reason then we set it to false and print out the response status code
-function initializeMap(){
+function initializeBaseMaps(){
 
     // check to make sure the MAPBOX_API_KEY actually exists (typeofand assign it to the API_KEY global variable. 
     // If the MAPBOX_API_KEY doesn't exist, set it to an empty string
@@ -31,14 +32,14 @@ function initializeMap(){
                 mapboxTilesAvailable = false;
             }
             
-            createBaseMapsAndUI(mapboxTilesAvailable);
+            createBaseMaps(mapboxTilesAvailable);
         });
 
 }
 
 
 
-function createBaseMapsAndUI(mapboxTilesAvailable){
+function createBaseMaps(mapboxTilesAvailable = false){
     // *************************************************************
     // FIRST DEFINE THE BASEMAPS (AKA "TILE LAYERS") TO USE AS  
     //     THE ACTUAL MAPS WE WILL DRAW FEATURES ON TOP OF 
@@ -112,7 +113,7 @@ function createBaseMapsAndUI(mapboxTilesAvailable){
     
     // create a Layer Control element specifically for our baselayer
     // we will add additional base layers (tilesets) and overlay layers (json data) as we load the data
-    let baseLayerControl = L.control.layers(baseMaps, undefined, {
+    let baseMapsLayerControl = L.control.layers(baseMaps, undefined, {
         collapsed: mapUISettings.baseLayerCtl.collapsed,
         position: mapUISettings.baseLayerCtl.position
     }).addTo(map);
@@ -120,14 +121,14 @@ function createBaseMapsAndUI(mapboxTilesAvailable){
     // we first set the initialBasemap to "Terrain" as this is the default behavior we want
     let initialBasemap = terrainmap;
 
-    // if mapboxTilesAvailable is true (this is set in the initializeMap() function), 
+    // if mapboxTilesAvailable is true (this is set in the initializeBaseMaps() function), 
     // then we want to add the mapbox base layers to the layer control
     // and we want to set the initialBasemap to Darkmap (if it is night time)
     // otherwise, we will set it to Street Map if it's daytime
     if(mapboxTilesAvailable){
-        baseLayerControl.addBaseLayer(darkmap, "Dark Map **");
-        baseLayerControl.addBaseLayer(streetmap, "Street Map **");
-        baseLayerControl.addBaseLayer(satellite, "Satellite **");
+        baseMapsLayerControl.addBaseLayer(darkmap, "Dark Map **");
+        baseMapsLayerControl.addBaseLayer(streetmap, "Street Map **");
+        baseMapsLayerControl.addBaseLayer(satellite, "Satellite **");
 
         let isNight = getIsNight();
         initialBasemap = isNight ? darkmap : streetmap;
@@ -135,8 +136,11 @@ function createBaseMapsAndUI(mapboxTilesAvailable){
 
     // add the initialBasemap (tile layer chosen based on criteria above)
     initialBasemap.addTo(map);
-    
 
+}
+
+
+function initializeMapOverlaysAndUI(hideElevationDisplayDiv = false){
     // *************************************************************
     //  ADD LEGEND -- LEAFLET CONTROL OBJECT
     //      set the location to mapUISettings.legend.position
@@ -158,25 +162,73 @@ function createBaseMapsAndUI(mapboxTilesAvailable){
     // *************************************************************
     // initialize the elevationControl by adding to the map
     elevationControl.addTo(map);
-
-    // SET THE DEFAULT STATE OF THE ELEVATION CONTROL LAYER
-    // for the 'index.html' page, we haven't created a separate div for displaying the elevation control
-    // so we will display the elevation control layer within the actual map (default behavior)
-    // in this case we want to remove the elevation control layer until the user selects a ride at which point we will display it
-    if(typeof(elevationDisplayDiv) === 'undefined'){
-        // console.log("elevation display div undefined");
-        // console.log(elevationDisplayDiv);
-        elevationControl.remove();
-    }
-    // else if we have a div setup to display the elevation control layer
-    // (which is what we are doing on the 'create-ride.html' page)
-    // we want to move the elevation control layer into that div
-    else{
-        // grab the elevationControl container and move it to the elevationDisplayDiv
-        elevationDisplayDiv.appendChild(elevationControl.getContainer());
-    }
     
+    // ##### ABRACADABRA #######
+    // if we havent't yet defined the div that we want to put our elevationControl inside of
+    // then we should create a control layer, add it to the map, grab the div that contains it
+    // and store a reference to that container div in our "elevationDisplayDiv" variable
+    if(elevationDisplayDiv === undefined){
+
+        // create a new Control Layer that we add the elevationControl to and overlay on the map
+        let elevationControlContainerLayer = L.control({position: mapUISettings.elevation.position});
+
+        // when we add the layer to the map we will create a div inside it and add a header title
+        elevationControlContainerLayer.onAdd = function(mymap){
+            let div = L.DomUtil.create('elevation-display-div', 'elevation-container');
+            div.innerHTML = "<div><h5>Elevation</h5></div>";
+
+            return div;
+        };
+
+        // add the layer to the map
+        elevationControlContainerLayer.addTo(map)
+
+        // grab a reference to the div where the layer has been placed on the map
+        // and store it in our globally accessible "elevationDisplayDiv" variable so we can hide/unhide later
+        elevationDisplayDiv = elevationControlContainerLayer.getContainer();
+    }
+
+
+    // grab the div that contains the elevationControl layer and move it to our elevationDisplayDiv
+    elevationDisplayDiv.appendChild(elevationControl.getContainer());
+
+    // elevationDisplayDiv.innerHTML += '<div style="clear: both;">&nbsp;</div>';
+    
+
+    if(hideElevationDisplayDiv){
+        elevationDisplayDiv.hidden = true;
+    }
+
+
+    // *************************************************************
+    //  CREATE VIDEO DISPLAY DIV
+    //      if we've declared a "videoDisplayDiv" variable
+    //      then we should create the videoDisplayContainerLayer
+    //      and save a reference to the div that contains it
+    // *************************************************************
+    // similar thing to what we're doing for the elevationControl layer above except this time we're creating a layer to contain the video player iFrame
+    if(videoDisplayDiv === undefined){
+
+        let videoIframeContainerLayer = L.control({position: mapUISettings.videoViewer.position});
+
+        videoIframeContainerLayer.onAdd = function(mymap){
+        
+          // get 'player-parent' div
+          let div = L.DomUtil.get('player-parent');
+          div.hidden = false;
+        
+          return div;
+        };
+        
+        // add the layer to the map
+        videoIframeContainerLayer.addTo(map);
+
+        videoDisplayDiv = videoIframeContainerLayer.getContainer();
+    }
+
 }
+
+
 
 
 

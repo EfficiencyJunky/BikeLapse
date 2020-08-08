@@ -15,18 +15,24 @@ map.setView([30, 0], minimumZoom);
 // ********************************************************************
 let geoJsonLayer = undefined;
 
+// This is the div in our HTML where we will display the elevationControl
+elevationDisplayDiv = document.getElementById('elevation-display-div');
+videoDisplayDiv = "REPLACE THIS WITH THE DIV";
+
 /* ###############################################################################
    ****  INITIALIZE OUR MAP WITH AVAILABLE BASEMAPS AND UI OVERLAYS ELEMENTS ****
 ################################################################################## */
-initializeMap();
+initializeBaseMaps();
+initializeMapOverlaysAndUI();
+
 
 // *************************************************************
-// GET REFERENCES TO HTML ELEMENTS USED FOR DISPLAYING INFO
+// GET REFERENCES TO OTHER HTML ELEMENTS USED FOR DISPLAYING INFO
 // *************************************************************
 let gpxImportProgressLabel = document.getElementById('gpx-import-progress-label');
 let gpxTextarea = document.getElementById('gpx-textarea');
 let geoJsonTextarea = document.getElementById('geojson-textarea');
-let elevationDisplayDiv = document.getElementById('elevation-display');
+
 
 // *************************************************************
 // ADD EVENT LISTENERS TO OUR INTERACTIVE HTML UI ELEMENTS

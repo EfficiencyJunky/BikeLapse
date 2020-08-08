@@ -6,6 +6,10 @@
 let ridesData = {};
 let currentRideID = "";
 let elevationRideID = "";
+let youTubeRideID = "";
+
+// these will be the rideIDs that are initially enable on the map
+let initialRideIDsToDisplay = ["ride0001", "ride0003", "ride0007"];
 
 /* ###################################################################
    ****  THE MAIN MAP OBJECTS NEED TO BE GLOBALY ACCESSIBLE
@@ -55,12 +59,12 @@ let elevationControlOptions = {
   theme: "steelblue-theme", //default: lime-theme
   width: 600,
   height: 125,
-  margins: {
-      top: 10,
-      right: 20,
-      bottom: 30,
-      left: 50
-  },
+  // margins: {
+  //     top: 10,
+  //     right: 20,
+  //     bottom: 30,
+  //     left: 50
+  // },
   useHeightIndicator: true, //if false a marker is drawn at map position
   interpolation: d3.curveLinear, //see https://github.com/d3/d3-shape/blob/master/README.md#area_curve
   hoverNumber: {
@@ -75,11 +79,34 @@ let elevationControlOptions = {
 }
 
 let elevationControl = L.control.elevation(elevationControlOptions);
+let elevationDisplayDiv;
 
 // the layer that holds the information for the rabit display for the elevation control
 // this is the layer that will be added and removed as data is added and removed from the elevationControl layer
-let elevationRabbitLayer;
+let elevationHighlightLayer;
 
+
+// ##### ABRACADABRA ####### // ##### ABRACADABRA #######
+// ##### ABRACADABRA ####### // ##### ABRACADABRA #######
+let videoDisplayDiv;
+
+// WE NEED TO DEFINE OUR RABBIT ICON LAYER HERE
+
+
+
+// SHOW/HIDE ELEVATION AND YOUTUBE PLAYER LOGIC
+let testButton = document.getElementById('test');
+if(testButton !== null){
+  testButton.onclick = showHideElevationDisplayContainer;
+}
+
+function showHideElevationDisplayContainer(){
+  videoDisplayDiv.hidden = !videoDisplayDiv.hidden;
+  elevationDisplayDiv.hidden = !elevationDisplayDiv.hidden;
+}
+
+// ##### ABRACADABRA ####### // ##### ABRACADABRA #######
+// ##### ABRACADABRA ####### // ##### ABRACADABRA #######
 
 
 /* ###################################################################
@@ -152,9 +179,9 @@ class AsyncCounter {
 }
 
 
-// **************** NON MAPPING HELPER FUNCTIONS ******************
-// **************** NON MAPPING HELPER FUNCTIONS ******************
-// **************** NON MAPPING HELPER FUNCTIONS ******************
+// **************** GLOBAL HELPER FUNCTIONS ******************
+// **************** GLOBAL HELPER FUNCTIONS ******************
+// **************** GLOBAL HELPER FUNCTIONS ******************
 
   // this is the function for creating rideIDs based off of the unique number being passed in
   // we're putting it in this file so that we can easily modify it if need be
@@ -177,4 +204,15 @@ function getIsNight(){
   let isNight = (HH >= 20 || HH <= 6);
 
   return isNight;
+}
+
+
+
+function getCoordsArrayFromGeoJson(geoJson){
+
+  return (geoJson.features.find   ( (feature) => 
+                                      feature.properties.name === "ROUTE"
+                                      && feature.geometry.type === "LineString"
+                                  )
+          ).geometry.coordinates;
 }
