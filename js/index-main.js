@@ -89,18 +89,33 @@ bikeRideJSONFileNames.forEach( (jsonFileName, i) => {
 
         let clickedRideID = event.target.getLayers()[0].feature.properties.rideID;
         // let clickedRideID = event.layer.feature.properties.rideID; // does the same thing as the one above
-        showElevationForRideID(clickedRideID);
-        
-        // make sure the div that contains the elevationControl display is not hidden
-        elevationDisplayDiv.hidden = false;
 
+        if(clickedRideID === undefined){
+          console.log("RIDE ID DOESN'T EXIST");
+          return false;
+        }
+        else if(elevationRideID !== clickedRideID){
 
-        // we need to test to see if a video exists in the ride
-        // also need to test to see if we should show the rabbit
-        let hasValidVideoID = loadYouTubeVideoForRideID(clickedRideID);
-        
-        // make sure the div that contains the elevationControl display is not hidden
-        videoDisplayDiv.hidden = !hasValidVideoID;
+          showElevationForRideID(clickedRideID);
+  
+          // we need to test to see if a video exists in the ride
+          // also need to test to see if we should show the rabbit
+          let hasValidVideoID = loadYouTubeVideoForRideID(clickedRideID);
+          
+          if(hasValidVideoID){
+            prepareRabbitForRide(clickedRideID);
+          }
+          else{
+            rabbitMarker.remove();
+          }
+          
+          // make sure the div that contains the elevationControl display is not hidden
+          elevationDisplayDiv.hidden = false;
+          // set the visibility of the videoDisplayDiv according to "hasValidVideoID"
+          videoDisplayDiv.hidden = !hasValidVideoID;
+
+        }
+
       });
 
       // when we remove a layer we want to check and see if it is currently being used
@@ -115,6 +130,9 @@ bikeRideJSONFileNames.forEach( (jsonFileName, i) => {
         if(removedRideID === elevationRideID) {
           clearElevationDisplay();
           elevationDisplayDiv.hidden = true;
+          videoDisplayDiv.hidden = true;
+          rabbitMarker.remove();
+          stopRabbitSyncronizer();
         }
       });
 

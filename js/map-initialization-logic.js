@@ -161,6 +161,7 @@ function initializeMapOverlaysAndUI(hideElevationDisplayDiv = false){
     //      or move it to a separate div - if we are loading the create-ride page
     // *************************************************************
     // initialize the elevationControl by adding to the map
+    elevationControl = L.control.elevation(elevationControlOptions);
     elevationControl.addTo(map);
     
     // ##### ABRACADABRA #######
@@ -195,11 +196,6 @@ function initializeMapOverlaysAndUI(hideElevationDisplayDiv = false){
     // elevationDisplayDiv.innerHTML += '<div style="clear: both;">&nbsp;</div>';
     
 
-    if(hideElevationDisplayDiv){
-        elevationDisplayDiv.hidden = true;
-    }
-
-
     // *************************************************************
     //  CREATE VIDEO DISPLAY DIV
     //      if we've declared a "videoDisplayDiv" variable
@@ -208,7 +204,7 @@ function initializeMapOverlaysAndUI(hideElevationDisplayDiv = false){
     // *************************************************************
     // similar thing to what we're doing for the elevationControl layer above except this time we're creating a layer to contain the video player iFrame
     if(videoDisplayDiv === undefined){
-
+        
         let videoIframeContainerLayer = L.control({position: mapUISettings.videoViewer.position});
 
         videoIframeContainerLayer.onAdd = function(mymap){
@@ -224,7 +220,48 @@ function initializeMapOverlaysAndUI(hideElevationDisplayDiv = false){
         videoIframeContainerLayer.addTo(map);
 
         videoDisplayDiv = videoIframeContainerLayer.getContainer();
+
+        L.DomEvent.disableClickPropagation(videoDisplayDiv);
     }
+
+
+
+    // if the rabbitMarker hasn't been instantiated yet, create it
+    // otherwise, simply update its latlon
+    if (rabbitMarker === undefined) {
+        let rabbitIconWidth = rabbitMarkerOptions.rabbitIconWidth;
+        let rabbitIconHeight = rabbitMarkerOptions.rabbitIconHeight;
+        let rabbitIconScaleFactor = rabbitMarkerOptions.scaleFactor;
+
+        let iconW = Math.round(rabbitIconWidth*rabbitIconScaleFactor);
+        let iconH = Math.round(rabbitIconHeight*rabbitIconScaleFactor);
+
+        let iconSize = [iconW, iconH];
+        let iconAnchor = [Math.round(iconW/2), iconH];
+
+        var rabbitIcon = L.icon({
+            iconUrl: rabbitMarkerOptions.iconUrl,
+            shadowUrl: rabbitMarkerOptions.shadowUrl,
+        
+            iconSize:     iconSize, // size of the icon
+            shadowSize:   iconSize, // size of the shadow
+            iconAnchor:   iconAnchor, // point of the icon which will correspond to marker's location
+            shadowAnchor: [3, iconH],  // the same for the shadow
+            popupAnchor:  [-3, -iconH] // point from which the popup should open relative to the iconAnchor
+        });
+
+        rabbitMarker = new L.Marker([0,0], {icon:rabbitIcon}).addTo(map);
+        // console.log(map.hasLayer(rabbitMarker));
+        rabbitMarker.remove();
+        // console.log(map.hasLayer(rabbitMarker));
+    }
+
+
+    if(hideElevationDisplayDiv){
+        elevationDisplayDiv.hidden = true;
+        videoDisplayDiv.hidden = true;
+    }
+
 
 }
 

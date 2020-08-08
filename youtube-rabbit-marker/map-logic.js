@@ -34,7 +34,7 @@ let maximumZoom = 18;
 let defaultRideViewZoom = 11;
 
 
-  
+
 
 let rabbitMarker;
 let rabbitIconWidth = 200;

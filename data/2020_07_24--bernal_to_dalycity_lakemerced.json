@@ -19312,6 +19312,7 @@
     "metadata": {
         "rideName": "Bernal Heights to Daly City / Lake Merced",
         "rideType": "completed",
+        "hasBikeLapseSync": true,
         "videoEmbedID": "XG7EWQNuP18",
         "stravaURL": "https://www.strava.com/activities/3809443302",
         "googleMapURL": "",

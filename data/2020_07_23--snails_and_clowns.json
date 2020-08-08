@@ -7030,6 +7030,7 @@
     "metadata": {
         "rideName": "Snails and Clowns",
         "rideType": "completed",
+        "hasBikeLapseSync": false,
         "videoEmbedID": "",
         "stravaURL": "https://www.strava.com/activities/3806786607",
         "googleMapURL": "",

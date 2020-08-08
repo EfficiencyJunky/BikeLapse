@@ -116,6 +116,7 @@ function onPlayerStateChange(event) {
         // (paused) -- what happens when the user pauses the video, or scrubs the playhead (we don't stop the rabbit syncronizer because we want the rabbit to continue updating if the user scrubs the playhead while the video is paused)
         case YT.PlayerState.PAUSED:
             playPauseButton.className = playButtonClass;
+            stopRabbitSyncronizer();
             break;
         // (unstarted) -- what happens when the video is initially loaded and ready, or is "stopped" by the player.stopVideo(); command
         case YT.PlayerState.UNSTARTED:
@@ -193,8 +194,9 @@ function updateRabbitPosition(){
 
 
     // if we wanted to just calculate the percent of the video watched we can uncomment this code
-    // let vDuration = player.getDuration();
-    // let percentWatched = vCurrentTime/vDuration;
+    let vDuration = player.getDuration();
+    let percentWatched = vCurrentTime/vDuration;
+    slider.value = percentWatched*100;
     // syncRabbitMarkerToVideo("percentWatched", percentWatched);
 }
 
@@ -224,7 +226,7 @@ function updateRabbitPosition(){
 
 // ################## VIDEO CONTROL BUTTONS & HANDLERS ##################
 let playPauseButton = document.getElementById('play-pause');
-let stopButton = document.getElementById('stop')
+let stopButton = document.getElementById('stop');
 
 
 playPauseButton.onclick = videoTransportButtonsHandler;
@@ -249,5 +251,28 @@ function videoTransportButtonsHandler(event) {
 }
 
 
+// SLIDER
+let slider = document.getElementById('slider');
+let videoDuration;
 
+slider.onchange = function(event){
 
+    console.log("onchange");
+    console.log(event.target.value);
+
+    let sliderValue = event.target.value;
+    let vDuration = player.getDuration();
+    player.seekTo(vDuration*sliderValue/100, true);
+    
+
+}
+
+slider.oninput = function(event){
+    console.log("oninput");
+    console.log(event.target.value);
+    
+    player.pauseVideo();
+    let sliderVal = event.target.value;
+
+    syncRabbitMarkerToVideo("frameIndex", frameIndex);
+}

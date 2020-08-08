@@ -53,7 +53,9 @@ map.getPane('bikeRidesPane').style.zIndex = 399;
 //    the elevationControl will be used throughout the app to 
 //    display the elevation for a selected ride 
 //    find out more about elevation control and options here: https://github.com/MrMufflon/Leaflet.Elevation
-// *************************************************************    
+// *************************************************************
+let elevationDisplayDiv;
+let elevationControl;
 let elevationControlOptions = {
   position: mapUISettings.elevation.position,
   theme: "steelblue-theme", //default: lime-theme
@@ -78,9 +80,6 @@ let elevationControlOptions = {
   imperial: true    //display imperial units instead of metric
 }
 
-let elevationControl = L.control.elevation(elevationControlOptions);
-let elevationDisplayDiv;
-
 // the layer that holds the information for the rabit display for the elevation control
 // this is the layer that will be added and removed as data is added and removed from the elevationControl layer
 let elevationHighlightLayer;
@@ -90,23 +89,21 @@ let elevationHighlightLayer;
 // ##### ABRACADABRA ####### // ##### ABRACADABRA #######
 let videoDisplayDiv;
 
-// WE NEED TO DEFINE OUR RABBIT ICON LAYER HERE
-
-
-
-// SHOW/HIDE ELEVATION AND YOUTUBE PLAYER LOGIC
-let testButton = document.getElementById('test');
-if(testButton !== null){
-  testButton.onclick = showHideElevationDisplayContainer;
-}
-
-function showHideElevationDisplayContainer(){
-  videoDisplayDiv.hidden = !videoDisplayDiv.hidden;
-  elevationDisplayDiv.hidden = !elevationDisplayDiv.hidden;
-}
+let rabbitMarker;
+let rabbitMarkerOptions = {
+  iconUrl: '../img/rabbit-marker.png',
+  shadowUrl: '../img/rabbit-marker-shadow.png',  
+  rabbitIconWidth: 200,
+  rabbitIconHeight: 167,
+  scaleFactor: 0.2
+};
+let rabbitCoordsArray;
+let videoHasBikeLapseSync = false;
 
 // ##### ABRACADABRA ####### // ##### ABRACADABRA #######
 // ##### ABRACADABRA ####### // ##### ABRACADABRA #######
+
+
 
 
 /* ###################################################################
@@ -114,7 +111,7 @@ function showHideElevationDisplayContainer(){
 ###################################################################### */
 
 // youtube video embed size variables
-let videoHeight = 200;
+let videoHeight = 250;
 let videoWidth = Math.round(videoHeight * 1.777777);
 let bindPopupProperties = {maxWidth: videoWidth + 40};
 
@@ -206,13 +203,3 @@ function getIsNight(){
   return isNight;
 }
 
-
-
-function getCoordsArrayFromGeoJson(geoJson){
-
-  return (geoJson.features.find   ( (feature) => 
-                                      feature.properties.name === "ROUTE"
-                                      && feature.geometry.type === "LineString"
-                                  )
-          ).geometry.coordinates;
-}

@@ -17,6 +17,8 @@ let geoJsonLayer = undefined;
 
 // This is the div in our HTML where we will display the elevationControl
 elevationDisplayDiv = document.getElementById('elevation-display-div');
+
+// setting this to a string makes it so the map doesn't create a video displaydiv
 videoDisplayDiv = "REPLACE THIS WITH THE DIV";
 
 /* ###############################################################################

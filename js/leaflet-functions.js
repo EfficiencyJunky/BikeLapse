@@ -197,7 +197,7 @@ function createMarkerIcon(markerType){
                         // shadowSize: [68, 95],
                         // shadowAnchor: [22, 94]
                       });
-      break;
+      // break;
     default:
       return L.icon({
                       iconUrl: markerProperties.iconURLorClass,
@@ -222,8 +222,8 @@ function createPopupHTMLDetailsPoint(properties){
   let rideMetadata = ridesData[currentRideID].metadata;
   let rideFeatures = ridesData[currentRideID].features;
 
-  let videoEmbedID = validate(rideMetadata.videoEmbedID);
-  let videoEmbedHTML = (videoEmbedID !== '' ? videoEmbedParams.firstHalf + videoEmbedID + videoEmbedParams.secondHalf : 'no video URL<br>');
+  // let videoEmbedID = validate(rideMetadata.videoEmbedID);
+  // let videoEmbedHTML = (videoEmbedID !== '' ? videoEmbedParams.firstHalf + videoEmbedID + videoEmbedParams.secondHalf : 'no video URL<br>');
 
   let rideName = validate(rideMetadata.rideName);
 
@@ -246,7 +246,7 @@ function createPopupHTMLDetailsPoint(properties){
  
   return  '<h2>RIDE: ' + rideName + '</h2>' +
           detailsPointDescription + '<br><br>' +
-          videoEmbedHTML +
+          // videoEmbedHTML +
           stravaHTML +
           googleMapHTML;
 }
@@ -286,12 +286,11 @@ function createPopupHTMLBasicPoints(properties){
 }
 
 
-// #############################################################################
-// *********  OTHER LEAFLET SPECIFIC FUNCIONS ********************************
-// #############################################################################
 
-// *********************************************************
-// ELEVATION DISPLAY FUNCTIONS
+
+// #############################################################################
+// *********  ELEVATION DISPLAY FUNCIONS ********************************
+// #############################################################################
 // This function manages the adding and removing of the
 // elevation control display and rabbit geojson overlay layer
 function showElevationForRideID(clickedRideID){
@@ -358,6 +357,7 @@ function showElevationForRideID(clickedRideID){
       console.log('clicked on ride with same "elevationRideID" as before: ', elevationRideID); 
   }
 
+
 }
 
 
@@ -389,45 +389,80 @@ function clearElevationDisplay(){
 }
 
 
-// *********************************************************
-// YOUTUBE VIDEO DISPLAY FUNCTIONS
+// #############################################################################
+// *********  YOUTUBE VIDEO + RABBIT DISPLAY FUNCTIONS ************************
+// #############################################################################
 // This function manages the adding and removing of the
 // youtube video and rabbit marker
 function loadYouTubeVideoForRideID(clickedRideID){
 
-  if(clickedRideID === undefined){
-    console.log("RIDE ID DOESN'T EXIST");
-    return;
-  }
-
   let youTubeVideoID = ridesData[clickedRideID].metadata.videoEmbedID;
-
-  let hasValidVideoID = (youTubeVideoID !== "");
-  console.log('has valid video id:', hasValidVideoID);
 
   // We only want to run this logic if we are clicking on a different
   // ride than we had previously clicked on, or if we haven't clicked
   // on a ride at all yet and the videoID is valid
-  if(youTubeRideID !== clickedRideID && hasValidVideoID){
-
+  if(youTubeVideoID !== ""){
     loadYouTubeVideo(youTubeVideoID);
-
-    youTubeRideID = clickedRideID;
+    return true;
   }
 
-  return hasValidVideoID;
+  return false;
+}
+
+
+function prepareRabbitForRide(clickedRideID){
+
+  videoHasBikeLapseSync = ridesData[clickedRideID].metadata.hasBikeLapseSync;
+
+  if(videoHasBikeLapseSync){
+    let routeLineString = getROUTELineStringFromGeoJson(ridesData[clickedRideID]);
+    rabbitCoordsArray = routeLineString.geometry.coordinates;
+    syncRabbitMarkerToVideo("frameIndex", 0);    
+  }
+  else{
+    rabbitCoordsArray = undefined;
+    rabbitMarker.remove();
+    stopRabbitSyncronizer();
+  }
+
 }
 
 
 
+function syncRabbitMarkerToVideo(valType, value){
 
+  let latlon;
 
+  // get the latlon from the coordsArray based on the
+  // value type that is passed in
+  switch(valType){
+      case "latlon":
+          latlon = value;
+          break;
+      // notice we don't use a break for "percentWatched" 
+      // because we also want the logic from "frameIndex" to be executed
+      case "percentWatched":
+          value = Math.round(value * rabbitCoordsArray.length);
+      case "frameIndex":
+          let frameIndex = (value < rabbitCoordsArray.length) ? value : rabbitCoordsArray.length - 1;
+          latlon = rabbitCoordsArray[frameIndex].slice(0, 2).reverse();
+          break;
+  }
 
+  // set the latlon of the rabbitMarker
+  rabbitMarker.setLatLng(latlon);
 
+  // if the rabbitMarker isn't visible, make it so
+  if(!map.hasLayer(rabbitMarker)) {
+    rabbitMarker.addTo(map);
+  } 
 
+}
 
-
-
+// simple method to print out the rabbit Marker object for debugging
+function getRabbitCoords(){    
+  return rabbitMarker._latlng;
+}
 
 
 // *****************************************************************

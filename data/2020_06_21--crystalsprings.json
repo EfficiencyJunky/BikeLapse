@@ -53369,6 +53369,7 @@
     "metadata": {
         "rideName": "SF to SM via Crystal Springs",
         "rideType": "completed",
+        "hasBikeLapseSync": false,
         "videoEmbedID": "YN9b3LK1la0",
         "stravaURL": "https://www.strava.com/activities/3650907808",
         "googleMapURL": "https://www.google.com/maps/d/edit?mid=10cQNnnBswOwCTTvcCW36Qsjviech_7ZL&usp=sharing",

@@ -50441,6 +50441,7 @@
     "metadata": {
         "rideName": "SF to Rodeo Beach via Hawk Hill",
         "rideType": "completed",
+        "hasBikeLapseSync": false,
         "videoEmbedID": "",
         "stravaURL": "https://www.strava.com/activities/3719729079",
         "googleMapURL": "https://www.google.com/maps/d/edit?mid=1hD_JODm9txFYwx-jcN_Lk17YExy1cX_c&usp=sharing",
