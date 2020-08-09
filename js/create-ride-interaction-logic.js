@@ -351,7 +351,7 @@ function showGeoJSONInTextArea(geoJson){
 /* ##################################################################################
     ADD RIDE TO MAP
         This is the function that will add the ride to the map initially
-        or if the "save changes" button is pressed, it will "update" the ride
+        or if the "save changes" button is pressed, it will update the ride
         it will also re-set the elevation display for the ride although
         that is likely not necessary, but will be good if in the future
         we want to allow the ability to re-import GPX files
@@ -359,52 +359,39 @@ function showGeoJSONInTextArea(geoJson){
 function addRideToMap(operation){
   
     // if we're updating the map (only used in create-ride interface), 
-    // then first clear the layers on it
-    if(operation === "update"){
-      clearElevationDisplay();
-      geoJsonLayer.remove();
+    // then the geoJsonLayerGroup will be set to undefined
+    // we should remove the geoJsonLayerGroup before re-creating it
+    // if(operation === "update"){
+    if(geoJsonLayerGroup !== undefined){
+    //   clearElevationDisplay();
+      geoJsonLayerGroup.remove();
     }
     
-    // *************************************************************
-    // Define the overlayMaps object to hold our overlay layers
-    // *************************************************************
     
-    // *************************************************************
-    //     SECOND DEFINE THE "DATA LAYER" TO USE AS THE VISUAL 
-    //     INFORMATION/DATA WE WILL DRAW ON TOP OF THE TILE LAYER 
-    // *************************************************************
+    // *****************************************************************
+    //   CREATE (OR RE-CREATE) THE GEOJSONLAYERGROUP AND ADD TO THE MAP
+    // *****************************************************************
+    geoJsonLayerGroup = L.geoJson(ridesData[currentRideID], { 
+                                                                pane: 'bikeRidesPane', // the "pane" option is inherited from the "Layer" object
+                                                                filter: filterFunction,
+                                                                pointToLayer: pointToLayerFunction,
+                                                                onEachFeature: onEachFeatureFunction,
+                                                                style: styleFunction
+                                                                // style: { fillOpacity: 0.0, weight: 4, opacity: 1, color: ridesData[currentRideID].metadata.lineColor}
+                                                            });
+
+
+    // add it to the map
+    geoJsonLayerGroup.addTo(map);
     
-    if (ridesData[currentRideID] !== undefined){
-  
-      geoJsonLayer = L.geoJson(ridesData[currentRideID], { 
-                                                            pane: 'bikeRidesPane', // the "pane" option is inherited from the "Layer" object
-                                                            filter: filterFunction,
-                                                            pointToLayer: pointToLayerFunction,
-                                                            onEachFeature: onEachFeatureFunction,
-                                                            style: styleFunction
-                                                            // style: { fillOpacity: 0.0, weight: 4, opacity: 1, color: ridesData[currentRideID].metadata.lineColor}
-                                                          });
-    }
-    else{
-      console.log("RIDE DATA UNDEFINED");
-      return;
-    }
-  
-    // layerControl.addOverlay(geoJsonLayer, "placeholder");
-  
+    
     // *************************************************************
     //     ADD THE BASIC LAYERS TO THE ACTUAL MAP
-    // *************************************************************
-    // *************************************************************
-    // set up our panes and zIndex ordering so they layer correctly 
-    // when added and removed using the layer control UI
-    // the zIndex number will make sure they stack on eachother 
-    // in the order we want them to
-    // *************************************************************    
-    geoJsonLayer.addTo(map);
-  
-    // show the elevationfor currentRideID
-    showElevationForRideID(currentRideID);
+    // ************************************************************* 
+    let lineStringFeature = getROUTELineStringFeatureFromGeoJsonLayerGroup(geoJsonLayerGroup);
+
+    // show the elevation for currentRideID
+    showElevationForLineStringFeature(lineStringFeature);
   
     // re-center the map on the location of the ride
     reCenterMap(currentRideID);

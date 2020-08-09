@@ -146,8 +146,6 @@ function getLatLonOfPointInGeoJson(geoJson, pointName){
 }
 
 
-
-
 function getCoordsArrayOfROUTELineStringInGeoJson(geoJson){
 
   return (geoJson.features.find   ( (feature) => 

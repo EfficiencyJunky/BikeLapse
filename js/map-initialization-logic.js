@@ -140,7 +140,7 @@ function createBaseMaps(mapboxTilesAvailable = false){
 }
 
 
-function initializeMapOverlaysAndUI(hideElevationDisplayDiv = false){
+function initializeMapOverlaysAndUI(hideElevationDisplayDiv = true, hideVideoDisplayDiv = true){
     // *************************************************************
     //  ADD LEGEND -- LEAFLET CONTROL OBJECT
     //      set the location to mapUISettings.legend.position
@@ -164,35 +164,47 @@ function initializeMapOverlaysAndUI(hideElevationDisplayDiv = false){
     elevationControl = L.control.elevation(elevationControlOptions);
     elevationControl.addTo(map);
     
-    // ##### ABRACADABRA #######
-    // if we havent't yet defined the div that we want to put our elevationControl inside of
-    // then we should create a control layer, add it to the map, grab the div that contains it
-    // and store a reference to that container div in our "elevationDisplayDiv" variable
+    // ##### OPTIONAL: CREATE A DIV TO DISPLAY THE ELEVATIOIN CONTROL IN #######
+    // if we havent't yet defined the div to put our elevationControl inside of
+    // then we will create a new control layer and add it to the map
+    // get a reference to the div that leaflet creates to hold this new layer
+    // and store a reference to that div in our "elevationDisplayDiv" variable
+    // afterwards we will take the elevationControl and place it in this new layer/div
     if(elevationDisplayDiv === undefined){
 
-        // create a new Control Layer that we add the elevationControl to and overlay on the map
+        // create a new Control Layer that we will use to contain the elevationControl on the map
         let elevationControlContainerLayer = L.control({position: mapUISettings.elevation.position});
 
-        // when we add the layer to the map we will create a div inside it and add a header title
+        // define the layer's onAdd function
         elevationControlContainerLayer.onAdd = function(mymap){
+            // create a div and give it the "elevation-display-div" ID and "elevation-container" class
             let div = L.DomUtil.create('elevation-display-div', 'elevation-container');
+
+            // add some HTML to display the title "Elevation". 
+            // later we will add the elevationControl beneath the title
             div.innerHTML = "<div><h5>Elevation</h5></div>";
 
             return div;
         };
 
-        // add the layer to the map
+        // add the new layer to the map to create the div defined in the onAdd function
         elevationControlContainerLayer.addTo(map)
 
-        // grab a reference to the div where the layer has been placed on the map
+        // get a reference to the container/div that the Layer created in the onAdd function
         // and store it in our globally accessible "elevationDisplayDiv" variable so we can hide/unhide later
         elevationDisplayDiv = elevationControlContainerLayer.getContainer();
     }
 
 
-    // grab the div that contains the elevationControl layer and move it to our elevationDisplayDiv
+    // grab the container/div that contains the elevationControl layer and move it to our elevationDisplayDiv
     elevationDisplayDiv.appendChild(elevationControl.getContainer());
 
+    // set the elevationDisplayDiv's hidden attribute to the variable we passed in (true by default meaning we want it to NOT be visible)
+    elevationDisplayDiv.hidden = hideElevationDisplayDiv;
+
+
+    // testing whether adding this div will fix the problems with our floated 
+    // elevationControl not being wrapped in our CSS styling for the elevationDisplayDiv
     // elevationDisplayDiv.innerHTML += '<div style="clear: both;">&nbsp;</div>';
     
 
@@ -202,15 +214,19 @@ function initializeMapOverlaysAndUI(hideElevationDisplayDiv = false){
     //      then we should create the videoDisplayContainerLayer
     //      and save a reference to the div that contains it
     // *************************************************************
-    // similar thing to what we're doing for the elevationControl layer above except this time we're creating a layer to contain the video player iFrame
+    // similar thing to what we're doing for the elevationControl layer above except this time we're defaulting to creating a layer/div on the map to contain the video player iFrame
     if(videoDisplayDiv === undefined){
         
+        // create the layer
         let videoIframeContainerLayer = L.control({position: mapUISettings.videoViewer.position});
 
+        // define the layer's onAdd function
         videoIframeContainerLayer.onAdd = function(mymap){
-        
-          // get 'player-parent' div
+          // get the div in our HTML who's child will be the youtube iFrame
+          // and the video playback controls
           let div = L.DomUtil.get('player-parent');
+
+          // unhide this div as we will control visibility through the Container Layer's div
           div.hidden = false;
         
           return div;
@@ -219,15 +235,22 @@ function initializeMapOverlaysAndUI(hideElevationDisplayDiv = false){
         // add the layer to the map
         videoIframeContainerLayer.addTo(map);
 
+        // get a reference to the container/div that the Layer created in the onAdd function
+        // store this div in our globally accessible "videoDisplayDiv" variable so we can hide/unhide later
         videoDisplayDiv = videoIframeContainerLayer.getContainer();
 
+        // we don't want clicks on this layer/div to propagate to the layers below
+        // otherwise, our custom video playhead slider will malfunction
         L.DomEvent.disableClickPropagation(videoDisplayDiv);
+
     }
+    
+    // set the elevationDisplayDiv's hidden attribute to the variable we passed in (true by default meaning we want it to NOT be visible)
+    videoDisplayDiv.hidden = hideVideoDisplayDiv;
 
 
 
     // if the rabbitMarker hasn't been instantiated yet, create it
-    // otherwise, simply update its latlon
     if (rabbitMarker === undefined) {
         let rabbitIconWidth = rabbitMarkerOptions.rabbitIconWidth;
         let rabbitIconHeight = rabbitMarkerOptions.rabbitIconHeight;
@@ -250,17 +273,16 @@ function initializeMapOverlaysAndUI(hideElevationDisplayDiv = false){
             popupAnchor:  [-3, -iconH] // point from which the popup should open relative to the iconAnchor
         });
 
+        // create a leaflet marker with the icon to an arbitrary location on the map (i.e. [0,0])
         rabbitMarker = new L.Marker([0,0], {icon:rabbitIcon}).addTo(map);
-        // console.log(map.hasLayer(rabbitMarker));
+        
+        // by default we don't want to see the marker
         rabbitMarker.remove();
+
+        // map.hasLayer(${layer_name}) will let us know if the layer is currently added to the map
         // console.log(map.hasLayer(rabbitMarker));
     }
 
-
-    if(hideElevationDisplayDiv){
-        elevationDisplayDiv.hidden = true;
-        videoDisplayDiv.hidden = true;
-    }
 
 
 }

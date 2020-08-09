@@ -1,17 +1,4 @@
 /* ###################################################################
-   ****  GLOBAL VARIABLES -- GLOBAL VARIABLES -- GLOBAL VARIABLES ****
-###################################################################### */
-// ridesData will be the object that holds a reference to every JSON file we import
-// rideIDs will be added as the JSON files are imported
-let ridesData = {};
-let currentRideID = "";
-let elevationRideID = "";
-let youTubeRideID = "";
-
-// these will be the rideIDs that are initially enable on the map
-let initialRideIDsToDisplay = ["ride0001", "ride0003", "ride0007"];
-
-/* ###################################################################
    ****  THE MAIN MAP OBJECTS NEED TO BE GLOBALY ACCESSIBLE
    ****  AND SOME GLOBAL MAP AND MAP UI SETTINGS
 ###################################################################### */
@@ -35,6 +22,29 @@ let mapUISettings = {
   "elevation":        { "position": "bottomleft"                           },
   "zoomCtl":          { "position": "topright"                             },
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ###################################################################
+   ****  GLOBAL VARIABLES -- GLOBAL VARIABLES -- GLOBAL VARIABLES ****
+###################################################################### */
+// ridesData will be the object that holds a reference to every JSON file we import
+// rideIDs will be added as the JSON files are imported
+let ridesData = {};
+let currentRideID = "";
+let highlightedRideID = "";
+let youTubeRideID = "";
 
 
 // *************************************************************
@@ -148,7 +158,7 @@ let routeLineProperties = {
   "suggested":          {"legendText": "Suggested Route",        "lineFillOpacity": 1, "lineWeight": 4.0, "lineOpacity": 1, "lineColor": "rgba(251, 255, 0, 1)"     },
   "variantNormal":      {"legendText": "Variant - Normal",       "lineFillOpacity": 1, "lineWeight": 4.0, "lineOpacity": 1, "lineColor": "green"                    },
   "variantDifficult":   {"legendText": "Variant - Difficult",    "lineFillOpacity": 1, "lineWeight": 4.0, "lineOpacity": 1, "lineColor": "red"                      },
-  "rabbitLayer":        {"legendText": "Selected Route",         "lineFillOpacity": 1, "lineWeight": 0.5, "lineOpacity": 1, "lineColor": "black"                    },
+  "highlightLayer":     {"legendText": "Selected Route",         "lineFillOpacity": 1, "lineWeight": 0.5, "lineOpacity": 1, "lineColor": "black"                    },
   "default":            {"legendText": "Default Route Color",    "lineFillOpacity": 1, "lineWeight": 4.0, "lineOpacity": 1, "lineColor": "rgba(155, 155, 155, 1)"   }
 };
 

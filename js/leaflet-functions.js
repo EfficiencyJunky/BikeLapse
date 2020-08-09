@@ -292,70 +292,44 @@ function createPopupHTMLBasicPoints(properties){
 // *********  ELEVATION DISPLAY FUNCIONS ********************************
 // #############################################################################
 // This function manages the adding and removing of the
-// elevation control display and rabbit geojson overlay layer
-function showElevationForRideID(clickedRideID){
+// elevation control display and highlight geojson overlay layer
+function showElevationForLineStringFeature(lineStringFeature){
 
-  if(clickedRideID === undefined){
-    console.log("RIDE ID DOESN'T EXIST");
-    return false;
+  // clear the display on the elevationControl
+  elevationControl.clear();
+
+  // if a highlight layer already exists, we need to remove it, 
+  // otherwise it will stay on the map forever
+  if(elevationHighlightLayer !== undefined){
+    elevationHighlightLayer.remove();
+    // elevationHighlightLayer.clearLayers();
   }
 
-  // We only want to run this logic if we are clicking on a different
-  // ride than we had previously clicked on, or if we haven't clicked
-  // on a ride at all yet
-  if(elevationRideID !== clickedRideID){
-    
-    // clear the display on the elevationControl
-    elevationControl.clear();
+  let elevationHighlightGeoJSON = {
+    "name":"HighlightLayerOverlay",
+    "type":"FeatureCollection",
+    "features":[
+        {
+            "name": "HIGHLIGHT_ROUTE",
+            "type":"Feature",
+            "geometry": {
+                "type":"LineString",
+                "coordinates": lineStringFeature.geometry.coordinates
+            },
+            "properties":null
+        }
+    ]
+  };        
 
-    // if a highlight layer already exists, we need to remove it, 
-    // otherwise it will stay on the map forever
-    if(elevationHighlightLayer !== undefined){
-      elevationHighlightLayer.clearLayers();
-      // elevationHighlightLayer.remove();
-    }
+  // assign a new geoJson layer with the 'elevationHighlightGeoJSON' data to the 'elevationHighlightLayer' object
+  // this also adds the data to display in the elevationControl
+  elevationHighlightLayer = L.geoJson(elevationHighlightGeoJSON,{
+    onEachFeature: elevationControl.addData.bind(elevationControl),
+    style: { fillOpacity: 0.0, weight: routeLineProperties.highlightLayer.lineWeight, opacity: 1, color: routeLineProperties.highlightLayer.lineColor}
+  });
 
-    // get the feature who's name is ROUTE and who's type is "LineString"
-    // so we can use its coordinatesArray to create the rabbitLayerGeoJSON we'll use to create the RabbitLayer
-    let routeLineString = getROUTELineStringFromGeoJson(ridesData[clickedRideID]);
-
-
-    let elevationHighlightGeoJSON = {
-      "name":"RabbitLayerOverlay",
-      "type":"FeatureCollection",
-      "features":[
-          {
-              "name": "RABBIT_ROUTE",
-              "type":"Feature",
-              "geometry": {
-                  "type":"LineString",
-                  "coordinates": routeLineString.geometry.coordinates
-              },
-              "properties":null
-          }
-      ]
-    };        
-
-    // assign a new geoJson layer with the 'elevationHighlightGeoJSON' data to the 'elevationHighlightLayer' object
-    // this also adds the data to display in the elevationControl
-    elevationHighlightLayer = L.geoJson(elevationHighlightGeoJSON,{
-      // pane: 'elevationPane', // panes don't seem to work
-      onEachFeature: elevationControl.addData.bind(elevationControl),
-      // filter: function(feature, layer) {  // the filter function doesn't seem to work either
-      //     // return feature.geometry.type !== "LineString";
-      // },
-      style: { fillOpacity: 0.0, weight: routeLineProperties.rabbitLayer.lineWeight, opacity: 1, color: routeLineProperties.rabbitLayer.lineColor}
-    });
-
-    // add the highlight layer to the map
-    elevationHighlightLayer.addTo(map);
-
-    // lastly, set our elevationRideID to the clickedRideID
-    elevationRideID = clickedRideID;
-  }
-  else{
-      console.log('clicked on ride with same "elevationRideID" as before: ', elevationRideID); 
-  }
+  // add the highlight layer to the map
+  elevationHighlightLayer.addTo(map);
 
 
 }
@@ -374,15 +348,15 @@ function clearElevationDisplay(){
       // set it to undefined so we know it needs to be re-initialized
       elevationHighlightLayer = undefined;
 
-      // reset the elevationRideID
-      elevationRideID = "";
+      // reset the highlightedRideID
+      highlightedRideID = "";
 
       // clear the elevationControl display
       elevationControl.clear();
 
   }
   else{
-    // console.log("rideIDs are equal? ", removedRideID === elevationRideID);
+    // console.log("rideIDs are equal? ", removedRideID === highlightedRideID);
     console.log("elevationControl container exists? ", elevationControl.getContainer() !== null);
   }
 
@@ -394,38 +368,37 @@ function clearElevationDisplay(){
 // #############################################################################
 // This function manages the adding and removing of the
 // youtube video and rabbit marker
-function loadYouTubeVideoForRideID(clickedRideID){
+// function loadYouTubeVideoForRideID(clickedRideID){
 
-  let youTubeVideoID = ridesData[clickedRideID].metadata.videoEmbedID;
+//   let youTubeVideoID = ridesData[clickedRideID].metadata.videoEmbedID;
 
-  // We only want to run this logic if we are clicking on a different
-  // ride than we had previously clicked on, or if we haven't clicked
-  // on a ride at all yet and the videoID is valid
-  if(youTubeVideoID !== ""){
-    loadYouTubeVideo(youTubeVideoID);
-    return true;
-  }
+//   // We only want to run this logic if we are clicking on a different
+//   // ride than we had previously clicked on, or if we haven't clicked
+//   // on a ride at all yet and the videoID is valid
+//   if(youTubeVideoID !== ""){
+//     loadYouTubeVideo(youTubeVideoID);
+//     return true;
+//   }
 
-  return false;
-}
+//   return false;
+// }
 
 
-function prepareRabbitForRide(clickedRideID){
+// function prepareRabbitForRide(clickedRideID){
 
-  videoHasBikeLapseSync = ridesData[clickedRideID].metadata.hasBikeLapseSync;
+//   videoHasBikeLapseSync = ridesData[clickedRideID].metadata.hasBikeLapseSync;
 
-  if(videoHasBikeLapseSync){
-    let routeLineString = getROUTELineStringFromGeoJson(ridesData[clickedRideID]);
-    rabbitCoordsArray = routeLineString.geometry.coordinates;
-    syncRabbitMarkerToVideo("frameIndex", 0);    
-  }
-  else{
-    rabbitCoordsArray = undefined;
-    rabbitMarker.remove();
-    stopRabbitSyncronizer();
-  }
+//   if(videoHasBikeLapseSync){
+//     let routeLineString = getROUTELineStringFromGeoJson(ridesData[clickedRideID]);
+//     rabbitCoordsArray = routeLineString.geometry.coordinates;
+//     syncRabbitMarkerToVideo("frameIndex", 0);    
+//   }
+//   else{
+//     rabbitCoordsArray = undefined;
+//     rabbitMarker.remove();
+//   }
 
-}
+// }
 
 
 
@@ -454,6 +427,7 @@ function syncRabbitMarkerToVideo(valType, value){
 
   // if the rabbitMarker isn't visible, make it so
   if(!map.hasLayer(rabbitMarker)) {
+    // console.log("adding rabbit");
     rabbitMarker.addTo(map);
   } 
 
@@ -480,11 +454,23 @@ function reCenterMap(rideIDtoCenterOn){
 
 
 
+// ****************************************************************
+//     VARIOUS HELPER FUNCTIONS
+// ****************************************************************
+// get the LineString Feature from the Layers array 
+// of the L.GeoJson object
+// we pass in the array of layers, each of which has a "feature" object in it
+// along with all of the other information associated with that layer
+// this feature object is one of the features from our original GeoJSON object 
+function getROUTELineStringFeatureFromGeoJsonLayerGroup(geoJsonLGroup){
 
-
-
-
-
+  let lineStringLayer = geoJsonLGroup.getLayers().find ( (layer) => 
+                                                              layer.feature.properties.name === "ROUTE"
+                                                              && layer.feature.geometry.type === "LineString"
+                                                        );
+  return lineStringLayer.feature;
+                      
+}
 
 
 

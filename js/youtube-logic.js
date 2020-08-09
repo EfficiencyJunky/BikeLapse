@@ -1,10 +1,50 @@
+// ################## "PUBLIC" METHODS ##################
+// ################## "PUBLIC" METHODS ##################
+// ################## "PUBLIC" METHODS ##################
+function loadYouTubeVideo(youTubeVideoID){
+    // console.log("loading new video");
+    player.cueVideoById(youTubeVideoID);
+}
+
+function stopYouTubeVideo(){
+    player.stopVideo();
+}
+
+function playYouTubeVideo(){
+    player.playVideo();
+}
+
+function pauseYouTubeVideo(){
+    player.pauseVideo();
+}
+
+
+// ################## "PRIVATE" VARIABLES ##################
+// ################## "PRIVATE" VARIABLES ##################
+// ################## "PRIVATE" VARIABLES ##################
 let player;
 let framesPerSecond = 15;
 let frameOffset = 0;
 let rabbitUpdateInterval = 250; // time in milliseconds between updating the rabbit
 let rabbitSyncIntervalTimerID;
 
-// YOUTUBE CODE
+// ################## MOCK CONSTRUCTOR ##################
+// ################## MOCK CONSTRUCTOR ##################
+// ################## MOCK CONSTRUCTOR ##################
+// BUTTONS
+// references to our video control buttons
+let playPauseButton = document.getElementById('play-pause');
+let stopButton = document.getElementById('stop')
+
+// for updating the playPauseButton's class to change its CSS and content
+let playButtonClass = "play";
+let pauseButtonClass = "pause";
+
+// SLIDER
+let slider = document.getElementById('slider');
+let sliderAvailable = true;
+
+// YOUTUBE PLAYER INITIALIZATION
 // 1. This code loads the IFrame Player API code asynchronously.
 var tag = document.createElement('script');
 tag.src = "https://www.youtube.com/iframe_api";
@@ -12,6 +52,11 @@ tag.src = "https://www.youtube.com/iframe_api";
 var firstScriptTag = document.getElementsByTagName('script')[0];
 firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
+
+
+// ################## PRIVATE YOUTUBE PLAYER METHODS ##################
+// ################## PRIVATE YOUTUBE PLAYER METHODS ##################
+// ################## PRIVATE YOUTUBE PLAYER METHODS ##################
 // 2. This function creates an <iframe> (and YouTube player)
 //    after the API code downloads. It fires automatically.
 function onYouTubeIframeAPIReady() {
@@ -106,17 +151,24 @@ function onPlayerStateChange(event) {
         case YT.PlayerState.UNSTARTED:
             playPauseButton.className = playButtonClass;
             stopRabbitSyncronizer();
-            if(videoHasBikeLapseSync){
-                updateRabbitPosition();
-                // syncRabbitMarkerToVideo("frameIndex", 0);
-            }
-            else{
-                updateVideoSliderPositionOnly();
-            }
+            updateRabbitPosition();
+                    
+            // console.log("unstarted");
+            // if(videoHasBikeLapseSync){
+            //     console.log("updateRabbitPosition -- UNSTARTED");
+            //     updateRabbitPosition();
+            //     // syncRabbitMarkerToVideo("frameIndex", 0);
+            // }
+            // else{
+            //     updateVideoSliderPositionOnly();
+            // }
             // syncRabbitMarkerToVideo("percentWatched", 0);
             break;
         // (cued) -- also happens when video is "stopped" by the player.stopVideo(); command (not currently making use of this obviously!)
         case YT.PlayerState.CUED:
+            // stopRabbitSyncronizer();
+            
+            // console.log("cued");            
             playPauseButton.className = playButtonClass;
             break;
         default:
@@ -137,42 +189,9 @@ function onPlayerError(e){
 
 
 
-
-
-
-// ################## YOUTUBE API HELPER FUNCTIONS ##################
-// ################## YOUTUBE API HELPER FUNCTIONS ##################
-// ################## YOUTUBE API HELPER FUNCTIONS ##################
-
-function loadYouTubeVideo(youTubeVideoID){
-    player.cueVideoById(youTubeVideoID);
-}
-
-
-
-
-// ################## RABBIT FUNCTIONS ##################
-// ################## RABBIT FUNCTIONS ##################
-// ################## RABBIT FUNCTIONS ##################
-
-function startRabbitSyncronizer() {
-    // this "if" statement prevents us from generating additional interval timers in the case that we already have one running
-    // we want to be careful not to generate more than one due to the way garbage collection works with these timers
-    // we just have to make sure that everytime we call clearInterval(ID) we need to set "rabbitSyncIntervalTimerID" to undefined
-    if(rabbitSyncIntervalTimerID === undefined){
-        // console.log("starting rabbit syncronization (interval timer)");
-        
-        
-        if(videoHasBikeLapseSync){
-            rabbitSyncIntervalTimerID = window.setInterval( updateRabbitPosition, rabbitUpdateInterval);
-        }
-        else{
-            rabbitSyncIntervalTimerID = window.setInterval( updateVideoSliderPositionOnly, rabbitUpdateInterval);
-        }
-    }
-
-}
-
+// ################## PRIVATE RABBIT UPDATE METHODS ##################
+// ################## PRIVATE RABBIT UPDATE METHODS ##################
+// ################## PRIVATE RABBIT UPDATE METHODS ##################
 
 // stops the currently running interval timer who's ID is stored in "rabbitSyncIntervalTimerID"
 function stopRabbitSyncronizer(){
@@ -186,6 +205,25 @@ function stopRabbitSyncronizer(){
 }
 
 
+// starts an interval timer that updates the rabbit's position every "rabbitUpdateInterval" milliseconds
+function startRabbitSyncronizer() {
+    // this "if" statement prevents us from generating additional interval timers in the case that we already have one running
+    // we want to be careful not to generate more than one due to the way garbage collection works with these timers
+    // we just have to make sure that everytime we call clearInterval(ID) we need to set "rabbitSyncIntervalTimerID" to undefined
+    if(rabbitSyncIntervalTimerID === undefined){
+        // console.log("starting rabbit syncronization (interval timer)");
+        
+        // if(videoHasBikeLapseSync){
+            rabbitSyncIntervalTimerID = window.setInterval( updateRabbitPosition, rabbitUpdateInterval);
+        // }
+        // else{
+        //     rabbitSyncIntervalTimerID = window.setInterval( updateVideoSliderPositionOnly, rabbitUpdateInterval);
+        // }
+    }
+
+}
+
+
 // this is how we move the rabbit around the map
 // we get the frame index of the video, 
 // and use that as the index into the coordsArray
@@ -195,17 +233,19 @@ function updateRabbitPosition(){
     //current time of the playhead (a float that is accurate to many milliseconds)
     let vCurrentTime = player.getCurrentTime();
     
-    // multiply that time by 15 frames per second (the framerate of BikeLapse videos)
-    // rounding it first is smart tho. And for future we can add a frameOffset
-    // to get our frame Index and then send that to the "syncRabbitMarkerToVideo" function
-    let frameIndex = Math.round(vCurrentTime * framesPerSecond) + frameOffset;
-    syncRabbitMarkerToVideo("frameIndex", frameIndex);
-    // setRabbitLatLonFromFrameIndex();
+    if(videoHasBikeLapseSync){
+        // multiply that time by 15 frames per second (the framerate of BikeLapse videos)
+        // rounding it first is smart tho. And for future we can add a frameOffset
+        // to get our frame Index and then send that to the "syncRabbitMarkerToVideo" function
+        let frameIndex = Math.round(vCurrentTime * framesPerSecond) + frameOffset;
+        syncRabbitMarkerToVideo("frameIndex", frameIndex);
+        // setRabbitLatLonFromFrameIndex();
 
-    // if we wanted to just calculate the percent of the video watched we can uncomment this code
-    // let vDuration = player.getDuration();
-    // let percentWatched = vCurrentTime/vDuration;
-    // syncRabbitMarkerToVideo("percentWatched", percentWatched);
+        // if we wanted to just calculate the percent of the video watched we can uncomment this code
+        // let vDuration = player.getDuration();
+        // let percentWatched = vCurrentTime/vDuration;
+        // syncRabbitMarkerToVideo("percentWatched", percentWatched);
+    }
 
     if(sliderAvailable){
         let vDuration = player.getDuration();
@@ -218,15 +258,15 @@ function updateRabbitPosition(){
 // we get the frame index of the video, 
 // and use that as the index into the coordsArray
 // in the LineString of our GeoJSON file
-function updateVideoSliderPositionOnly(){
-    if(sliderAvailable){
-    //current time of the playhead (a float that is accurate to many milliseconds)
-        let vCurrentTime = player.getCurrentTime();
-        let vDuration = player.getDuration();
-        let percentWatched = (vDuration !== 0) ? vCurrentTime/vDuration : 0;
-        slider.value = percentWatched*100;
-    }
-}
+// function updateVideoSliderPositionOnly(){
+//     if(sliderAvailable){
+//     //current time of the playhead (a float that is accurate to many milliseconds)
+//         let vCurrentTime = player.getCurrentTime();
+//         let vDuration = player.getDuration();
+//         let percentWatched = (vDuration !== 0) ? vCurrentTime/vDuration : 0;
+//         slider.value = percentWatched*100;
+//     }
+// }
 
 
 
@@ -268,15 +308,9 @@ function printRabbitInfo(){
 
 
 
-
-// ################## VIDEO CONTROL BUTTONS & HANDLERS ##################
-// for selecting/modifying buttons
-let playButtonClass = "play";
-let pauseButtonClass = "pause";
-let stopButtonID = "stop";
-
-let playPauseButton = document.getElementById('play-pause');
-let stopButton = document.getElementById('stop')
+// ################## VIDEO CONTROL BUTTONS/SLIDER HANDLERS ##################
+// ################## VIDEO CONTROL BUTTONS/SLIDER HANDLERS ##################
+// ################## VIDEO CONTROL BUTTONS/SLIDER HANDLERS ##################
 
 if(playPauseButton !== null){
     playPauseButton.onclick = videoTransportButtonsHandler;
@@ -286,53 +320,47 @@ if(stopButton !== null){
 }
 
 
-
 function videoTransportButtonsHandler(event) {
 
     let button = event.target;
     
     if(button.className === playButtonClass){
-        // console.log("attempting to play");
         player.playVideo();
     }
     else if(button.className === pauseButtonClass){
         player.pauseVideo();
     }
-    else if(button.id === stopButtonID){
+    else if(button === stopButton){
         player.stopVideo();
+
     }
 
 }
 
 
-
-
-// SLIDER
-let slider = document.getElementById('slider');
-// let videoDuration;
-let sliderAvailable = true;
-
+// "onchange" callback is triggered when we release the slider
+// at which point we want to seek the video playhead to the placement of the slider
+// and we can allow the slider to continue being updated by the YouTube player again
 slider.onchange = function(event){
-
-    // console.log("onchange");
-    // console.log(event.target.value);
 
     let sliderValue = event.target.value;
     let vDuration = player.getDuration();
+
     player.seekTo(vDuration*sliderValue/100, true);
     
     sliderAvailable = true;
-
 }
 
+// "oninput" callback is triggered when we grab the slider and slide it around
+// when the user is moving the slider around, we don't want its position
+// to be updated with the playhead of the video, so we set "sliderAvailable" to false
+// it is always called before "onchange"
 slider.oninput = function(event){
-    // console.log("oninput");
-    // console.log(event.target.value);
+
     sliderAvailable = false;
+
     // player.pauseVideo();
-    let sliderVal = event.target.value;
-    // event.stopPropagation();
-    // syncRabbitMarkerToVideo("frameIndex", frameIndex);
+    // let sliderVal = event.target.value;
 }
 
 

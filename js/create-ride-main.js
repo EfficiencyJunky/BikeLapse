@@ -1,44 +1,53 @@
 /* ###################################################################
-   ****  DEFINE VARIOUS GLOBAL VARIABLES LIKE OUR MAP AND ZOOM SETTINGS ****
+   ****  OVERRIDE GLOBAL VARIABLES AND SETTINGS ****
 ###################################################################### */
 // override global map zoom and ride ID parameters
 minimumZoom = 2;
 // maximumZoom = 18;
-currentRideID = "single_ride_ID"; // we're only dealing with one ride in the create-ride interface
 
-// set map initial center location and zoom for map
-map.setView([30, 0], minimumZoom);
-
-// ********************************************************************
-// CREATE A GLOBALLY ACCESSIBLE REFERENCE TO THE LEAFLET GEOJSON LAYER
-// THAT WE WILL GENERATE FROM OUR RIDE DATA AND ADD/REMOVE FROM THE MAP
-// ********************************************************************
-let geoJsonLayer = undefined;
+// override global "currentRideID" to always stay the same
+// since we're only dealing with one ride in the create-ride interface
+currentRideID = "single_ride_ID"; 
 
 // This is the div in our HTML where we will display the elevationControl
+// we need to grab a reference to it and store it here so our
+// "initializeMapOverlaysAndUI()" function can add the elevationControl to it
 elevationDisplayDiv = document.getElementById('elevation-display-div');
 
-// setting this to a string makes it so the map doesn't create a video displaydiv
+// This is the div in our HTML where we will display the YouTube Player
+// currently setting this to a string so the map doesn't create a video displaydiv
 videoDisplayDiv = "REPLACE THIS WITH THE DIV";
 
-/* ###############################################################################
-   ****  INITIALIZE OUR MAP WITH AVAILABLE BASEMAPS AND UI OVERLAYS ELEMENTS ****
-################################################################################## */
-initializeBaseMaps();
-initializeMapOverlaysAndUI();
 
+/* ###################################################################
+   ****  CREATE-RIDE SPECIFIC VARIABLES AND SETTINGS ****
+###################################################################### */
 
-// *************************************************************
-// GET REFERENCES TO OTHER HTML ELEMENTS USED FOR DISPLAYING INFO
-// *************************************************************
+// a globally accessible reference to the Leaflet GeoJSON Layers Group
+let geoJsonLayerGroup = undefined;
+let testBool = false;
+
+// REFERENCES TO OTHER HTML ELEMENTS USED FOR DISPLAYING INFO
 let gpxImportProgressLabel = document.getElementById('gpx-import-progress-label');
 let gpxTextarea = document.getElementById('gpx-textarea');
 let geoJsonTextarea = document.getElementById('geojson-textarea');
 
 
-// *************************************************************
-// ADD EVENT LISTENERS TO OUR INTERACTIVE HTML UI ELEMENTS
-// *************************************************************
+/* ###############################################################################
+   ****  INITIALIZE OUR MAP WITH AVAILABLE BASEMAPS AND UI OVERLAY ELEMENTS ****
+################################################################################## */
+
+// set map initial center location and zoom for map
+map.setView([30, 0], minimumZoom);
+
+initializeBaseMaps();
+initializeMapOverlaysAndUI(hideElevationDisplayDiv = false);
+
+
+
+/* ###############################################################################
+   ****  ADD EVENT LISTENERS TO OUR INTERACTIVE HTML UI ELEMENTS ****
+################################################################################## */
 
 // GPX IMPORT BUTTON ONCLICK HANDLER
 // a hacky way to deal with the fact that File input buttons can't be styled
@@ -62,5 +71,3 @@ document.getElementById('save-changes-button').onclick = saveChangesButtonHandle
 // click handlers for GeoJSON and GPX download buttons
 document.getElementById('geojson-download-button').onclick = downloadButtonHandler;
 document.getElementById('gpx-download-button').onclick = downloadButtonHandler;
-
-
