@@ -1,7 +1,7 @@
 /* ###################################################################
    ****  DEFINE VARIOUS GLOBAL VARIABLES LIKE OUR MAP AND ZOOM SETTINGS ****
 ###################################################################### */
-let initialRideIDsToDisplay = ["ride0001", "ride0003", "ride0007"];
+let initialRideIDsToDisplay = ["ride0001", "ride0003", "ride0007", "ride0008"];
 
 
 // "overlayLayerControl" layer is the L.control with checkboxes to hide/unhide rides on the map
