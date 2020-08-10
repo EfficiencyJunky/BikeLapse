@@ -25,8 +25,10 @@ function pauseYouTubeVideo(){
 let player;
 let framesPerSecond = 15;
 let frameOffset = 0;
-let rabbitUpdateInterval = 250; // time in milliseconds between updating the rabbit
-let rabbitSyncIntervalTimerID;
+let rabbitAndSliderSyncInterval = 250; // time in milliseconds between updating the rabbit
+let rabbitAndSliderSyncTimerID;
+
+let consoleLogsOn = false;
 
 // ################## MOCK CONSTRUCTOR ##################
 // ################## MOCK CONSTRUCTOR ##################
@@ -65,13 +67,17 @@ function onYouTubeIframeAPIReady() {
     player = new YT.Player('player', {
         height: String(videoHeight),
         width: String(videoWidth),
-        videoId: "Kb1YkCAQzmo",
+        videoId: "",
+        // Learn about the playerVars here: https://developers.google.com/youtube/player_parameters.html?playerVersion=HTML5
         playerVars: { 
                         // 'autoplay': 1, 
                         'controls': 0, 
                         'disablekb': 1,
                         'modestbranding': 1,
-                        'playsinline': 1,
+                        'playsinline': 1, // prevents full screen when pressing play on mobile
+                        'fs': 0, // prevents fullscreen button (doesn't matter if 'controls' is set to 0)
+                        'origin': "https://bikelapse.com",
+                        'widget_referrer': "https://bikelapse.com",
                         'rel': 0
                     },
         events: {
@@ -105,18 +111,19 @@ function onPlayerStateChange(event) {
 
     // an efficient way to structure "if/else" statements for purposes like this
     // converts the YT.PlayerState.{STATE_NAME} into human readable text
-    let logText =       playerState === YT.PlayerState.PLAYING   ? "playing" :
-                        playerState === YT.PlayerState.BUFFERING ? "buffering" :
-                        playerState === YT.PlayerState.PAUSED    ? "paused" :
-                        playerState === YT.PlayerState.ENDED     ? "ended" :
+    let logText =       playerState === YT.PlayerState.CUED      ? "cued" :
                         playerState === YT.PlayerState.UNSTARTED ? "unstarted" :
-                        playerState === YT.PlayerState.CUED      ? "cued" :
-                        String("GetPlayerState: " + player.getPlayerState());
+                        // playerState === YT.PlayerState.BUFFERING ? "buffering" :
+                        // playerState === YT.PlayerState.PLAYING   ? "playing" :
+                        // playerState === YT.PlayerState.PAUSED    ? "paused" :
+                        // playerState === YT.PlayerState.ENDED     ? "ended" :
+                        // String("GetPlayerState: " + player.getPlayerState());
+                        false;
 
     // let the people know what our lovely YouTube player is up to
-    // console.log(logText);
-
-    // return;
+    if(logText && consoleLogsOn){
+        console.log(logText);
+    }
 
 
     // playerState (event.data) gives us the state of the player (i.e. state=1 (playing), state=2 (paused)),
@@ -131,45 +138,26 @@ function onPlayerStateChange(event) {
     switch(playerState){
         // notice we don't have a "break;" for the "PLAYING" state below because we want to update the button in both the ended and paused states. Leaving out the break means the code in both cases will execute if the state is "PLAYING"
         case YT.PlayerState.PLAYING:
-            startRabbitSyncronizer();
+            startRabbitAndSliderSyncronizer();
         case YT.PlayerState.BUFFERING:
             playPauseButton.className = pauseButtonClass;
             break;
         // notice we don't have a "break;" below for the "ENEDED" state because we want to update the button in both the ended and paused states. Leaving out the break means the code in both cases will execute if the state is "ENDED"
         // (ended) -- what happens when the video finishes playing on its own
         case YT.PlayerState.ENDED:
-            if(videoHasBikeLapseSync){
-                printRabbitInfo();    
-            }
-            stopRabbitSyncronizer();
+            (consoleLogsOn === true) ? printRabbitInfo() : undefined; // can eventually remove this
+        // (unstarted) -- what happens when the video is initially loaded and ready, or is "stopped" by the player.stopVideo(); command
+        case YT.PlayerState.UNSTARTED:            
+            stopRabbitAndSliderSyncronizer();
         // (paused) -- what happens when the user pauses the video, or scrubs the playhead (we don't stop the rabbit syncronizer because we want the rabbit to continue updating if the user scrubs the playhead while the video is paused)
         case YT.PlayerState.PAUSED:
             playPauseButton.className = playButtonClass;
-            // stopRabbitSyncronizer();
             break;
-        // (unstarted) -- what happens when the video is initially loaded and ready, or is "stopped" by the player.stopVideo(); command
-        case YT.PlayerState.UNSTARTED:
-            playPauseButton.className = playButtonClass;
-            stopRabbitSyncronizer();
-            updateRabbitPosition();
-                    
-            // console.log("unstarted");
-            // if(videoHasBikeLapseSync){
-            //     console.log("updateRabbitPosition -- UNSTARTED");
-            //     updateRabbitPosition();
-            //     // syncRabbitMarkerToVideo("frameIndex", 0);
-            // }
-            // else{
-            //     updateVideoSliderPositionOnly();
-            // }
-            // syncRabbitMarkerToVideo("percentWatched", 0);
-            break;
-        // (cued) -- also happens when video is "stopped" by the player.stopVideo(); command (not currently making use of this obviously!)
+        // (cued) -- also happens when video is "stopped" by the player.stopVideo(); command (which we send when the ride is removed from the map)
         case YT.PlayerState.CUED:
-            // stopRabbitSyncronizer();
-            
-            // console.log("cued");            
             playPauseButton.className = playButtonClass;
+            // stopRabbitAndSliderSyncronizer();
+            updateRabbitAndSliderPosition();
             break;
         default:
             break;
@@ -184,7 +172,6 @@ function onPlayerStateChange(event) {
 function onPlayerError(e){
     console.log('ERROR YouTube API "onPlayerError"');
     console.log(e);
-
 }
 
 
@@ -193,32 +180,27 @@ function onPlayerError(e){
 // ################## PRIVATE RABBIT UPDATE METHODS ##################
 // ################## PRIVATE RABBIT UPDATE METHODS ##################
 
-// stops the currently running interval timer who's ID is stored in "rabbitSyncIntervalTimerID"
-function stopRabbitSyncronizer(){
-    // console.log("stopping rabbit syncronization (interval timer)");
+// stops the currently running interval timer who's ID is stored in "rabbitAndSliderSyncTimerID"
+function stopRabbitAndSliderSyncronizer(){
+    (consoleLogsOn === true) ? console.log("STOP - interval timer") : undefined;
     
     // garbage collection
-    clearInterval(rabbitSyncIntervalTimerID);
+    clearInterval(rabbitAndSliderSyncTimerID);
     
-    // this lets our "startRabbitSyncronizer()" function know we need a new one
-    rabbitSyncIntervalTimerID = undefined;
+    // this lets our "startRabbitAndSliderSyncronizer()" function know we need a new one
+    rabbitAndSliderSyncTimerID = undefined;
 }
 
 
-// starts an interval timer that updates the rabbit's position every "rabbitUpdateInterval" milliseconds
-function startRabbitSyncronizer() {
+// starts an interval timer that updates the rabbit's position every "rabbitAndSliderSyncInterval" milliseconds
+function startRabbitAndSliderSyncronizer() {
     // this "if" statement prevents us from generating additional interval timers in the case that we already have one running
     // we want to be careful not to generate more than one due to the way garbage collection works with these timers
-    // we just have to make sure that everytime we call clearInterval(ID) we need to set "rabbitSyncIntervalTimerID" to undefined
-    if(rabbitSyncIntervalTimerID === undefined){
-        // console.log("starting rabbit syncronization (interval timer)");
+    // we just have to make sure that everytime we call clearInterval(ID) we need to set "rabbitAndSliderSyncTimerID" to undefined
+    if(rabbitAndSliderSyncTimerID === undefined){
+        (consoleLogsOn === true) ? console.log("START - interval timer") : undefined;
         
-        // if(videoHasBikeLapseSync){
-            rabbitSyncIntervalTimerID = window.setInterval( updateRabbitPosition, rabbitUpdateInterval);
-        // }
-        // else{
-        //     rabbitSyncIntervalTimerID = window.setInterval( updateVideoSliderPositionOnly, rabbitUpdateInterval);
-        // }
+        rabbitAndSliderSyncTimerID = window.setInterval( updateRabbitAndSliderPosition, rabbitAndSliderSyncInterval);
     }
 
 }
@@ -228,12 +210,13 @@ function startRabbitSyncronizer() {
 // we get the frame index of the video, 
 // and use that as the index into the coordsArray
 // in the LineString of our GeoJSON file
-function updateRabbitPosition(){
+function updateRabbitAndSliderPosition(){
 
     //current time of the playhead (a float that is accurate to many milliseconds)
     let vCurrentTime = player.getCurrentTime();
     
-    if(videoHasBikeLapseSync){
+    if(showRabbitOnRoute){
+        
         // multiply that time by 15 frames per second (the framerate of BikeLapse videos)
         // rounding it first is smart tho. And for future we can add a frameOffset
         // to get our frame Index and then send that to the "syncRabbitMarkerToVideo" function
@@ -241,66 +224,59 @@ function updateRabbitPosition(){
         syncRabbitMarkerToVideo("frameIndex", frameIndex);
         // setRabbitLatLonFromFrameIndex();
 
-        // if we wanted to just calculate the percent of the video watched we can uncomment this code
+        // duration only is reported once the video starts playing
+        // if the video has just been cued, the duration will return 0
+        // we need to avoid divide by 0 so we add some extra safeguards here
         // let vDuration = player.getDuration();
-        // let percentWatched = vCurrentTime/vDuration;
+        // let percentWatched = (vDuration !== 0) ? vCurrentTime/vDuration : 0.0;
         // syncRabbitMarkerToVideo("percentWatched", percentWatched);
     }
 
+
     if(sliderAvailable){
         let vDuration = player.getDuration();
-        let percentWatched = (vDuration !== 0) ? vCurrentTime/vDuration : 0;
+
+        // duration only is reported once the video starts playing
+        // if the video has just been cued, the duration will return 0
+        // we need to avoid divide by 0 so we add some extra safeguards here
+        let percentWatched = (vDuration !== 0) ? vCurrentTime/vDuration : 0.0;
         slider.value = percentWatched*100;
     }
 }
 
-// this is how we move the rabbit around the map
-// we get the frame index of the video, 
-// and use that as the index into the coordsArray
-// in the LineString of our GeoJSON file
-// function updateVideoSliderPositionOnly(){
-//     if(sliderAvailable){
-//     //current time of the playhead (a float that is accurate to many milliseconds)
-//         let vCurrentTime = player.getCurrentTime();
-//         let vDuration = player.getDuration();
-//         let percentWatched = (vDuration !== 0) ? vCurrentTime/vDuration : 0;
-//         slider.value = percentWatched*100;
-//     }
-// }
 
 
-
-
-
-
-
+// $$$$$$$ REMOVE THIS IN FINAL VERSION $$$$$$$$$
 // prints a bunch of info for the rabbit
 function printRabbitInfo(){
 
-    let vDuration = player.getDuration();
-    let vCurrentTime = player.getCurrentTime();    
-    let currentFrameNum = Math.round(vCurrentTime * framesPerSecond) + frameOffset;
-    // let currentFrame = Math.round(vCurrentTime * framesPerSecond);
-    let percentWatched = vCurrentTime/vDuration;
-    let calculatedCurrentFrame = Math.round(percentWatched * rabbitCoordsArray.length);
+    if(showRabbitOnRoute){
+        let vDuration = player.getDuration();
+        let vCurrentTime = player.getCurrentTime();    
+        let currentFrameNum = Math.round(vCurrentTime * framesPerSecond) + frameOffset;
+        // let currentFrame = Math.round(vCurrentTime * framesPerSecond);
+        
+        let percentWatched = (vDuration !== 0) ? vCurrentTime/vDuration : 0.0;
+        let calculatedCurrentFrame = Math.round(percentWatched * rabbitCoordsArray.length);
 
-    syncRabbitMarkerToVideo("frameIndex", currentFrameNum);
-    // syncRabbitMarkerToVideo("percentWatched", percentWatched);
+        syncRabbitMarkerToVideo("frameIndex", currentFrameNum);
+        // syncRabbitMarkerToVideo("percentWatched", percentWatched);
 
-    console.log("######### STATS 1 ###########");
-    console.log("video duration:", vDuration);
-    console.log("current time:", vCurrentTime);
-    console.log("% watched:", (percentWatched * 100).toFixed(2) + "%");
-    
-    
-    console.log("######### STATS 2 ###########");
-    console.log("current frame index (fps):", currentFrameNum);
-    console.log("coords length:", rabbitCoordsArray.length);
-    console.log("calculated frame index (% watched * coordslength):", calculatedCurrentFrame);
-    
-    console.log("difference ((% watched * coords length) - (frame index * 15fps)):", calculatedCurrentFrame - currentFrameNum);
+        console.log("######### STATS 1 ###########");
+        console.log("video duration:", vDuration);
+        console.log("current time:", vCurrentTime);
+        console.log("% watched:", (percentWatched * 100).toFixed(2) + "%");
+        
+        
+        console.log("######### STATS 2 ###########");
+        console.log("current frame index (fps):", currentFrameNum);
+        console.log("coords length:", rabbitCoordsArray.length);
+        console.log("calculated frame index (% watched * coordslength):", calculatedCurrentFrame);
+        
+        console.log("difference ((% watched * coords length) - (frame index * 15fps)):", calculatedCurrentFrame - currentFrameNum);
 
-    console.log(getRabbitCoords());
+        console.log(getRabbitCoords());
+    }
 }
 
 
@@ -342,11 +318,13 @@ function videoTransportButtonsHandler(event) {
 // at which point we want to seek the video playhead to the placement of the slider
 // and we can allow the slider to continue being updated by the YouTube player again
 slider.onchange = function(event){
-
+    
     let sliderValue = event.target.value;
     let vDuration = player.getDuration();
 
-    player.seekTo(vDuration*sliderValue/100, true);
+    // the second argument tells the video to keep playing from the new position in the case that it was already playing before we told it to seek
+    let vTimeToSeekTo = vDuration*sliderValue/100;
+    player.seekTo(vTimeToSeekTo, true);
     
     sliderAvailable = true;
 }

@@ -305,10 +305,21 @@ function legendOnAdd(map) {
 
     mapIconsKeys.map( (key, i) => {
 
-        labels.push('<i class="' + mapIcons[key].iconURLorClass + '"></i>' + (key ? key : undefined));
+        let legendClass;
+
+        // if the mapIcon has a legendClass defined, use it
+        if(typeof(mapIcons[key].legendClass) !== 'undefined'){
+            legendClass = mapIcons[key].legendClass;
+        }
+        // otherwise use the value in the iconURLorClass (same one we use for a divIcon most likely)
+        else{
+            legendClass = mapIcons[key].iconURLorClass;
+        }
+
+        labels.push('<i class="' + legendClass + '"></i>' + mapIcons[key].displayText);
 
         // this is how we'd do it if we didn't want to use the <i> (bullet) element
-        // labels.push('<span class="' + mapIcons[key].iconURLorClass + ' legend-icon-positioning"></span>' + (key ? key : 'undefined'));
+        // labels.push('<span class="' + legendClass + ' legend-icon-positioning"></span>' + (key ? key : 'undefined'));
     });
     
     // takes the "labels" list and turns it into a single string with "<br>" appended between each item in the list
@@ -319,12 +330,22 @@ function legendOnAdd(map) {
     // create a horizontal line between the mapIcons section of the legend and the routes section
     div.innerHTML += '<hr>';
 
-    // And this time just using the += because laziness
+    // Create a title for the routes section
     div.innerHTML += '<strong>Route Types</strong>' + '<br>';
-    div.innerHTML += '<span class="legend-route-completed-icon"></span>' +          '<span>' + routeLineProperties.completed.legendText + '</span>' + '<br>';
-    div.innerHTML += '<span class="legend-route-suggested-icon"></span>' +          '<span>' + routeLineProperties.suggested.legendText + '</span>';// + '<br>';
-    // div.innerHTML += '<span class="legend-route-variant-normal-icon"></span>' +     '<span>' + routeLineProperties.variantNormal.legendText + '</span>' + '<br>';
-    // div.innerHTML += '<span class="legend-route-variant-difficult-icon"></span>' +  '<span>' + routeLineProperties.variantDifficult.legendText + '</span>';
+
+    // add the HTML to create the routes info in the legend
+    routeLineKeys = Object.keys(routeLineProperties);
+
+    routeLineKeys.forEach( (key,i) => {
+        if(key !== "default" && key !== "selected"){
+
+            let lineColor = routeLineProperties[key].lineColor;
+            let legendText = routeLineProperties[key].legendText
+
+            div.innerHTML += `<span class="${routeIconBaseClass}" style="background:${lineColor}"></span>` +
+                             `<span>${legendText}</span>` + '<br>';
+        }
+    });
     
     return div;
 }

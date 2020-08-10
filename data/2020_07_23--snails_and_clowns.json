@@ -7029,9 +7029,9 @@
     ],
     "metadata": {
         "rideName": "Snails and Clowns",
-        "rideType": "completed",
+        "rideType": "regular",
         "hasBikeLapseSync": false,
-        "videoEmbedID": "",
+        "youTubeVideoID": "",
         "stravaURL": "https://www.strava.com/activities/3806786607",
         "googleMapURL": "",
         "lineColor": "rgba(62, 146, 204, 1)",

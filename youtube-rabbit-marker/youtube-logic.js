@@ -8,7 +8,7 @@ let rabbitSyncIntervalTimerID;
 let videoHeight = 200;
 let videoWidth = Math.round(videoHeight * 1.777777);
 let bindPopupProperties = {maxWidth: videoWidth + 40};
-let videoEmbedCode = initialRideJSON.metadata.videoEmbedID;
+let placeholderVideoID = initialRideJSON.metadata.youTubeVideoID;
 
 
 // for selecting/modifying buttons
@@ -38,12 +38,12 @@ function onYouTubeIframeAPIReady() {
 
 
 // 2.2. This function creates an actual YT.Player object
-//      and loads the video stored in "videoEmbedCode"
+//      and loads the video stored in "placeholderVideoID"
 function createYouTubeVideoPlayer(){
     player = new YT.Player('player', {
         height: String(videoHeight),
         width: String(videoWidth),
-        videoId: videoEmbedCode,
+        videoId: placeholderVideoID,
         playerVars: { 
                         // 'autoplay': 1, 
                         'controls': 0,

@@ -4,7 +4,6 @@
 let initialRideIDsToDisplay = ["ride0001", "ride0003", "ride0007"];
 
 
-
 // "overlayLayerControl" layer is the L.control with checkboxes to hide/unhide rides on the map
 // we can add it to the map first with baseLayer and overlayLayer arguments set as "undefined"
 // then as we asyncronously read in the rideJSON files we will add the rides to it
@@ -93,7 +92,6 @@ bikeRideJSONFileNames.forEach( (jsonFileName, i) => {
       // contained in the overlayLayerControl 
       geoJsonLayerGroup.on('remove', geoJsonLayerGroupRemoved);
 
-      // console.log(geoJsonLayerGroup);
 
       // ****************************************************************************
       // ADD THE GEOJSON LAYER GROUP TO THE OVERLAY LAYER CONTROL
@@ -134,59 +132,13 @@ function geoJsonLayerGroupClicked(event){
     return false;
   }
   else if(highlightedRideID !== clickedRideID){
-
-    // *************************************************************
-    //  GET ALL NECESSARY INFORMATION TO INFORM WHAT NEEDS TO BE DONE
-    // *************************************************************
     
-    // get the metadata for the ride
-    let rideMetadata = ridesData[clickedRideID].metadata;
+    displaySelectedRide(clickedRideID, geoJsonLGroup);
 
-    // get the feature who's name is ROUTE and who's type is "LineString"
-    // so we can use its coordinatesArray to create the elevationHighlightGeoJSON we'll use to create the elevationHighlightLayer
-    let lineStringFeature = getROUTELineStringFeatureFromGeoJsonLayerGroup(geoJsonLGroup);
-
-
-    // *************************************************************
-    //  UPDATE THE ELEVATION DISPLAY
-    // *************************************************************
-    showElevationForLineStringFeature(lineStringFeature);
-
-    // make sure the div that contains the elevationControl display is not hidden
-    elevationDisplayDiv.hidden = false;
-
-    // *************************************************************
-    //  UPDATE THE YOUTUBE VIDEO PLAYER / RABBIT MARKER
-    // *************************************************************
+    if(ridesData[clickedRideID].metadata.hasBikeLapseSync){
+      reCenterMapWithBounds(geoJsonLGroup);
+    }
     
-    // returns true if the videoEmbedID is not an empty string
-    let youTubeVideoID = rideMetadata.videoEmbedID;
-    let hasValidVideoID = (youTubeVideoID !== "");
-
-    // lets us know if this video is syncronized BikeLapse style (meaning it needs a rabbit)
-    let hasBikeLapseSync = rideMetadata.hasBikeLapseSync;
-    videoHasBikeLapseSync = (typeof(hasBikeLapseSync) !== undefined) ? hasBikeLapseSync : false;
-
-    // console.log("video has BLS?", videoHasBikeLapseSync);
-
-    // load the youtube video and initialize the rabbit
-    if(hasValidVideoID){
-      // the youTube player needs to know if the video has bikeLapse sync
-      loadYouTubeVideo(youTubeVideoID);
-    }
-
-    if(hasValidVideoID && videoHasBikeLapseSync){
-      rabbitCoordsArray = lineStringFeature.geometry.coordinates;
-      syncRabbitMarkerToVideo("frameIndex", 0);    
-    }    
-    else {
-      rabbitCoordsArray = undefined;
-      rabbitMarker.remove();
-    }
-
-    // set the visibility of the videoDisplayDiv according to "hasValidVideoID"
-    videoDisplayDiv.hidden = !hasValidVideoID;
-
     // lastly, set our highlightedRideID to the clickedRideID
     highlightedRideID = clickedRideID;
   }
@@ -202,7 +154,7 @@ function geoJsonLayerGroupClicked(event){
 // *************************************************************
 // when a geoJsonLayer (group) is removed, check and see if it is the one
 // that is currently being highlighted (the last one to be clicked)
-// if it is, we want to clear and remove all UI and display elements
+// if it is, we want to reset and remove all UI and display elements
 function geoJsonLayerGroupRemoved(event){
   // event.target gives us the entire GeoJSON LayerGroup
   // so we use the "getLayers()" function to grab all the layers and since
@@ -211,26 +163,25 @@ function geoJsonLayerGroupRemoved(event){
   let removedRideID = event.target.getLayers()[0].feature.properties.rideID;
 
   if(removedRideID === highlightedRideID) {
-    // the order here is important videoHasBikeLapseSync must go first
-    // the youtube API is slow to respond and worse yet, the rabbit update interval timer
-    // might trigger after we've stopped the video and done everything else
-    videoHasBikeLapseSync = false;
 
-    // the rest doesn't matter
-    stopYouTubeVideo();
-    clearElevationDisplay();
+    // first remove the elevationFollowMarkerLayer from the map
+    elevationFollowMarkerLayer.remove();
     elevationDisplayDiv.hidden = true;
-    videoDisplayDiv.hidden = true;
-    rabbitMarker.remove();
 
+    // if the videoDisplayDiv is not hidden, then the ride has a video playing
+    // in this case we need to stop the video, remove the rabbit if it is on the map
+    // and then set the videoDisplayDiv's hidden attribute to true
+    if(videoDisplayDiv.hidden !== true){
+      // the order here is important showRabbitOnRoute = false must go first
+      // the youtube API is slow to respond and so the rabbit update interval timer
+      // might trigger after we've stopped the video and done everything else
+      showRabbitOnRoute = false;      
+      stopYouTubeVideo();      
+      rabbitMarker.remove();
+      videoDisplayDiv.hidden = true;
+    }
+
+    // reset the highlightedRideID
+    highlightedRideID = "";
   }
 }
-
-// leaflet-functions.js:420 Uncaught TypeError: Cannot read property 'length' of undefined
-//     at syncRabbitMarkerToVideo (leaflet-functions.js:420)
-//     at updateRabbitPosition (youtube-logic.js:232)
-
-
-
-
-

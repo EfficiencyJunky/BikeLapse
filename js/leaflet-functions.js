@@ -29,15 +29,18 @@ function filterFunction (geoJsonFeature) {
     // include all Point features who's names appear as keys
     // in the global mapIcons settings object
     case 'Point':
-
-      if(mapIconsKeys.includes(geoJsonFeature.properties.name)){
-        return true;
+      switch (geoJsonFeature.properties.name) {
+        case 'DETAILS': 
+        case 'START':
+        case 'FINISH':
+        // case 'PHOTO_OP':
+        // case 'POI':
+          return true;
       }
-      
-      break;
+    default:
+      return false;
   }
-
-  return false;
+  
 }
 
 
@@ -47,26 +50,19 @@ function filterFunction (geoJsonFeature) {
 // by using the following code: "return L.marker(latlng);"
 function pointToLayerFunction(geoJsonPoint, latlng) {
 
-  let markerType = geoJsonPoint.properties.name;
+  let pointName = geoJsonPoint.properties.name;
+
+  // if the pointName is not "DETAILS" then use it for the markerType
+  // otherwise, check to see if "hasBikeLapseSync" is true in the metadata for the ride
+  // and set the markerType accordingly
+  let markerType =  (pointName !== "DETAILS") ? pointName :
+                    (ridesData[currentRideID].metadata.hasBikeLapseSync) ? "DETAILS-BIKELAPSE" :
+                    "DETAILS-REGULAR";
+
+  // the markerType will be used to find the corresponding Icon in the mapIcons global settings object
+  let icon = createMarkerIcon(markerType);
   
-  switch (markerType) {
-    // case 'DETAILS': 
-    //   return L.marker(latlng);
-    //   break;
-    case 'START':
-    case 'FINISH':
-    case 'PHOTO_OP':
-    case 'POI':
-
-      let myIcon = createMarkerIcon(markerType);
-
-      return L.marker(latlng, {icon: myIcon});
-      break;
-    default:
-       // this is the default functionality for the pointToLayerFunction described in the Leaflet.js documentation. 
-       // removing it will effectively remove all points that are not in the switch statement above
-      return L.marker(latlng);
-  }
+  return L.marker(latlng, {icon: icon});
 
 }
 
@@ -193,9 +189,6 @@ function createMarkerIcon(markerType){
                         iconSize: markerProperties.iconSize,
                         iconAnchor: markerProperties.iconAnchor,
                         popupAnchor: markerProperties.popupAnchor,
-                        // shadowUrl: 'my-icon-shadow.png',
-                        // shadowSize: [68, 95],
-                        // shadowAnchor: [22, 94]
                       });
       // break;
     default:
@@ -222,8 +215,8 @@ function createPopupHTMLDetailsPoint(properties){
   let rideMetadata = ridesData[currentRideID].metadata;
   let rideFeatures = ridesData[currentRideID].features;
 
-  // let videoEmbedID = validate(rideMetadata.videoEmbedID);
-  // let videoEmbedHTML = (videoEmbedID !== '' ? videoEmbedParams.firstHalf + videoEmbedID + videoEmbedParams.secondHalf : 'no video URL<br>');
+  // let youTubeVideoID = validate(rideMetadata.youTubeVideoID);
+  // let videoEmbedHTML = (youTubeVideoID !== '' ? videoEmbedParams.firstHalf + youTubeVideoID + videoEmbedParams.secondHalf : 'no video URL<br>');
 
   let rideName = validate(rideMetadata.rideName);
 
@@ -276,7 +269,7 @@ function validate(value){
 // creates the HTML code necessary for the "START" and "FINISH" Popups
 // probably need to re-name this function
 function createPopupHTMLBasicPoints(properties){
-  let markerTypeText = mapIcons[properties.name].markerText;
+  let markerTypeText = mapIcons[properties.name].displayText;
 
   let rideName = ridesData[currentRideID].metadata.rideName;
   
@@ -284,201 +277,6 @@ function createPopupHTMLBasicPoints(properties){
           // "<b>Location Details:</b><br>" + properties.description;
 
 }
-
-
-
-
-// #############################################################################
-// *********  ELEVATION DISPLAY FUNCIONS ********************************
-// #############################################################################
-// This function manages the adding and removing of the
-// elevation control display and highlight geojson overlay layer
-function showElevationForLineStringFeature(lineStringFeature){
-
-  // clear the display on the elevationControl
-  elevationControl.clear();
-
-  // if a highlight layer already exists, we need to remove it, 
-  // otherwise it will stay on the map forever
-  if(elevationHighlightLayer !== undefined){
-    elevationHighlightLayer.remove();
-    // elevationHighlightLayer.clearLayers();
-  }
-
-  let elevationHighlightGeoJSON = {
-    "name":"HighlightLayerOverlay",
-    "type":"FeatureCollection",
-    "features":[
-        {
-            "name": "HIGHLIGHT_ROUTE",
-            "type":"Feature",
-            "geometry": {
-                "type":"LineString",
-                "coordinates": lineStringFeature.geometry.coordinates
-            },
-            "properties":null
-        }
-    ]
-  };        
-
-  // assign a new geoJson layer with the 'elevationHighlightGeoJSON' data to the 'elevationHighlightLayer' object
-  // this also adds the data to display in the elevationControl
-  elevationHighlightLayer = L.geoJson(elevationHighlightGeoJSON,{
-    onEachFeature: elevationControl.addData.bind(elevationControl),
-    style: { fillOpacity: 0.0, weight: routeLineProperties.highlightLayer.lineWeight, opacity: 1, color: routeLineProperties.highlightLayer.lineColor}
-  });
-
-  // add the highlight layer to the map
-  elevationHighlightLayer.addTo(map);
-
-
-}
-
-
-// Sometimes we need to clear the elevation display 
-// everytime we click on a different ride than we had previously selected
-// and everytime we remove the ride from the map that is currently showing its elevation
-// in that case we want to remove the elevation control along with the layer
-function clearElevationDisplay(){
-
-  if(elevationControl.getContainer() !== null){
-      // first remove the elevationHighlightLayer
-      elevationHighlightLayer.remove();
-
-      // set it to undefined so we know it needs to be re-initialized
-      elevationHighlightLayer = undefined;
-
-      // reset the highlightedRideID
-      highlightedRideID = "";
-
-      // clear the elevationControl display
-      elevationControl.clear();
-
-  }
-  else{
-    // console.log("rideIDs are equal? ", removedRideID === highlightedRideID);
-    console.log("elevationControl container exists? ", elevationControl.getContainer() !== null);
-  }
-
-}
-
-
-// #############################################################################
-// *********  YOUTUBE VIDEO + RABBIT DISPLAY FUNCTIONS ************************
-// #############################################################################
-// This function manages the adding and removing of the
-// youtube video and rabbit marker
-// function loadYouTubeVideoForRideID(clickedRideID){
-
-//   let youTubeVideoID = ridesData[clickedRideID].metadata.videoEmbedID;
-
-//   // We only want to run this logic if we are clicking on a different
-//   // ride than we had previously clicked on, or if we haven't clicked
-//   // on a ride at all yet and the videoID is valid
-//   if(youTubeVideoID !== ""){
-//     loadYouTubeVideo(youTubeVideoID);
-//     return true;
-//   }
-
-//   return false;
-// }
-
-
-// function prepareRabbitForRide(clickedRideID){
-
-//   videoHasBikeLapseSync = ridesData[clickedRideID].metadata.hasBikeLapseSync;
-
-//   if(videoHasBikeLapseSync){
-//     let routeLineString = getROUTELineStringFromGeoJson(ridesData[clickedRideID]);
-//     rabbitCoordsArray = routeLineString.geometry.coordinates;
-//     syncRabbitMarkerToVideo("frameIndex", 0);    
-//   }
-//   else{
-//     rabbitCoordsArray = undefined;
-//     rabbitMarker.remove();
-//   }
-
-// }
-
-
-
-function syncRabbitMarkerToVideo(valType, value){
-
-  let latlon;
-
-  // get the latlon from the coordsArray based on the
-  // value type that is passed in
-  switch(valType){
-      case "latlon":
-          latlon = value;
-          break;
-      // notice we don't use a break for "percentWatched" 
-      // because we also want the logic from "frameIndex" to be executed
-      case "percentWatched":
-          value = Math.round(value * rabbitCoordsArray.length);
-      case "frameIndex":
-          let frameIndex = (value < rabbitCoordsArray.length) ? value : rabbitCoordsArray.length - 1;
-          latlon = rabbitCoordsArray[frameIndex].slice(0, 2).reverse();
-          break;
-  }
-
-  // set the latlon of the rabbitMarker
-  rabbitMarker.setLatLng(latlon);
-
-  // if the rabbitMarker isn't visible, make it so
-  if(!map.hasLayer(rabbitMarker)) {
-    // console.log("adding rabbit");
-    rabbitMarker.addTo(map);
-  } 
-
-}
-
-// simple method to print out the rabbit Marker object for debugging
-function getRabbitCoords(){    
-  return rabbitMarker._latlng;
-}
-
-
-// *****************************************************************
-//     RE-CENTER/ZOOM THE MAP WITH THE DETAILS POINT AS THE CENTER
-// *****************************************************************
-
-function reCenterMap(rideIDtoCenterOn){
-  // get the latlon of the DETAILS point in the Features array of the GeoJSON
-  let centerLatLon = getLatLonOfPointInGeoJson(ridesData[rideIDtoCenterOn], "DETAILS");
-
-  // this is supposed to animate the pan and zoom but doesn't always seem to do this
-  map.flyTo(centerLatLon, defaultRideViewZoom, {animate: true, duration: 1});
-}
-
-
-
-
-// ****************************************************************
-//     VARIOUS HELPER FUNCTIONS
-// ****************************************************************
-// get the LineString Feature from the Layers array 
-// of the L.GeoJson object
-// we pass in the array of layers, each of which has a "feature" object in it
-// along with all of the other information associated with that layer
-// this feature object is one of the features from our original GeoJSON object 
-function getROUTELineStringFeatureFromGeoJsonLayerGroup(geoJsonLGroup){
-
-  let lineStringLayer = geoJsonLGroup.getLayers().find ( (layer) => 
-                                                              layer.feature.properties.name === "ROUTE"
-                                                              && layer.feature.geometry.type === "LineString"
-                                                        );
-  return lineStringLayer.feature;
-                      
-}
-
-
-
-
-
-
-
-
 
 
 

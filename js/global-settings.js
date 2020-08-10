@@ -13,6 +13,11 @@ let minimumZoom = 10;
 let maximumZoom = 18;
 let defaultRideViewZoom = 12;
 
+// when clicking on a BikeLapse ride, we will zoom into the ride
+// these two settings will tell the zoom function to add padding
+let paddingTopLeft = [450, 0]; //[leftside, top]
+let paddingBottomRight = [100, 0]; //[rightside, bottom]
+
 // settings for map UI elements
 let mapUISettings = {
   "baseLayerCtl":     { "position": "topright",        "collapsed": true   },
@@ -25,15 +30,16 @@ let mapUISettings = {
 
 
 
+// youtube video embed size variables
+let videoHeight = 250;
+let videoWidth = Math.round(videoHeight * 1.777777);    // 250 * 1.77777 == 444 just so you know
+let bindPopupProperties = {maxWidth: videoWidth + 40};
 
-
-
-
-
-
-
-
-
+// embed HTML code used to create the embeded video objects
+// let videoEmbedParams = {
+//   firstHalf: '<iframe width="' + videoWidth + '" height="' + videoHeight + '" src="https://www.youtube.com/embed/',
+//   secondHalf: '" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>'
+// };
 
 
 /* ###################################################################
@@ -92,7 +98,7 @@ let elevationControlOptions = {
 
 // the layer that holds the information for the rabit display for the elevation control
 // this is the layer that will be added and removed as data is added and removed from the elevationControl layer
-let elevationHighlightLayer;
+let elevationFollowMarkerLayer;
 
 
 // ##### ABRACADABRA ####### // ##### ABRACADABRA #######
@@ -108,7 +114,7 @@ let rabbitMarkerOptions = {
   scaleFactor: 0.2
 };
 let rabbitCoordsArray;
-let videoHasBikeLapseSync = false;
+let showRabbitOnRoute = false;
 
 // ##### ABRACADABRA ####### // ##### ABRACADABRA #######
 // ##### ABRACADABRA ####### // ##### ABRACADABRA #######
@@ -120,16 +126,7 @@ let videoHasBikeLapseSync = false;
    ****  VARIOUS OTHER INDIVIDUAL VARIABLES AND OBJECTS FOR SETTINGS
 ###################################################################### */
 
-// youtube video embed size variables
-let videoHeight = 250;
-let videoWidth = Math.round(videoHeight * 1.777777);
-let bindPopupProperties = {maxWidth: videoWidth + 40};
 
-// embed HTML code used to create the embeded video objects
-let videoEmbedParams = {
-  firstHalf: '<iframe width="' + videoWidth + '" height="' + videoHeight + '" src="https://www.youtube.com/embed/',
-  secondHalf: '" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>'
-};
 
 // ICON PROPERTIES AND HOW THEY TRANSLATE TO CSS:
     // iconSize: [24, 24]
@@ -140,28 +137,34 @@ let videoEmbedParams = {
         // creates css --> margin-top: -12px;
 
 // any rows that appear in the below object will show up in the legend and also be added to each ride if applicable
+// https://maps.gstatic.com/mapfiles/ms2/micons/POI.png
+// https://maps.gstatic.com/mapfiles/ms2/micons/camera.png
+// https://maps.gstatic.com/mapfiles/ms2/micons/red.png
+// https://maps.gstatic.com/mapfiles/ms2/micons/green.png
+let defaultIconURL = "https://unpkg.com/leaflet@1.6.0/dist/images/marker-icon.png";
+let bikelapseIconURL = "../img/favicon-32x32.png";
+// let bikelapseIconURL = "https://maps.gstatic.com/mapfiles/ms2/micons/cycling.png";
+
+
 let mapIcons = {
-  "START":    {markerText: "START",     iconType: "divIcon",  iconURLorClass: "start-icon",             iconSize: [24, 24], iconAnchor: [12, 12], popupAnchor: [1, -8]},
-  "FINISH":   {markerText: "FINISH",    iconType: "divIcon",  iconURLorClass: "finish-icon",            iconSize: [24, 24], iconAnchor: [12, 12], popupAnchor: [1, -8]},
-  "DETAILS":  {markerText: "DETAILS",   iconType: "default",  iconURLorClass: "legend-default-icon",    iconSize: [32, 32], iconAnchor: [16, 32], popupAnchor: [0, -32]},
-  // "START":    {markerText: "START",     iconType: "divIcon",  iconURLorClass: "https://maps.gstatic.com/mapfiles/ms2/micons/green.png",   iconSize: [32, 32], iconAnchor: [16, 32], popupAnchor: [0, -32]},
-  // "FINISH":   {markerText: "FINISH",    iconType: "divIcon",  iconURLorClass: "https://maps.gstatic.com/mapfiles/ms2/micons/red.png",     iconSize: [32, 32], iconAnchor: [16, 32], popupAnchor: [0, -32]},
-  // "PHOTO_OP": {markerText: "PHOTO OP",  iconType: "icon",     iconURLorClass: "https://maps.gstatic.com/mapfiles/ms2/micons/camera.png",  iconSize: [38, 38], iconAnchor: [22, 37], popupAnchor: [-3, -30]},
-  // "POI":      {markerText: "POI",       iconType: "icon",     iconURLorClass: "https://maps.gstatic.com/mapfiles/ms2/micons/POI.png",     iconSize: [38, 38], iconAnchor: [22, 37], popupAnchor: [-3, -38]}
+  "START":    {displayText: "START",   iconType: "divIcon",  iconURLorClass: "start-icon", iconSize: [24, 24], iconAnchor: [12, 12], popupAnchor: [1, -8]},
+  "FINISH":   {displayText: "FINISH",  iconType: "divIcon",  iconURLorClass: "finish-icon", iconSize: [24, 24], iconAnchor: [12, 12], popupAnchor: [1, -8]},
+  "DETAILS-BIKELAPSE":  {displayText: "BIKELAPSE", iconType: "regular",  iconURLorClass: bikelapseIconURL, iconSize: [32, 32], iconAnchor: [16, 32], popupAnchor: [0, -32], legendClass:"bikelapse-icon",},
+  "DETAILS-REGULAR":  {displayText: "REGULAR", iconType: "regular",  iconURLorClass: defaultIconURL, iconSize: [18, 30], iconAnchor: [18/2, 30], popupAnchor: [0, -30], legendClass:"default-icon"},
 }
 
 let mapIconsKeys = Object.keys(mapIcons);
 
 // white -- "rgba(255, 255, 255, 1)"
+// carol's bikelapse route color -- "rgb(53, 233, 218)"
 let routeLineProperties = {
-  "completed":          {"legendText": "Completed Route",        "lineFillOpacity": 1, "lineWeight": 4.0, "lineOpacity": 1, "lineColor": "rgba(62, 146, 204, 1)"    },
-  "suggested":          {"legendText": "Suggested Route",        "lineFillOpacity": 1, "lineWeight": 4.0, "lineOpacity": 1, "lineColor": "rgba(251, 255, 0, 1)"     },
-  "variantNormal":      {"legendText": "Variant - Normal",       "lineFillOpacity": 1, "lineWeight": 4.0, "lineOpacity": 1, "lineColor": "green"                    },
-  "variantDifficult":   {"legendText": "Variant - Difficult",    "lineFillOpacity": 1, "lineWeight": 4.0, "lineOpacity": 1, "lineColor": "red"                      },
-  "highlightLayer":     {"legendText": "Selected Route",         "lineFillOpacity": 1, "lineWeight": 0.5, "lineOpacity": 1, "lineColor": "black"                    },
-  "default":            {"legendText": "Default Route Color",    "lineFillOpacity": 1, "lineWeight": 4.0, "lineOpacity": 1, "lineColor": "rgba(155, 155, 155, 1)"   }
+  "bikelapse": {"legendText": "BikeLapse",      "lineFillOpacity": 1, "lineWeight": 4.0, "lineOpacity": 1, "lineColor": "rgb(236, 85, 85)" },
+  "regular":   {"legendText": "Regular",        "lineFillOpacity": 1, "lineWeight": 4.0, "lineOpacity": 1, "lineColor": "rgba(62, 146, 204, 1)" },
+  "selected":  {"legendText": "Selected Route", "lineFillOpacity": 1, "lineWeight": 0.5, "lineOpacity": 1, "lineColor": "black" },
+  "default":   {"legendText": "Default Color",  "lineFillOpacity": 1, "lineWeight": 4.0, "lineOpacity": 1, "lineColor": "rgba(155, 155, 155, 1)" }
 };
 
+let routeIconBaseClass = "legend-route-icon";
 
 
 /* ##########################################################################################################

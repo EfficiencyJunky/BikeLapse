@@ -39,11 +39,11 @@ function swapFunc(){
 
     let geoJsonSwapped = swapRideMapData();
 
-    let youTubeVideoID = geoJsonSwapped.metadata.videoEmbedID;
+    let youTubeVideoID = geoJsonSwapped.metadata.youTubeVideoID;
 
 
     if(!player){
-        videoEmbedCode = youTubeVideoID;
+        placeholderVideoID = youTubeVideoID;
         createYouTubeVideoPlayer();
     }
     else{

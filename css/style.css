@@ -19,16 +19,26 @@
 }
 
 /* reference the URL of the default icon used by leaflet and set its size so we can replace a list bullet with the imag  */
-.legend-default-icon {
+.default-icon {
   /* background-image: url('https://maps.gstatic.com/mapfiles/ms2/micons/green.png'); */
   background-image: url('https://unpkg.com/leaflet@1.6.0/dist/images/marker-icon.png');
   background-size: 12px;
   background-repeat: no-repeat;
-  background-position: 5px;
+  background-position: 5px;  
 }
 
+.bikelapse-icon {
+  /* background-image: url('https://maps.gstatic.com/mapfiles/ms2/micons/green.png'); */
+  background-image: url('../img/favicon-32x32.png');
+  background-size: 20px;
+  background-repeat: no-repeat;
+  color: rgb(236, 85, 85);
+  /* background-position: bottom;  */
+}
+
+
 /* create the line used to represent a "route" in the legend */
-.legend-route-completed-icon, .legend-route-suggested-icon, .legend-route-variant-normal-icon, .legend-route-variant-difficult-icon { 
+.legend-route-icon { 
   width: 30px;
   height: 5px;
   /* background:rgba(62, 146, 204, 1); */
@@ -40,23 +50,6 @@
   opacity: 1;
 }
 
-.legend-route-completed-icon { 
-  background: rgba(62, 146, 204, 1);
-}
-
-.legend-route-suggested-icon { 
-  background: rgb(251, 255, 0);
-}
-
-/* create the line used to represent a "route" in the legend */
-.legend-route-variant-normal-icon { 
-  background: green;
-}
-
-/* create the line used to represent a "route" in the legend */
-.legend-route-variant-difficult-icon { 
-  background: red;
-}
 
 
 /* ************************** LEGEND STYLING ************************** */
@@ -156,3 +149,116 @@ we would also need to add this class along with the usual class for each icon */
   margin-inline-end: 0px;
   font-weight: bold;
 }
+
+
+/* YOUTUBE PLAYER CSS */
+.transport-controls{
+  margin: 5px 0px;
+}
+
+#player-parent{
+  padding: 8px 8px 4px 8px;
+  /* font: 12px/14px Arial, Helvetica, sans-serif; */
+  /* background: white; */
+  background: rgba(255,255,255,0.8);
+  box-shadow: 0 0 15px rgba(0,0,0,0.2);
+  border-radius: 5px;
+}
+
+#play-pause, #stop{
+  font-family: Arial, Helvetica, sans-serif;
+  height: 2rem;
+  width: 2rem; /* if using "►" or "⎮⎮" for button text */
+  /* width: 4rem; */ /* if using "PLAY" or "PAUSE" for button text */
+  text-align: center;
+  vertical-align: middle;
+  padding: 0px 1px 0px 0px;
+  
+  /* background-color: #4CAF50;
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;       */
+  border-radius: 4px;
+  background-color: #4CAF50; /* Green */
+  border: none;
+  color: white;
+  /* padding: 15px 32px; */
+  /* text-align: center; */
+  text-decoration: none;
+  display: inline-block;
+  /* font-size: 16px;       */
+  /* background-color: "green"; */
+
+  /* opacity: 0.9; */
+  /* box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19); */
+  cursor: pointer;
+}
+
+#stop{
+  margin-left: 5px;
+}
+
+#play-pause:hover, #stop:hover, .slider::-webkit-slider-thumb:hover  {
+  /* opacity: 1; */
+  background: #3c8b3e;
+}
+
+/* HTML SYMBOLS LIST: http://www.scrollseek.com/wd/html_symbols_complete.html */
+/* ᐅ - 5125 - play button option 1 */
+/* ► - 9658 - play button option 2 */
+/* ⏯ - 9199 - play button option 3 */
+/* ⎮ - 9134 - use 2 for pause */
+/* ຩ - 3753 - stop button option 1 */
+/* ▇ - 9607 - stop button option 2 */
+/* ⏹ - 9209 - stop button option 3 */
+
+#play-pause.play::after{
+    content: "►";
+}
+
+#play-pause.pause:after{
+    content: "⎮⎮";
+}
+
+.slider{
+  -webkit-appearance: none;
+  width: 80%; /* Width of the outside container */
+  vertical-align: middle;
+  margin-left: 5px;
+  height: 1rem; /* height of the bar the "thumb" slides on */
+  border-radius: 5px;
+  background: #ffffff;
+  /* outline: none; */
+  opacity: 0.85;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
+}
+
+.slider:hover{
+  opacity: 1;
+}
+
+
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 0.8rem;
+  height: 2rem;
+  border-radius: 25%;
+  background: #4CAF50;
+  cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+  width: 0.8rem;
+  height: 2rem;
+  border-radius: 25%;
+  background: #4CAF50;
+  cursor: pointer;
+}
+

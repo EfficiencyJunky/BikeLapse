@@ -13611,9 +13611,9 @@
     ],
     "metadata": {
         "rideName": "SF Southwest Big Loop",
-        "rideType": "completed",
+        "rideType": "regular",
         "hasBikeLapseSync": false,
-        "videoEmbedID": "",
+        "youTubeVideoID": "",
         "stravaURL": "",
         "googleMapURL": "",
         "lineColor": "rgba(62, 146, 204, 1)",

@@ -19217,7 +19217,7 @@ let bernalJSON = {
     "metadata": {
         "rideName": "Bernal Heights to Daly City / Lake Merced",
         "rideType": "completed",
-        "videoEmbedID": "XG7EWQNuP18",
+        "youTubeVideoID": "XG7EWQNuP18",
         "stravaURL": "https://www.strava.com/activities/3809443302",
         "googleMapURL": "",
         "frameOffset": 0,

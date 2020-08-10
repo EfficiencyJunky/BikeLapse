@@ -1,3 +1,7 @@
+// ##########################################################################################################################
+// *********  MAIN FUNCTIONS FOR IMPORTING/CONVERTING GPX FILE ****************
+// ##########################################################################################################################
+
 // ****************************************************************
 //     WHEN A USER CHOOSES ONE OR MORE GPX FILES WE NEED TO
 //     READ THE SELECTED GPX FILE(S) INTO MEMORY AS A DOCDOMS, COMBINE THEM INTO ONE GPX FILE
@@ -131,27 +135,27 @@ function handleGpxFileSelectionCombineAndConvertToGeoJson(event) {
 
 
 
-// #############################################################################
+// #######################################################################################
 // *********  HELPERS FOR THE MAIN FUNCTION ABOVE ****************
-// #############################################################################
+// #######################################################################################
 // THIS IS THE FUNCTION THAT TAKES THE GEOJSON (THAT WAS CREATED BY CONVERTING THE GPX FILE)
 // AND ADDS INFORMATION TO IT SO THAT IT ADHERES TO THE CORRECT SPECIFICATIONS FOR THE BIKELAPSE WEBSITE
 function addSupplementalGeoJSONFeatures(tempGeoJson){
-
-    // rename linestring to ROUTE, create an alert if conditions are not met
-    // return the LineString Feature
-    renameLineStringToROUTE(tempGeoJson);
 
     // get all the user input from the text fields
     let userInput = getUserInputsFromTextFields();
 
     // add metadata from form inputs
     tempGeoJson["metadata"] = userInput.rideInfo;
-    
-    // create Point Features for START/FINISH/DETAILS
-    let startPoint = createPointFeature(tempGeoJson, "START", userInput.startName);
-    let finishPoint = createPointFeature(tempGeoJson, "FINISH", userInput.finishName);
-    let detailsPoint = createPointFeature(tempGeoJson, "DETAILS");
+
+    // rename linestring to ROUTE, create an alert if conditions are not met
+    // return the LineString Feature
+    let routeLineString = renameLineStringToROUTE(tempGeoJson);
+
+    // create Point Features for START/FINISH/DETAILS from the start/end and middle coordinate of the routeLineString
+    let startPoint = createPointFeature(routeLineString, "START", userInput.startName);
+    let finishPoint = createPointFeature(routeLineString, "FINISH", userInput.finishName);
+    let detailsPoint = createPointFeature(routeLineString, "DETAILS");
 
     tempGeoJson.features.push(startPoint);
     tempGeoJson.features.push(finishPoint);
@@ -165,42 +169,73 @@ function addSupplementalGeoJSONFeatures(tempGeoJson){
 // Rename the LineString to "ROUTE" is called from the "addSupplementalGeoJSONFeatures" function above
 function renameLineStringToROUTE(tempGeoJson) {
 
-    // first make sure there's only one feature in the GeoJSON and that feature is a LineString
-    // then rename it's properties.name member to "ROUTE"
-    if(tempGeoJson.features.length === 1 && tempGeoJson.features[0].geometry.type === "LineString"){
-        tempGeoJson.features[0].properties.name = "ROUTE";
+    // first make sure there's only one feature in the GeoJSON
+    if(tempGeoJson.features.length === 1){
+
+        let feature = tempGeoJson.features[0];
+
+        // then check to see that the single feature is a LineString and rename it's properties.name member to "ROUTE"
+        if(feature.geometry.type === "LineString"){
+            feature.properties.name = "ROUTE";
+
+            // return the renamed feature
+            return feature;
+        }
+        else{
+            alert(  'The GeoJSON feature generated from GPX file is not a LineString\n' + 
+                    'features[0].geometry.type == ' + feature.geometry.type
+                 );
+        }
     }
     else{
-        alert('GeoJSON generated from GPX file has more (or fewer) than one feature in its FeatureCollection and the first one is not a LineString\n' +
-              'features.length == ' + tempGeoJson.features.length + '\n' +
-              'features[0].geometry.type == ' + tempGeoJson.features[0].geometry.type
+        alert('GeoJSON generated from GPX file has more (or fewer) than one feature in its FeatureCollection\n' +
+              'features.length == ' + tempGeoJson.features.length + '\n' 
+            //  + 'features[0].geometry.type == ' + tempGeoJson.features[0].geometry.type
              );
     }
 
+
 }
 
-// CREATE THE METADATA OBJECT THAT WE ARE GOING TO ADD TO THE GEOJSON 
-// DO THIS BY BY GETTING INFORMATION FROM THE USER INPUTS IN THE "RIDE INFO" SECTION
+
+
+
+/* ##################################################################################################################################
+    *******  SHARED HELPER FUNCTIONS ******* SHARED HELPER FUNCTIONS ******* 
+                These functions are run when a new GPX file is imported
+                OR when the "saveChangesButton" is clicked
+##################################################################################################################################### */
+
+// *********************************************************************************************************************
+// GET USER INPUTS FROM TEXT FIELDS IN THE "RIDE INFO" FORM
+//      This function creates the metadata object that we are going to add to the GeoJson
+//      and saves the Start/finish location name in two other variables we will use when creating those points
+// *********************************************************************************************************************
 function getUserInputsFromTextFields(){
+
+    // defining a function and calling it all at once because I'm lazy
+    let selectedRadio = ( function() {
+        // get reference to all radios with name "rideType"
+        // NOTE: this returns a NodeList object, not an Array
+        let radios = document.getElementsByName('rideType');
+        let checkedRadioValue = undefined;
+
+        // need to use a for loop because radios is a NodeList not an Array
+        for (let i = 0; i < radios.length; i++) {
+            if(radios[i].checked){
+                checkedRadioValue = radios[i].value;
+            }
+        }
+    
+        return checkedRadioValue;
+    })();
+
 
     let rideInfo = {    
         "rideName": document.getElementById('rideName').value,
-        "rideType": ( function() {
-            // get reference to all radios with name "rideType"
-            // NOTE: this returns a NodeList object, not an Array
-            let radios = document.getElementsByName('rideType');
-            let checkedRadioValue = undefined;
-
-            // need to use a for loop because radios is a NodeList not an Array
-            for (let i = 0; i < radios.length; i++) {
-                if(radios[i].checked){
-                    checkedRadioValue = radios[i].value;
-                }
-            }
-        
-            return checkedRadioValue;
-        })(),
-        "videoEmbedID": document.getElementById('videoEmbedID').value,
+        "rideType": selectedRadio,
+        "hasBikeLapseSync": (selectedRadio === "bikelapse"),
+        "youTubeVideoID": document.getElementById('youTubeVideoID').value,
         "stravaURL": document.getElementById('stravaURL').value,
         "googleMapURL": document.getElementById('googleMapURL').value,
         "lineColor": "rgba(62, 146, 204, 1)",
@@ -219,13 +254,21 @@ function getUserInputsFromTextFields(){
 }
 
 
-// THIS IS THE FUNCTION THAT GENERATES THE START, FINISH AND DETAILS POINT FEATURES
-// SO WE CAN ADD THEM TO THE GEOJSON AND THEY WILL APPEAR ON OUR MAP
-function createPointFeature(tempGeoJson, pointName, pointLocationName = 'Location Name'){
+
+
+
+
+
+// *********************************************************************************************************************
+// THIS IS THE FUNCTION THAT GENERATES THE START, FINISH AND DETAILS POINT FEATURES 
+//      FROM THE FIRST/LAST/MIDDLE POINTS OF THE ROUTE LINESTRING AND INFORMATION FROM USER INPUT
+//      SO WE CAN ADD THEM TO THE GEOJSON AND THEY WILL APPEAR ON OUR MAP
+// *********************************************************************************************************************
+function createPointFeature(routeLineString, pointName, pointLocationName = 'Location Name'){
 
     // get the LineString Feature from the Features array in the GeoJSON object
     // who's properties.name "ROUTE" and geometry.type is "LineString"     
-    let routeLineString = getROUTELineStringFromGeoJson(tempGeoJson);
+    // let routeLineString = getROUTELineStringFromGeoJson(tempGeoJson);
 
 
     // get the coordTimes and coordinates arrays from the ROUTE LineString
@@ -293,7 +336,8 @@ function createPointFeature(tempGeoJson, pointName, pointLocationName = 'Locatio
 
 }
 
-// this is the function where we create description for the DETAILS pin
+// *********************************************************************************************************************
+// THIS IS THE FUNCTION WHERE WE CREATE THE DESCRIPTION HTML FOR THE DETAILS PIN
 // the description is made up of calculations from the data in the route LineString
 //      Time: Sunday, June 21, 2020 9:20 AM PDT<br>
 //      Distance: 26.38 miles<br>
@@ -303,6 +347,7 @@ function createPointFeature(tempGeoJson, pointName, pointLocationName = 'Locatio
 //      Maximum Elevation: 599 feet<br>
 //      Total climb: 1526 feet<br>
 //      Total descent: 100 feet
+// *********************************************************************************************************************
 function createDetailsDescription(routeLineString, formattedStartTimeString){
 
     const coordTimes = routeLineString.properties.coordTimes;
@@ -330,10 +375,9 @@ function createDetailsDescription(routeLineString, formattedStartTimeString){
            '<b>Total Descent:</b> ' + elevationStats.descent_ft + ' feet &nbsp (' + elevationStats.descent_m + ' meters)';
 }
 
-
-// this simply shows the geoJson in the text area
-// it is called when the gpx file is initially converted
-// and anytime a user saves the RIDE INFO they want to update
+// *********************************************************************************************************************
+//      shows the geoJson in the text area
+// *********************************************************************************************************************
 function showGeoJSONInTextArea(geoJson){
 
     // if a GeoJson was passed in, use it, otherwise use the globally defined one
@@ -347,15 +391,14 @@ function showGeoJSONInTextArea(geoJson){
 
 
 
-
-/* ##################################################################################
-    ADD RIDE TO MAP
-        This is the function that will add the ride to the map initially
-        or if the "save changes" button is pressed, it will update the ride
-        it will also re-set the elevation display for the ride although
-        that is likely not necessary, but will be good if in the future
-        we want to allow the ability to re-import GPX files
-##################################################################################### */
+// ************************************************************************
+// ADD RIDE TO MAP
+//      This is the function that will add the ride to the map initially
+//      or if the "save changes" button is pressed, it will update the ride
+//      it will also re-set the elevation display for the ride although
+//      that is likely not necessary, but will be good if in the future
+//      we want to allow the ability to re-import GPX files
+// ************************************************************************
 function addRideToMap(operation){
   
     // if we're updating the map (only used in create-ride interface), 
@@ -388,25 +431,20 @@ function addRideToMap(operation){
     // *************************************************************
     //     ADD THE BASIC LAYERS TO THE ACTUAL MAP
     // ************************************************************* 
-    let lineStringFeature = getROUTELineStringFeatureFromGeoJsonLayerGroup(geoJsonLayerGroup);
+    displaySelectedRide(currentRideID, geoJsonLayerGroup, allowHiddenVideoDisplayDiv = false);
 
-    // show the elevation for currentRideID
-    showElevationForLineStringFeature(lineStringFeature);
-  
-    // re-center the map on the location of the ride
-    reCenterMap(currentRideID);
-  
+    reCenterMapWithBounds(geoJsonLayerGroup);
 }
-  
-  
+
+
   
 
 
-/* ########### UI INTERACTION HANDLERS ##############################################
+/* ########### UI INTERACTION HANDLERS ##########################################################################################
     TEXT FIELD INTERACTION HANDLER, BUTTON CLICK HANDLERS, UI TEXT FIELD UPDATERS
         Save Changes button and "unsaved changes" text aleart show/hide
         download button handler for "GeoJSON" and 'GPX download buttons
-##################################################################################### */
+################################################################################################################################# */
 
 // this event fires if the user has typed new text in one the form fields
 // or chosen a different radio button
@@ -443,11 +481,11 @@ function saveChangesButtonHandler(event){
         ridesData[currentRideID].metadata = userInput.rideInfo;
         
         // get a reference to the GeoJson object for easier to read code
-        let tempGeoJson = ridesData[currentRideID];
+        let routeLineString = getROUTELineStringFromGeoJson(ridesData[currentRideID])
 
         // loop through all the features in the GeoJson
         // replace the description for the features who's names are "START" and "FINISH" 
-        tempGeoJson.features.forEach( (feature) => {
+        ridesData[currentRideID].features.forEach( (feature) => {
 
             let featureName = feature.properties.name;
 
@@ -459,7 +497,9 @@ function saveChangesButtonHandler(event){
                     let newLocationName = (featureName === "START") ? userInput.startName : userInput.finishName;
                     
                     // create a new point feature of type "featureName" and set the location to "newLocationName"
-                    let newPointFeature = createPointFeature(tempGeoJson, featureName, newLocationName);
+                    // the only reason we create a whole new point is to update the HTML of the point
+                    // in the future we should move away from storing the HTML directly in the point
+                    let newPointFeature = createPointFeature(routeLineString, featureName, newLocationName);
 
                     // replace the existing properties.description for this point with the new one
                     feature.properties.description = newPointFeature.properties.description;
@@ -566,27 +606,4 @@ function download(filename, text) {
     element.click();
 
     document.body.removeChild(element);
-}
-
-
-
-
-
-
-
-
-
-// THIS ISN'T BEING USED CURRENTLY
-// THIS ISN'T BEING USED CURRENTLY
-// THIS ISN'T BEING USED CURRENTLY
-// THIS ISN'T BEING USED CURRENTLY
-// THIS ISN'T BEING USED CURRENTLY
-function setDownloadButtonsDisabled(disabled){
-
-    // let geoJsonNotificationText = (disabled) ? '' : 'unsaved changes';
-    // document.getElementById('save-changes-button-notification-text').innerHTML = geoJsonNotificationText;
-
-    document.getElementById('geojson-download-button').disabled = disabled;
-    document.getElementById('gpx-download-button').disabled = disabled;
-
 }

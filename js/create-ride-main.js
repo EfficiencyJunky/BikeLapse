@@ -5,9 +5,15 @@
 minimumZoom = 2;
 // maximumZoom = 18;
 
+// override global padding to use when first displaying ride
+// when clicking on a BikeLapse ride, we will zoom into the ride
+// these two settings will tell the zoom function to add padding
+paddingTopLeft = [0, 0]; //[leftside, top]
+paddingBottomRight = [0, 100]; //[rightside, bottom]
+
 // override global "currentRideID" to always stay the same
 // since we're only dealing with one ride in the create-ride interface
-currentRideID = "single_ride_ID"; 
+currentRideID = "create_ride_single_ID"; 
 
 // This is the div in our HTML where we will display the elevationControl
 // we need to grab a reference to it and store it here so our
@@ -16,8 +22,8 @@ elevationDisplayDiv = document.getElementById('elevation-display-div');
 
 // This is the div in our HTML where we will display the YouTube Player
 // currently setting this to a string so the map doesn't create a video displaydiv
-videoDisplayDiv = "REPLACE THIS WITH THE DIV";
-
+// videoDisplayDiv = "REPLACE THIS WITH THE DIV";
+videoDisplayDiv = document.getElementById('player-parent');
 
 /* ###################################################################
    ****  CREATE-RIDE SPECIFIC VARIABLES AND SETTINGS ****
@@ -25,7 +31,6 @@ videoDisplayDiv = "REPLACE THIS WITH THE DIV";
 
 // a globally accessible reference to the Leaflet GeoJSON Layers Group
 let geoJsonLayerGroup = undefined;
-let testBool = false;
 
 // REFERENCES TO OTHER HTML ELEMENTS USED FOR DISPLAYING INFO
 let gpxImportProgressLabel = document.getElementById('gpx-import-progress-label');
@@ -41,7 +46,7 @@ let geoJsonTextarea = document.getElementById('geojson-textarea');
 map.setView([30, 0], minimumZoom);
 
 initializeBaseMaps();
-initializeMapOverlaysAndUI(hideElevationDisplayDiv = false);
+initializeMapOverlaysAndUI(hideElevationDisplayDiv = false, hideVideoDisplayDiv = false);
 
 
 

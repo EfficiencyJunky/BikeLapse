@@ -16438,7 +16438,7 @@ let lahondaJSON = {
     "metadata": {
         "rideName": "La Honda Climb",
         "rideType": "completed",
-        "videoEmbedID": "Kb1YkCAQzmo",
+        "youTubeVideoID": "Kb1YkCAQzmo",
         "stravaURL": "https://www.strava.com/activities/3856435073",
         "googleMapURL": "",
         "frameOffset": 0,

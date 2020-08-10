@@ -204,6 +204,13 @@
       display: none;  
     }
 
+    #player-parent{
+      width: 460px;
+      padding: 8px 8px 8px 8px;
+      margin-bottom: 10px;
+      background: rgb(238, 238, 238);
+    }
+
 
     /* ELEVATION CONTROL CSS OVERRIDES */
     /* .steelblue-theme.leaflet-control.elevation .background {
@@ -303,21 +310,6 @@
                 <input type="text" id="rideName" class="form-control" placeholder="Name your route">
               </div>
 
-              <label >Ride Type:</label>
-              <div class="form-check">
-                <input class="form-check-input" type="radio" name="rideType" id="rideTypeRadioCompleted" value="completed" checked>
-                <label class="form-check-label" for="rideTypeRadioCompleted">
-                  Completed
-                </label>
-              </div>
-              <div class="form-check">
-                <input class="form-check-input" type="radio" name="rideType" id="rideTypeRadioSuggestion" value="suggested">
-                <label class="form-check-label" for="rideTypeRadioSuggestion">
-                  Suggested
-                </label>
-              </div>
-
-
               <div class="form-group form-element-extra-padding">
                 <label for="startLocationName">Start Location Name</label>
                 <input type="text" id="startLocationName" class="form-control" placeholder="Name of Start Location">
@@ -329,9 +321,24 @@
 
 
               <div class="form-group form-element-extra-padding">
-                <label for="videoEmbedID">YouTube Video ID:</label>
-                <input type="text" id="videoEmbedID" class="form-control" placeholder="example: YN9b3LK1la0">
+                <label for="youTubeVideoID">YouTube Video ID:</label>
+                <input type="text" id="youTubeVideoID" class="form-control" placeholder="example: YN9b3LK1la0">
               </div>
+
+              <label>GPX file(s) synced to video?</label>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="rideType" id="rideTypeRadioBikelapse" value="bikelapse" checked>
+                <label class="form-check-label" for="rideTypeRadioBikelapse">
+                  Yes - (BikeLapse)
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="rideType" id="rideTypeRadioRegular" value="regular">
+                <label class="form-check-label" for="rideTypeRadioRegular">
+                  No - (Regular)
+                </label>
+              </div>
+
               <div class="form-group form-element-extra-padding">
                 <label for="stravaURL">Strava URL:</label>
                 <input type="text" id="stravaURL" class="form-control" placeholder="Strava URL">
@@ -360,10 +367,46 @@
         </div>
       </div>
 
-      <!-- ########### COLUMN 2 - MAP ############ -->
+      <!-- ########### COLUMN 2 - VIDEO, MAP, ELEVATION ############ -->
       <div class="col-lg-8">
+        <div class="row mb-2">
+
+          
+          <div class="col-lg-8">
+            <!-- The YouTube API requires that we place an empty div with id="player" on the page.
+              When the YouTube API is first initialized, it will steal this "player" div, and
+              transform it into an iFrame with a video player inside it that we can control with the API.
+              BUT....in order to hide/unhide the iFrame that the YouTube API creates (as well as style it), 
+              we need to wrap it in this "player-parent" div and reference the "player-parent"
+              in our logic whenever we want to hide/unhide the video player -->
+            <div id="player-parent">
+              <div id="player">
+                video iFrame will replace this div
+              </div>
+              <div class="transport-controls">
+                <button id="play-pause" class="play"></button>
+                <!-- <button id="stop">▇</button> -->
+                <input type="range" min="0" max="100" value="0" class="slider" id="slider">
+              </div>
+            </div>  
+          </div>
+          
+          <div class="col-lg-4" hidden>
+            <div class="card bg-light mb-4">  
+              <div class="card-body">
+
+                <h5 class="card-title text-center">Video Info</h5>
+                <div class="card-content text-center">This area to be developed</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
         <div id="map" class="map-div"><h1 class="map-placeholder-text">You <i>should</i> see a map here...</h1></div>
-        
+
+
+  
 
         <div id="elevation-display-div" class="elevation-container">
           <div><h5>Elevation</h5></div>
@@ -374,23 +417,6 @@
         <!-- <div id="elevation-display-div" class="leaflet-bar leaflet-control elevation-div"></div> -->
       </div>
 
-    </div>
-
-    <!-- The YouTube API requires that we place an empty div with id="player" on the page.
-          When the YouTube API is first initialized, it will steal this "player" div, and
-          transform it into an iFrame with a video player inside it that we can control with the API.
-          BUT....in order to hide/unhide the iFrame that the YouTube API creates (as well as style it), 
-          we need to wrap it in this "player-parent" div and reference the "player-parent"
-          in our logic whenever we want to hide/unhide the video player -->
-    <div id="player-parent" hidden>
-      <div id="player">
-        video iFrame will replace this div
-      </div>
-      <div>
-        <button id="play-pause" class="play"></button>
-        <!-- <button id="stop">▇</button> -->
-        <input type="range" min="0" max="100" value="0" class="slider" id="slider">
-      </div>
     </div>
 
 
@@ -457,8 +483,10 @@
   <!-- Our JS -->
   <!-- shared JS functionality -->
   <script type="text/javascript" src="js/global-settings.js"></script>
+  <script type="text/javascript" src="js/youtube-logic.js"></script>
   <script type="text/javascript" src="js/leaflet-functions.js"></script>
   <script type="text/javascript" src="js/map-initialization-logic.js"></script>
+  <script type="text/javascript" src="js/common-display-update-logic.js"></script>
   
 
   <!-- specific JS functionality for the create-ride.html page -->

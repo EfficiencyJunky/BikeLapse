@@ -191,6 +191,10 @@
       /* background-color:rgba(70,130,180,0.2); */
     }
 
+    .steelblue-theme.leaflet-control.elevation .area{
+      fill:#a0a0a0;
+    }
+
     .steelblue-theme.leaflet-control.elevation {
       /* background-color:rgba(70,130,180,0); */
       margin-left: -30px;
@@ -209,49 +213,7 @@
       overflow: hidden;
     }
 
-    #player-parent{
-      padding: 8px 8px 4px 8px;
-      /* font: 12px/14px Arial, Helvetica, sans-serif; */
-      background: white;
-      background: rgba(255,255,255,0.8);
-      box-shadow: 0 0 15px rgba(0,0,0,0.2);
-      border-radius: 5px;
-    }
 
-    #play-pause, #stop{
-      font-family: Arial, Helvetica, sans-serif;
-      height: 2rem;
-      width: 2rem; /* if using "►" or "⎮⎮" for button text */
-      /* width: 4rem; */ /* if using "PLAY" or "PAUSE" for button text */
-
-      text-align: center;
-      vertical-align: middle;
-      padding: 0px 1px 0px 0px;
-    }
-
-    /* HTML SYMBOLS LIST: http://www.scrollseek.com/wd/html_symbols_complete.html */
-    /* ᐅ - 5125 - play button option 1 */
-    /* ► - 9658 - play button option 2 */
-    /* ⏯ - 9199 - play button option 3 */
-    /* ⎮ - 9134 - use 2 for pause */
-    /* ຩ - 3753 - stop button option 1 */
-    /* ▇ - 9607 - stop button option 2 */
-    /* ⏹ - 9209 - stop button option 3 */
-    
-    #play-pause.play::after{
-        content: "►";
-    }
-
-    #play-pause.pause:after{
-        content: "⎮⎮";
-    }
-
-
-    .slider{
-        width: 80%; /* Width of the outside container */
-        vertical-align: middle;
-        margin-left: 10px;
-    }
 
   </style>
 
@@ -301,8 +263,8 @@
     <div id="player">
       video iFrame will replace this div
     </div>
-    <div>
-      <button id="play-pause" class="play"></button>
+    <div class="transport-controls">
+      <button id="play-pause" class="play btn btn-primary "></button>
       <!-- <button id="stop">▇</button> -->
       <input type="range" min="0" max="100" value="0" class="slider" id="slider">
     </div>
@@ -348,6 +310,7 @@
   <script type="text/javascript" src="js/youtube-logic.js"></script>
   <script type="text/javascript" src="js/leaflet-functions.js"></script>
   <script type="text/javascript" src="js/map-initialization-logic.js"></script>
+  <script type="text/javascript" src="js/common-display-update-logic.js"></script>
   
   <!-- specific JS functionality for the index.html page -->
   <script type="text/javascript" src="js/config/all_ride_file_names.js"></script>
