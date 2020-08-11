@@ -100,19 +100,18 @@ function handleGpxFileSelectionCombineAndConvertToGeoJson(event) {
         // add "metadata" object with those user inputs
         // add "START" and "FINISH" points with user inputs
         // add "DETAILS" point with ride details calculated from GeoJson
-        let modifiedTempGeoJson = addSupplementalGeoJSONFeatures(tempGeoJson);
+        geoJsonData = addSupplementalGeoJSONFeatures(tempGeoJson);
         
         //******** Print GPX and GeoJson Contents to Textareas *************************
         // print out the contents of the final "gpx" AND "GeoJSON" files
         // showGPXInTextArea(tempXmlDocDom);
         gpxTextarea.value = new XMLSerializer().serializeToString(tempXmlDocDom);
-        showGeoJSONInTextArea(modifiedTempGeoJson);
+        showGeoJSONInTextArea(geoJsonData);
 
         //******* Load temporary GeoJson object into Globally accessible variable *****************
-        // load the ridesData Object with a single ride 
-        // who's key is stored in the global variable createRideInterfaceRideID
+        // load the geoJsonData Object with a single ride 
         // and value is the GeoJSON we just created
-        ridesData[currentRideID] = modifiedTempGeoJson;
+        // geoJsonData = modifiedTempGeoJson;
 
         //******* Let the user know the conversion worked **********************************
         gpxImportProgressLabel.innerHTML = gpxImportProgressLabel.innerHTML + '<br>Adding to map'
@@ -382,7 +381,7 @@ function showGeoJSONInTextArea(geoJson){
 
     // if a GeoJson was passed in, use it, otherwise use the globally defined one
     // we don't need to do it this way anymore so it's commented out
-    // let geoJsonToOutput = (geoJson !== undefined) ? geoJson : ridesData[currentRideID];
+    // let geoJsonToOutput = (geoJson !== undefined) ? geoJson : geoJsonData;
     
     // stringify the GeoJson in order to print to the textarea
     geoJsonTextarea.value = JSON.stringify(geoJson, null, 4);
@@ -410,17 +409,18 @@ function addRideToMap(operation){
       geoJsonLayerGroup.remove();
     }
     
-    
+    currentRideMetadata = geoJsonData.metadata;
     // *****************************************************************
     //   CREATE (OR RE-CREATE) THE GEOJSONLAYERGROUP AND ADD TO THE MAP
     // *****************************************************************
-    geoJsonLayerGroup = L.geoJson(ridesData[currentRideID], { 
+    geoJsonLayerGroup = L.geoJson(geoJsonData, { 
                                                                 pane: 'bikeRidesPane', // the "pane" option is inherited from the "Layer" object
                                                                 filter: filterFunction,
                                                                 pointToLayer: pointToLayerFunction,
                                                                 onEachFeature: onEachFeatureFunction,
-                                                                style: styleFunction
-                                                                // style: { fillOpacity: 0.0, weight: 4, opacity: 1, color: ridesData[currentRideID].metadata.lineColor}
+                                                                style: styleFunction,
+                                                                metadata: currentRideMetadata
+                                                                // style: { fillOpacity: 0.0, weight: 4, opacity: 1, color: geoJsonData.metadata.lineColor}
                                                             });
 
 
@@ -431,9 +431,9 @@ function addRideToMap(operation){
     // *************************************************************
     //     ADD THE BASIC LAYERS TO THE ACTUAL MAP
     // ************************************************************* 
-    displaySelectedRide(currentRideID, geoJsonLayerGroup, allowHiddenVideoDisplayDiv = false);
+    displaySelectedRide(currentRideMetadata, geoJsonLayerGroup, allowHiddenVideoDisplayDiv = false);
 
-    reCenterMapWithBounds(geoJsonLayerGroup);
+    reCenterMap(geoJsonLayerGroup);
 }
 
 
@@ -453,7 +453,7 @@ function addRideToMap(operation){
 function handleFormChanges(event){
 
     // if we've imported data and are therefore displaying it in the map then carry out the event
-    if(ridesData[currentRideID] !== undefined){
+    if(geoJsonData !== undefined){
 
         if(event.type === "keyup" || (event.type === "change" && event.target.type === "radio") ){
             unsavedChanges(true);
@@ -473,19 +473,19 @@ function handleFormChanges(event){
 function saveChangesButtonHandler(event){
 
     // check to make sure the GeoJson has been created first
-    if(ridesData[currentRideID] !== undefined){
+    if(geoJsonData !== undefined){
         // get user inputs from text fields
         let userInput = getUserInputsFromTextFields();
 
         // replace fields in GeoJson with user inputs from text fields
-        ridesData[currentRideID].metadata = userInput.rideInfo;
+        geoJsonData.metadata = userInput.rideInfo;
         
         // get a reference to the GeoJson object for easier to read code
-        let routeLineString = getROUTELineStringFromGeoJson(ridesData[currentRideID])
+        let routeLineString = getROUTELineStringFromGeoJson(geoJsonData)
 
         // loop through all the features in the GeoJson
         // replace the description for the features who's names are "START" and "FINISH" 
-        ridesData[currentRideID].features.forEach( (feature) => {
+        geoJsonData.features.forEach( (feature) => {
 
             let featureName = feature.properties.name;
 
@@ -509,7 +509,7 @@ function saveChangesButtonHandler(event){
         });        
 
         // print GeoJson to textarea
-        showGeoJSONInTextArea(ridesData[currentRideID]);
+        showGeoJSONInTextArea(geoJsonData);
         
         addRideToMap("update");
         
@@ -518,7 +518,7 @@ function saveChangesButtonHandler(event){
     }
     else{
         alert('Please import a GPX file (or files) first')
-        console.log("rides data is of type: ", typeof(ridesData[currentRideID]));
+        console.log("rides data is of type: ", typeof(geoJsonData));
     }
 
     
@@ -548,15 +548,15 @@ function downloadButtonHandler(event){
     // check to make sure the GeoJson has been created first
     // if it hasn't, send an alert that the user needs to
     // import a GPX file before we will generate a GeoJSON or GPX to save
-    if(ridesData[currentRideID] !== undefined){
+    if(geoJsonData !== undefined){
 
         // get the routeLineString from the rideData 
-        let routeLineString = getROUTELineStringFromGeoJson(ridesData[currentRideID]);
+        let routeLineString = getROUTELineStringFromGeoJson(geoJsonData);
 
                                                                     
         // pull the ISO date time so we can use for the file name later
         let rideTime = routeLineString.properties.time;
-        let rideName = ridesData[currentRideID].metadata.rideName;
+        let rideName = geoJsonData.metadata.rideName;
         let fileExtension = "";
         let fileContents = "";
 
@@ -585,7 +585,7 @@ function downloadButtonHandler(event){
     }
     else{
         alert('Please import a GPX file (or files) first\nOnce imported, the GeoJSON will be generated\nIf multiple GPX files were imported they will be combined into one file');
-        console.log("rides data is of type: ", typeof(ridesData[currentRideID]));
+        console.log("rides data is of type: ", typeof(geoJsonData));
     }
     
 }

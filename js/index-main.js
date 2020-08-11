@@ -1,8 +1,10 @@
 /* ###################################################################
    ****  DEFINE VARIOUS GLOBAL VARIABLES LIKE OUR MAP AND ZOOM SETTINGS ****
 ###################################################################### */
-let initialRideIDsToDisplay = ["ride0001", "ride0003", "ride0007", "ride0008"];
 
+// these are the indexes (starting at 1 not 0) in the bikeRideJSONFileNames object/file
+// for the rides we want to dislay on the map first  
+let initialRidesToDisplay = [1, 3, 7, 8];
 
 // "overlayLayerControl" layer is the L.control with checkboxes to hide/unhide rides on the map
 // we can add it to the map first with baseLayer and overlayLayer arguments set as "undefined"
@@ -15,18 +17,18 @@ let overlayLayerControl = L.control.layers(undefined, undefined, {
 // move the zoom control to the position specified in the mapUISettings object
 map.zoomControl.setPosition(mapUISettings.zoomCtl.position);
 
-
 /* ###############################################################################
    ****  INITIALIZE OUR MAP WITH AVAILABLE BASEMAPS AND UI OVERLAYS ELEMENTS ****
 ################################################################################## */
 initializeBaseMaps();
 initializeMapOverlaysAndUI();
 
+
+
 /* ###############################################################################
    ****  LOAD THE JSON FILES FOR EACH RIDE                  ****
    ****  LISTED IN THE "all_ride_file_names.js" FILE        ****
 ################################################################################## */
-
 // "bikeRideJSONFileNames" is a variable found in the "all_ride_file_names.js" file
 bikeRideJSONFileNames.forEach( (jsonFileName, i) => {
 
@@ -38,37 +40,11 @@ bikeRideJSONFileNames.forEach( (jsonFileName, i) => {
     .then(response => response.json()) // Transform the data into json
     .then(rideJSON => {
     
-      // ****************************************************************************
-      // CREATE A UNIQUE RIDE ID 
-      //    THEN EMBED IT IN EVERY FEATURE OF THE JSON OBJECT 
-      //    AND STORE THE JSON IN AN OBJECT WITH THE rideID AS ITS KEY
-      // ****************************************************************************
-
-      // create a new rideID that gets incremented by 1 for each file we read in
-      // this way we can store the rideJSONs by rideID and not file name
-      // we set the global variable "currentRideID" to be the rideID for this ride
+      // save the metadata in a globally accessible object "currentRideMetadata" 
       // this global variable will be used to access the correct data for this ride
       // in the 'filter', 'pointToLayer', 'onEachFeature', and 'style'
       // functions used to create the geoJson layer below
-      currentRideID = getRideID(i+1);
-      
-      // save the rideID in the "metadata" of the rideJSON
-      rideJSON.metadata["rideID"] = currentRideID;
-
-      // also save the rideID in the "properties" of each feature in the rideJSON
-      // this is used as a reference for events that occur on each feature later
-      rideJSON.features.forEach((feature) => {
-        feature.properties["rideID"] = currentRideID;
-      });
-
-      // finally store the rideJSON in the 'ridesData' object using the 'rideID' as the key
-      ridesData[currentRideID] = rideJSON;
-      
-      // set the global variable "currentRideID" to be the rideID for this ride
-      // this global variable will be used to access the correct data for this ride
-      // in the 'filter', 'pointToLayer', 'onEachFeature', and 'style'
-      // functions used to create the geoJson layer below
-      // currentRideID = rideID;
+      currentRideMetadata = rideJSON.metadata;
 
       // ****************************************************************************
       // CREATE A GEOJSON LAYER FOR THE 'rideJSON'
@@ -80,10 +56,10 @@ bikeRideJSONFileNames.forEach( (jsonFileName, i) => {
                                                     filter: filterFunction,
                                                     pointToLayer: pointToLayerFunction,
                                                     onEachFeature: onEachFeatureFunction,
-                                                    style: styleFunction
+                                                    style: styleFunction,
+                                                    metadata: rideJSON.metadata
                                                     // style: { fillOpacity: 0.0, weight: 4, opacity: 1, color: rideMetadata.lineColor}
                                                   });
-
 
       // called when a user clicks on any part of the geoJsonLayerGroup (Point, LineString, etc.)
       geoJsonLayerGroup.on('click dblclick', geoJsonLayerGroupClicked);
@@ -91,19 +67,18 @@ bikeRideJSONFileNames.forEach( (jsonFileName, i) => {
       // called when a user removes the layer from the map by unchecking the checkbox
       // contained in the overlayLayerControl 
       geoJsonLayerGroup.on('remove', geoJsonLayerGroupRemoved);
-
-
+      
       // ****************************************************************************
       // ADD THE GEOJSON LAYER GROUP TO THE OVERLAY LAYER CONTROL
-      // AND ADD TO THE MAP IF "currentRideID" MATCHES ONE IN THE "initialRideIDsToDisplay" aray
+      // AND ADD TO THE MAP IF THE CURRENT INDEX MATCHES ONE IN THE "initialRidesToDisplay" ARRAY
       //    grab the ride's name from metadata and use as the display text in the layer control
       // ****************************************************************************
 
       // add the geoJsonLayerGroup to the layer control using the rides name as the display text      
       overlayLayerControl.addOverlay(geoJsonLayerGroup, rideJSON.metadata.rideName);
       
-      // if the ride id matches one of those in the 'initialRideIDsToDisplay' array, add it to the map
-      if(initialRideIDsToDisplay.includes(currentRideID)){
+      // if the index matches one of those in the 'initialRidesToDisplay' array, add it to the map
+      if(initialRidesToDisplay.includes(i+1)){
         geoJsonLayerGroup.addTo(map);
       }
 
@@ -117,26 +92,22 @@ bikeRideJSONFileNames.forEach( (jsonFileName, i) => {
 // *************************************************************
 function geoJsonLayerGroupClicked(event){
 
-  // event.target gives us the entire GeoJSON Layer Group 
+  // event.target gives us the entire GeoJSON Layer Group   
   let geoJsonLGroup = event.target;
-  // let layerClicked = event.layer; // does the same thing as the one above but "layer" is the actual layer we clicked on from the geoJsonLayer group
   
-  // we can use the "getLayers()" function to grab all the layers and since
-  // we have previously added the rideID to every layer in the group, we
-  // just grab the first layer in the group with [0] and then get its rideID
-  let clickedRideID = geoJsonLGroup.getLayers()[0].feature.properties.rideID;
+  // we can use L.Util.stamp() to get its Leaflet Internal ID
+  let clickedRideID = L.Util.stamp(geoJsonLGroup);
 
-
-  if(clickedRideID === undefined){
-    console.log("RIDE ID DOESN'T EXIST");
-    return false;
-  }
-  else if(highlightedRideID !== clickedRideID){
+  if(highlightedRideID !== clickedRideID){
     
-    displaySelectedRide(clickedRideID, geoJsonLGroup);
+    let clickedRideMetadata = geoJsonLGroup.getMetadata();
 
-    if(ridesData[clickedRideID].metadata.hasBikeLapseSync){
-      reCenterMapWithBounds(geoJsonLGroup);
+    // displaySelectedRide(clickedRideID, geoJsonLGroup);
+    displaySelectedRide(clickedRideMetadata, geoJsonLGroup);
+
+    // if(ridesData[clickedRideID].metadata.hasBikeLapseSync){
+    if(clickedRideMetadata.hasBikeLapseSync){  
+      reCenterMap(geoJsonLGroup);
     }
     
     // lastly, set our highlightedRideID to the clickedRideID
@@ -157,10 +128,9 @@ function geoJsonLayerGroupClicked(event){
 // if it is, we want to reset and remove all UI and display elements
 function geoJsonLayerGroupRemoved(event){
   // event.target gives us the entire GeoJSON LayerGroup
-  // so we use the "getLayers()" function to grab all the layers and since
-  // we have previously added the rideID to every layer in the group, we
-  // just grab the first layer in the group with [0] and then get its rideID
-  let removedRideID = event.target.getLayers()[0].feature.properties.rideID;
+  // we can use L.Util.stamp() to get its Leaflet Internal ID
+  let removedRideID = L.Util.stamp(event.target);
+  // let removedRideID = event.target.getLayerId();
 
   if(removedRideID === highlightedRideID) {
 

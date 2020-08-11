@@ -121,61 +121,12 @@ function calcDistance(coord1, coord2, latLonReversed = false){
 }
 
 
-// ****************************************************************
-//     MY GEOJSON TOOLS
-// ****************************************************************
-
-
-// get the LineString Feature from the Features array in the geoJson object
-// who's properties.name "ROUTE" and geometry.type is "LineString"  
-function getROUTELineStringFromGeoJson(geoJson){
-
-  return geoJson.features.find  ( (feature) => 
-                                      feature.properties.name === "ROUTE"
-                                      && feature.geometry.type === "LineString"
-                                );
-          
-}
-
-function getLatLonOfPointInGeoJson(geoJson, pointName){
-
-  let point = geoJson.features.find( (feature) => feature.properties.name === pointName);
-  let latLon = point.geometry.coordinates.slice(0, 2).reverse();
-  
-  return latLon;
-}
-
-
-function getCoordsArrayOfROUTELineStringInGeoJson(geoJson){
-
-  return (geoJson.features.find   ( (feature) => 
-                                      feature.properties.name === "ROUTE"
-                                      && feature.geometry.type === "LineString"
-                                  )
-          ).geometry.coordinates;
-}
 
 
 
-function getLatLonArrayFromLineStringCoordsArray(lineStringCoordsArray){
-
-  const reversedLineStringCoordsArray = lineStringCoordsArray.map((point) => {
-      return point.slice(0, 2).reverse();
-  });
-
-  return reversedLineStringCoordsArray;
-}
-
-
-
-
-
-
-
-
-
-
-
+// #############################################################################
+// *********  GEOJSON TOOLS I CREATED ************************
+// #############################################################################
 /**
  * calculates the total duration we were actually in motion throughout the coordTimesArray
  * calculates the total duration from begining to end of a coordTimesArray
@@ -299,26 +250,29 @@ function getAvgSpeed(duration, distance){
 
 /**
  * calculates various stats related to elevation
- * @param {ArrObjectay} duration object with various information about the duration of the ride
- * @returns {Object} object with max, min, total gain, total descent
+ * @param {ArrObjectay} coordsArray Array of coordinates from a LineString's geometry.coordinates
+ * @returns {Object} object with max, min, total gain, total descent in meters (_m) and feet (_ft)
  * {
- *  max_ft: 
- *  min_ft: 
- *  gain_ft: 
- *  descent_ft:
  *  max_m: 
  *  min_m: 
  *  gain_m: 
  *  descent_m: 
+ *  max_ft: 
+ *  min_ft: 
+ *  gain_ft: 
+ *  descent_ft:
  * }
  */
 function getElevationStats(coordsArray){
 
-  // maxAllowedGain and deltaThreshold are used to account for potentially erroneous data
-  // in the calculations below
+  // maxAllowedGain, deltaThreshold, and alpha are used to smooth
+  // the noisy elevation data in the calculations below
+  // and get rid of poential anomalies (like if elevation drops below 0 suddenly)
   const maxAllowedElevationGain = 2.0,
-        minElevationGainThreshold = 0.1,
+        minElevationGainThreshold = 0.12,
+        alpha = 0.85,
         feetPerMeter = 3.28084;
+        
 
   // the elevation is in the 3rd position at each point in the coordsArray
   // because each coordinate in a GeoJSON is a 3 point array --> [lon, lat, ele]
@@ -333,7 +287,8 @@ function getElevationStats(coordsArray){
   // the main function to calculate the total elevation gain and descent in meters
   coordsArray.map((coord) => {
     // get the elevation of the current coordinate
-    let elevation = coord[elevationIndex];
+    // let elevation = coord[elevationIndex];
+    let elevation = coord[elevationIndex] * (1 - alpha) + prevElevation * alpha;
 
     // subtract from previous elevation to get the delta between current elevation and previous elevation
     let delta = Number((elevation - prevElevation).toFixed(2));
@@ -360,17 +315,11 @@ function getElevationStats(coordsArray){
       // console.log("skipping elevation delta: ", delta);
       // console.log("coords: ", coord);
     }
-
+    
     prevElevation = elevation;
 
   });
 
-  
-
-  // console.log(max_m * feetPerMeter);
-  // console.log(min_m * feetPerMeter);
-  // console.log(gain_m * feetPerMeter);
-  // console.log(descent_m * feetPerMeter);
 
   let elevationInfo = {
     "min_m": Math.round(min_m),

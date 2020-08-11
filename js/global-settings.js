@@ -29,28 +29,38 @@ let mapUISettings = {
 };
 
 
-
-// youtube video embed size variables
+// *******************************************
+// YOUTUBE PLAYER PARAMETERS
+// *******************************************
 let videoHeight = 250;
 let videoWidth = Math.round(videoHeight * 1.777777);    // 250 * 1.77777 == 444 just so you know
 let bindPopupProperties = {maxWidth: videoWidth + 40};
 
-// embed HTML code used to create the embeded video objects
-// let videoEmbedParams = {
-//   firstHalf: '<iframe width="' + videoWidth + '" height="' + videoHeight + '" src="https://www.youtube.com/embed/',
-//   secondHalf: '" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>'
-// };
+// Learn about the playerVars that can be used for this "youTubePlayerOptions" object here: https://developers.google.com/youtube/player_parameters.html?playerVersion=HTML5
+let youTubePlayerOptions = { 
+  // 'autoplay': 1, 
+  'controls': 0, 
+  'disablekb': 1,
+  'modestbranding': 1,
+  'playsinline': 1, // prevents full screen when pressing play on mobile
+  'fs': 0, // prevents fullscreen button (doesn't matter if 'controls' is set to 0)
+  'origin': "https://bikelapse.com",
+  'widget_referrer': "https://bikelapse.com",
+  'rel': 0
+};
+
+
 
 
 /* ###################################################################
    ****  GLOBAL VARIABLES -- GLOBAL VARIABLES -- GLOBAL VARIABLES ****
 ###################################################################### */
-// ridesData will be the object that holds a reference to every JSON file we import
-// rideIDs will be added as the JSON files are imported
-let ridesData = {};
-let currentRideID = "";
+// global variable that allows us to pass data to the callbacks
+// that are called as the L.geoJson Layer Groups are created
+let currentRideMetadata;
+
+// these will be used when adding/removing rides
 let highlightedRideID = "";
-let youTubeRideID = "";
 
 
 // *************************************************************
@@ -101,8 +111,14 @@ let elevationControlOptions = {
 let elevationFollowMarkerLayer;
 
 
-// ##### ABRACADABRA ####### // ##### ABRACADABRA #######
-// ##### ABRACADABRA ####### // ##### ABRACADABRA #######
+
+
+// ****************************************************************************
+// VIDEO DISPLAY AND RABBIT MARKER
+//    the videoDisplayDiv is where we will display our YouTube video iFrame
+//    the rabbitMarker is what will run around on the map to show the 
+//    location of each frame of the video
+// ****************************************************************************
 let videoDisplayDiv;
 
 let rabbitMarker;
@@ -116,8 +132,7 @@ let rabbitMarkerOptions = {
 let rabbitCoordsArray;
 let showRabbitOnRoute = false;
 
-// ##### ABRACADABRA ####### // ##### ABRACADABRA #######
-// ##### ABRACADABRA ####### // ##### ABRACADABRA #######
+
 
 
 
@@ -167,11 +182,34 @@ let routeLineProperties = {
 let routeIconBaseClass = "legend-route-icon";
 
 
-/* ##########################################################################################################
-// *** ASYNCRONOUS COUNTER CLASS TO TRIGGER A CALLBACK WHEN ALL ASYNCRONOUS TASKS HAVE COMPLETED   *******
-// *** BECAUSE WE ONLY WANT TO CALL THE CALLBACK AFTER ALL THE API CALLS ETC HAVE COMPLETED               *******
-############################################################################################################# */
-// ******* AsyncCounter Class ****************
+/* #######################################################################################
+// ************ CLASSES AND CLASS EXTENSIONS ************
+// ************ CLASSES AND CLASS EXTENSIONS ************
+// ************ CLASSES AND CLASS EXTENSIONS ************
+########################################################################################## */
+// *************************************************************************************** 
+// EXTEND THE BASE LEAFLET "Layer" CLASS USING ".include({myobjects})" 
+//    In the documentation they use this nomenclature .include(MyMixin);"
+//    Find out more here: https://leafletjs.com/reference-1.6.0.html#class
+//    Since each JSON file has metadata attached to it (Ride Name, YouTube Video, etc.)
+//    We will embed this metadata in each of our L.geoJson Layer Groups that
+//    We create to represent each of our rides
+// ***************************************************************************************     
+L.Layer.include({
+  getMetadata: function () {
+    let options = this.options = this.options || {}; // Initialize the options, if missing.
+    options.metadata = options.metadata || {}; // Initialize the metadata, if missing.
+    return options.metadata;
+  }
+});
+
+
+// ******************************************************************* 
+// ASYNCRONOUS COUNTER CLASS 
+//    Triggers a callback when all asyncronous tasks have completed
+//    Because we only want to call the callback
+//    after all the API calls etc have finished running
+// *******************************************************************     
 class AsyncCounter {
   constructor(numCalls, callback){
     this.callback = callback;
@@ -187,32 +225,3 @@ class AsyncCounter {
     }
   }
 }
-
-
-// **************** GLOBAL HELPER FUNCTIONS ******************
-// **************** GLOBAL HELPER FUNCTIONS ******************
-// **************** GLOBAL HELPER FUNCTIONS ******************
-
-  // this is the function for creating rideIDs based off of the unique number being passed in
-  // we're putting it in this file so that we can easily modify it if need be
-  // it doesn't really matter what the rideID generation method is as long as they are all unique
-function getRideID(numToPadd){
-  return "ride" + String(numToPadd).padStart(4, '0');;
-}
-
-
-
-// **************** RETURN "true" IF IT'S NIGHT OR NOT ******************
-  // checks to see if the local time is between 8pm and 6am
-  // if so, we are considering it to be night time
-function getIsNight(){
-  let todaysDate = new Date();
-
-  let HH = String(todaysDate.getHours()).padStart(2, '0');
-
-  // if the current hour is between 8pm (20:00) and 6am, set isNight to true
-  let isNight = (HH >= 20 || HH <= 6);
-
-  return isNight;
-}
-

@@ -11,9 +11,8 @@ minimumZoom = 2;
 paddingTopLeft = [0, 0]; //[leftside, top]
 paddingBottomRight = [0, 100]; //[rightside, bottom]
 
-// override global "currentRideID" to always stay the same
-// since we're only dealing with one ride in the create-ride interface
-currentRideID = "create_ride_single_ID"; 
+// this is the object to hold our GeoJson that the user will download
+let geoJsonData;
 
 // This is the div in our HTML where we will display the elevationControl
 // we need to grab a reference to it and store it here so our

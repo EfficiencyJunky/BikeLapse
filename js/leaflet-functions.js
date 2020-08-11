@@ -56,7 +56,7 @@ function pointToLayerFunction(geoJsonPoint, latlng) {
   // otherwise, check to see if "hasBikeLapseSync" is true in the metadata for the ride
   // and set the markerType accordingly
   let markerType =  (pointName !== "DETAILS") ? pointName :
-                    (ridesData[currentRideID].metadata.hasBikeLapseSync) ? "DETAILS-BIKELAPSE" :
+                    (currentRideMetadata.hasBikeLapseSync) ? "DETAILS-BIKELAPSE" :
                     "DETAILS-REGULAR";
 
   // the markerType will be used to find the corresponding Icon in the mapIcons global settings object
@@ -73,13 +73,6 @@ function pointToLayerFunction(geoJsonPoint, latlng) {
 // The default is to do nothing with the newly created layers:
 // function (feature, layer) {}
 function onEachFeatureFunction(feature, layer) {
-
-  // console.log("On Each Feature Function Call");
-  // console.log("Feature Type: ", feature.geometry.type);
-  // console.log("Feature Name: ", feature.properties.name);
-  // // console.log("rideMetadata: ", rideMetadata);
-  // console.log("currentRideID: ", currentRideID);
-  // console.log("**********************************");
 
   let properties = feature.properties;
 
@@ -106,7 +99,7 @@ function onEachFeatureFunction(feature, layer) {
   // to any of the above "cases"
   // layer.on('click dblclick', function(e) {
   //   let 
-  //   showElevationForRideID(e, e.target.feature.properties.rideID);
+  //   showElevationForRideLayerID(e, e.target.feature.properties.ridezID);
   //   // console.log(e);
   // });
 }
@@ -119,43 +112,29 @@ function onEachFeatureFunction(feature, layer) {
 // The default is to do nothing with the newly created layers:
 // function (feature, layer) {}
 function styleFunction (geoJsonFeature) {
-
-  // console.log("**********************************");
-  // console.log("currentRideID: ", currentRideID);
-  // console.log("Filter Function Call");
-  // console.log("Feature Type: ", geoJsonFeature.geometry.type);
-  // console.log("Feature Name: ", geoJsonFeature.properties.name);
-  // console.log("    ###    ");
   
   switch (geoJsonFeature.geometry.type) {
     case 'LineString':
       let lineStringName = geoJsonFeature.properties.name;
-      // console.log("LineString name", lineStringName);
-      // console.log("Includes #? ", lineStringName.includes("#"));
-
-      // pull out the metadata object for the ride to use later
-      metadata = ridesData[currentRideID].metadata;
 
       // create the lineColor variable to use for the color of the Feature's line
-      // let lineColor = metadata.lineColor;
       let lineColor = routeLineProperties["default"].lineColor;
 
-      // if the metadata object has a "rideType" (not undefined),
+      // if the currentRideMetadata object has a "rideType" (not undefined),
       // and the "rideType" itself is not undefined,
       // use the value stored there as the key
       // into the global line options object to get the corresponding lineColor
-      if(typeof(metadata.rideType) !== undefined && metadata.rideType !== undefined){
-        // console.log("metadata rideType: ", metadata.rideType);
-        lineColor = routeLineProperties[metadata.rideType].lineColor;
+      if(typeof(currentRideMetadata.rideType) !== undefined && currentRideMetadata.rideType !== undefined){
+        lineColor = routeLineProperties[currentRideMetadata.rideType].lineColor;
       }
 
       // if the name includes a "$" then it's supposed to the easy route option and should be colored accordingly
       // if the name includes a "#" then it's supposed to the hard route option and should be colored accordingly
       if(lineStringName.includes("$")){
-        lineColor = metadata.lineColorEasy;
+        lineColor = currentRideMetadata.lineColorEasy;
       }
       else if(lineStringName.includes("#")){
-        lineColor = metadata.lineColorHard;
+        lineColor = currentRideMetadata.lineColorHard;
       }
 
       return { fillOpacity: 0.0, weight: 4, opacity: 1, color: lineColor};
@@ -212,30 +191,17 @@ function createMarkerIcon(markerType){
 // FROM THE PROPERTIES WE STORE IN THE DETAILS PIN
 function createPopupHTMLDetailsPoint(properties){
 
-  let rideMetadata = ridesData[currentRideID].metadata;
-  let rideFeatures = ridesData[currentRideID].features;
+  let rideName = validate(currentRideMetadata.rideName);
 
-  // let youTubeVideoID = validate(rideMetadata.youTubeVideoID);
-  // let videoEmbedHTML = (youTubeVideoID !== '' ? videoEmbedParams.firstHalf + youTubeVideoID + videoEmbedParams.secondHalf : 'no video URL<br>');
-
-  let rideName = validate(rideMetadata.rideName);
-
-  let stravaURL = validate(rideMetadata.stravaURL);
+  let stravaURL = validate(currentRideMetadata.stravaURL);
   let stravaHTML = (stravaURL !== '' ? '<h3><a href="' + stravaURL + '" target="_blank">Click here for Strava Recording and Map</a></h3>' : 'no strava URL<br>');
 
-  let googleMapURL = validate(rideMetadata.googleMapURL);
+  let googleMapURL = validate(currentRideMetadata.googleMapURL);
   let googleMapHTML = (googleMapURL !== '' ? '<h3><a href="' + googleMapURL + '" target="_blank">Click here for detailed Google Map</a></h3>' : 'no googlemap URL');
 
-  // find the point feature named "DETAILS"
-  let detailsPointFeature = rideFeatures.find( (element, i) =>{
-    
-    if(element.geometry.type === "Point" && element.properties.name === "DETAILS"){
-      return true;
-    }
-    return false;
-  });
 
-  let detailsPointDescription = (detailsPointFeature ? detailsPointFeature.properties.description : 'no description found');
+  // get the description from the details point properties and create one if it's not defined 
+  let detailsPointDescription = ((typeof(properties.description) !== "undefined") ? properties.description : 'no description found');
  
   return  '<h2>RIDE: ' + rideName + '</h2>' +
           detailsPointDescription + '<br><br>' +
@@ -271,12 +237,10 @@ function validate(value){
 function createPopupHTMLBasicPoints(properties){
   let markerTypeText = mapIcons[properties.name].displayText;
 
-  let rideName = ridesData[currentRideID].metadata.rideName;
+  // let rideName = ridesData[currentRidezID].metadata.rideName;
+  let rideName = currentRideMetadata.rideName;
   
   return  "<h3><b>" + markerTypeText + "</b>: " + rideName + "</h3>" + properties.description;
           // "<b>Location Details:</b><br>" + properties.description;
 
 }
-
-
-

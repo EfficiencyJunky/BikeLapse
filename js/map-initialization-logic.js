@@ -353,4 +353,21 @@ function legendOnAdd(map) {
 
 
 
+// **************** HELPER FUNCTIONS ******************
+// **************** HELPER FUNCTIONS ******************
+// **************** HELPER FUNCTIONS ******************
+
+// **************** RETURN "true" IF IT'S NIGHT OR NOT ******************
+  // checks to see if the local time is between 8pm and 6am
+  // if so, we are considering it to be night time
+function getIsNight(){
+    let todaysDate = new Date();
+  
+    let HH = String(todaysDate.getHours()).padStart(2, '0');
+  
+    // if the current hour is between 8pm (20:00) and 6am, set isNight to true
+    let isNight = (HH >= 20 || HH <= 6);
+  
+    return isNight;
+  }
   

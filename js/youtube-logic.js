@@ -69,17 +69,7 @@ function onYouTubeIframeAPIReady() {
         width: String(videoWidth),
         videoId: "",
         // Learn about the playerVars here: https://developers.google.com/youtube/player_parameters.html?playerVersion=HTML5
-        playerVars: { 
-                        // 'autoplay': 1, 
-                        'controls': 0, 
-                        'disablekb': 1,
-                        'modestbranding': 1,
-                        'playsinline': 1, // prevents full screen when pressing play on mobile
-                        'fs': 0, // prevents fullscreen button (doesn't matter if 'controls' is set to 0)
-                        'origin': "https://bikelapse.com",
-                        'widget_referrer': "https://bikelapse.com",
-                        'rel': 0
-                    },
+        playerVars: youTubePlayerOptions,
         events: {
             'onReady': onPlayerReady,
             'onStateChange': onPlayerStateChange,
