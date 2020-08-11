@@ -6,6 +6,10 @@
 // for the rides we want to dislay on the map first  
 let initialRidesToDisplay = [1, 3, 7, 8];
 
+// this will be used to remember which ride is currently highlighted
+// (meaning it was the last one to be clicked)
+let highlightedRideID = "";
+
 // "overlayLayerControl" layer is the L.control with checkboxes to hide/unhide rides on the map
 // we can add it to the map first with baseLayer and overlayLayer arguments set as "undefined"
 // then as we asyncronously read in the rideJSON files we will add the rides to it
@@ -40,26 +44,13 @@ bikeRideJSONFileNames.forEach( (jsonFileName, i) => {
     .then(response => response.json()) // Transform the data into json
     .then(rideJSON => {
     
-      // save the metadata in a globally accessible object "currentRideMetadata" 
-      // this global variable will be used to access the correct data for this ride
-      // in the 'filter', 'pointToLayer', 'onEachFeature', and 'style'
-      // functions used to create the geoJson layer below
-      currentRideMetadata = rideJSON.metadata;
-
       // ****************************************************************************
-      // CREATE A GEOJSON LAYER FOR THE 'rideJSON'
+      // CREATE A GEOJSON LAYER GROUP FOR THE 'rideJSON'
       //    ATTACH EVENT LISTENER FOR WHEN WE CLICK ON THE LAYER IN THE MAP
       //    ATTACH EVENT LISTENER FOR WHEN WE REMOVE THE LAYER FROM THE MAP (UNCHECK IT)
       // ****************************************************************************
-      let geoJsonLayerGroup = L.geoJson(rideJSON, { 
-                                                    pane: 'bikeRidesPane', // the "pane" option is inherited from the "Layer" object
-                                                    filter: filterFunction,
-                                                    pointToLayer: pointToLayerFunction,
-                                                    onEachFeature: onEachFeatureFunction,
-                                                    style: styleFunction,
-                                                    metadata: rideJSON.metadata
-                                                    // style: { fillOpacity: 0.0, weight: 4, opacity: 1, color: rideMetadata.lineColor}
-                                                  });
+      let geoJsonLayerGroup = createGeoJsonLayerGroupForRide(rideJSON, rideJSON.metadata);
+
 
       // called when a user clicks on any part of the geoJsonLayerGroup (Point, LineString, etc.)
       geoJsonLayerGroup.on('click dblclick', geoJsonLayerGroupClicked);

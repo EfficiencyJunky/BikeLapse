@@ -1,4 +1,10 @@
 // #############################################################################
+// *********  GLOBAL VARIABLES ***********************
+// #############################################################################
+
+
+
+// #############################################################################
 // *********  DISPLAY SELECTED RIDE AND ASSOCIATED DATA ***********************
 // #############################################################################
 function displaySelectedRide(rideMetadata, geoJsonLGroup, allowHiddenVideoDisplayDiv = true){
@@ -173,8 +179,8 @@ function reCenterMap(geoJsonLGroup){
   let bounds = geoJsonLGroup.getBounds();
 
   let flyToBoundsOptions = {
-    paddingTopLeft: paddingTopLeft,
-    paddingBottomRight: paddingBottomRight,
+    paddingTopLeft: flyToPaddingTopLeft,
+    paddingBottomRight: flyToPaddingBottomRight,
     maxZoom: maximumZoom,
     animate: true,
     duration: 1

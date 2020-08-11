@@ -15,8 +15,8 @@ let defaultRideViewZoom = 12;
 
 // when clicking on a BikeLapse ride, we will zoom into the ride
 // these two settings will tell the zoom function to add padding
-let paddingTopLeft = [450, 0]; //[leftside, top]
-let paddingBottomRight = [100, 0]; //[rightside, bottom]
+let flyToPaddingTopLeft = [450, 0]; //[leftside, top]
+let flyToPaddingBottomRight = [100, 0]; //[rightside, bottom]
 
 // settings for map UI elements
 let mapUISettings = {
@@ -28,6 +28,29 @@ let mapUISettings = {
   "zoomCtl":          { "position": "topright"                             },
 };
 
+
+// *************************************************************
+// SET UP A PANE FOR OUR BIKE RIDES WITH zIndex OF 399
+//    setting zIndex to 399 for our 'bikeRidesPane' in this case means that
+//    when rides are added and removed using the layer control UI  
+//    the elevation control layer (which is automatically set to z = 400)
+//    will always display on top of them 
+// *************************************************************    
+map.createPane('bikeRidesPane');
+map.getPane('bikeRidesPane').style.zIndex = 399;
+
+
+
+/* ###################################################################
+// ****  VIDEO DISPLAY AND RABBIT MARKER
+//          the videoDisplayDiv is where we will display our YouTube video iFrame
+//          the rabbitMarker is what will run around on the map to show the 
+//          location of each frame of the video      
+###################################################################### */
+// ****************************************************************************
+//  THE DIV WHERE WE WILL DISPLAY THE VIDEO (IFRAME) AND CONTROLS
+// ****************************************************************************
+let videoDisplayDiv;
 
 // *******************************************
 // YOUTUBE PLAYER PARAMETERS
@@ -49,38 +72,41 @@ let youTubePlayerOptions = {
   'rel': 0
 };
 
+// *******************************************
+// RABBIT MARKER USED TO SHOW THE LOCATION
+// FOR EACH FRAME OF THE VIDEO ON THE MAP
+// *******************************************
+let rabbitMarker;
+let rabbitMarkerOptions = {
+  iconUrl: '../img/rabbit-marker.png',
+  shadowUrl: '../img/rabbit-marker-shadow.png',  
+  rabbitIconWidth: 200,
+  rabbitIconHeight: 167,
+  scaleFactor: 0.2
+};
+let rabbitCoordsArray;
+let showRabbitOnRoute = false;
+
+
+
+
 
 
 
 /* ###################################################################
-   ****  GLOBAL VARIABLES -- GLOBAL VARIABLES -- GLOBAL VARIABLES ****
-###################################################################### */
-// global variable that allows us to pass data to the callbacks
-// that are called as the L.geoJson Layer Groups are created
-let currentRideMetadata;
-
-// these will be used when adding/removing rides
-let highlightedRideID = "";
-
-
-// *************************************************************
-// SET UP A PANE FOR OUR BIKE RIDES WITH zIndex OF 399
-//    setting zIndex to 399 for our 'bikeRidesPane' in this case means that
-//    when rides are added and removed using the layer control UI  
-//    the elevation control layer (which is automatically set to z = 400)
-//    will always display on top of them 
-// *************************************************************    
-map.createPane('bikeRidesPane');
-map.getPane('bikeRidesPane').style.zIndex = 399;
-
-
-// *************************************************************
-// ELEVATION CONTROL CREATION
+// ELEVATION CONTROL
 //    the elevationControl will be used throughout the app to 
 //    display the elevation for a selected ride 
 //    find out more about elevation control and options here: https://github.com/MrMufflon/Leaflet.Elevation
-// *************************************************************
+###################################################################### */
+// ****************************************************************************
+//  THE DIV WHERE WE WILL DISPLAY THE ELEVATION CONTROL AND TITLE
+// ****************************************************************************
 let elevationDisplayDiv;
+
+// *******************************************
+// THE ELEVATION CONTROL AND OPTIONS
+// *******************************************
 let elevationControl;
 let elevationControlOptions = {
   position: mapUISettings.elevation.position,
@@ -106,32 +132,12 @@ let elevationControlOptions = {
   imperial: true    //display imperial units instead of metric
 }
 
-// the layer that holds the information for the rabit display for the elevation control
-// this is the layer that will be added and removed as data is added and removed from the elevationControl layer
+// ****************************************************************
+// ELEVATION FOLLOW MARKER LAYER IS USED TO SHOW THE LOCATION
+// FOR EACH POINT OF THE ELEVATION CONTROL ON THE MAP
+// ****************************************************************
+// this layer that will be added and removed as data is added and removed from the elevationControl layer
 let elevationFollowMarkerLayer;
-
-
-
-
-// ****************************************************************************
-// VIDEO DISPLAY AND RABBIT MARKER
-//    the videoDisplayDiv is where we will display our YouTube video iFrame
-//    the rabbitMarker is what will run around on the map to show the 
-//    location of each frame of the video
-// ****************************************************************************
-let videoDisplayDiv;
-
-let rabbitMarker;
-let rabbitMarkerOptions = {
-  iconUrl: '../img/rabbit-marker.png',
-  shadowUrl: '../img/rabbit-marker-shadow.png',  
-  rabbitIconWidth: 200,
-  rabbitIconHeight: 167,
-  scaleFactor: 0.2
-};
-let rabbitCoordsArray;
-let showRabbitOnRoute = false;
-
 
 
 
@@ -140,9 +146,6 @@ let showRabbitOnRoute = false;
 /* ###################################################################
    ****  VARIOUS OTHER INDIVIDUAL VARIABLES AND OBJECTS FOR SETTINGS
 ###################################################################### */
-
-
-
 // ICON PROPERTIES AND HOW THEY TRANSLATE TO CSS:
     // iconSize: [24, 24]
         // creates css --> width: 24px; 
@@ -181,47 +184,3 @@ let routeLineProperties = {
 
 let routeIconBaseClass = "legend-route-icon";
 
-
-/* #######################################################################################
-// ************ CLASSES AND CLASS EXTENSIONS ************
-// ************ CLASSES AND CLASS EXTENSIONS ************
-// ************ CLASSES AND CLASS EXTENSIONS ************
-########################################################################################## */
-// *************************************************************************************** 
-// EXTEND THE BASE LEAFLET "Layer" CLASS USING ".include({myobjects})" 
-//    In the documentation they use this nomenclature .include(MyMixin);"
-//    Find out more here: https://leafletjs.com/reference-1.6.0.html#class
-//    Since each JSON file has metadata attached to it (Ride Name, YouTube Video, etc.)
-//    We will embed this metadata in each of our L.geoJson Layer Groups that
-//    We create to represent each of our rides
-// ***************************************************************************************     
-L.Layer.include({
-  getMetadata: function () {
-    let options = this.options = this.options || {}; // Initialize the options, if missing.
-    options.metadata = options.metadata || {}; // Initialize the metadata, if missing.
-    return options.metadata;
-  }
-});
-
-
-// ******************************************************************* 
-// ASYNCRONOUS COUNTER CLASS 
-//    Triggers a callback when all asyncronous tasks have completed
-//    Because we only want to call the callback
-//    after all the API calls etc have finished running
-// *******************************************************************     
-class AsyncCounter {
-  constructor(numCalls, callback){
-    this.callback = callback;
-    this.numCalls = numCalls;
-    this.calls = 0;
-  }
-
-  increment(){
-    this.calls += 1;
-
-    if(this.calls === this.numCalls){
-        this.callback();
-    }
-  }
-}

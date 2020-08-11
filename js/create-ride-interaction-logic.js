@@ -1,7 +1,41 @@
-// ##########################################################################################################################
-// *********  MAIN FUNCTIONS FOR IMPORTING/CONVERTING GPX FILE ****************
-// ##########################################################################################################################
+/* #############################################################################
+// ************ GLOBAL VARIABLES and CLASS DECLARATIONS ************
+// ************ GLOBAL VARIABLES and CLASS DECLARATIONS ************
+// ************ GLOBAL VARIABLES and CLASS DECLARATIONS ************
+################################################################################ */
+// ******************************************************************* 
+// ASYNCRONOUS COUNTER CLASS 
+//    Triggers a callback when all asyncronous tasks have completed
+//    Because we only want to call the callback
+//    after all the API calls etc have finished running
+// *******************************************************************     
+class AsyncCounter {
+    constructor(numCalls, callback){
+        this.callback = callback;
+        this.numCalls = numCalls;
+        this.calls = 0;
+    }
 
+    increment(){
+        this.calls += 1;
+    
+        if(this.calls === this.numCalls){
+            this.callback();
+        }
+    }
+}
+
+
+
+/* #############################################################################
+// ************ FUNCTIONS ************
+// ************ FUNCTIONS ************
+// ************ FUNCTIONS ************
+################################################################################ */
+
+// ############################################################################################
+// *********  MAIN FUNCTION FOR IMPORTING/CONVERTING GPX FILE ****************
+// ############################################################################################
 // ****************************************************************
 //     WHEN A USER CHOOSES ONE OR MORE GPX FILES WE NEED TO
 //     READ THE SELECTED GPX FILE(S) INTO MEMORY AS A DOCDOMS, COMBINE THEM INTO ONE GPX FILE
@@ -188,8 +222,7 @@ function renameLineStringToROUTE(tempGeoJson) {
     }
     else{
         alert('GeoJSON generated from GPX file has more (or fewer) than one feature in its FeatureCollection\n' +
-              'features.length == ' + tempGeoJson.features.length + '\n' 
-            //  + 'features[0].geometry.type == ' + tempGeoJson.features[0].geometry.type
+              'features.length == ' + tempGeoJson.features.length
              );
     }
 
@@ -323,9 +356,12 @@ function createPointFeature(routeLineString, pointName, pointLocationName = 'Loc
             },
             "properties": {
               "name": pointName,
-              "description": (pointName === "DETAILS") ? createDetailsDescription(routeLineString, formattedDateTimeString) : '<b>Location Name:</b> ' + pointLocationName + '<br><br>' +
-                                                                                      '<b>Time:</b> ' + formattedDateTimeString + '<br>' +
-                                                                                      '<b>Elevation:</b> ' + Math.round(pointCoords[2]*3.28084) + ' feet &nbsp (' + Math.round(pointCoords[2]) + ' meters)'
+              "description": (pointName === "DETAILS") ? 
+                              createDetailsDescription(routeLineString, formattedDateTimeString) :
+                              `<b>Location Name:</b> ${pointLocationName}
+                               <br><br> +
+                               <b>Time:</b> ${formattedDateTimeString}<br>
+                               <b>Elevation:</b> ${Math.round(pointCoords[2]*3.28084)} feet &nbsp (${Math.round(pointCoords[2])} meters)`
             }
           }
 
@@ -362,16 +398,16 @@ function createDetailsDescription(routeLineString, formattedStartTimeString){
 
     let elevationStats = getElevationStats(coordinates);
 
-    return '<b>Start Time:</b> ' + formattedStartTimeString + '<br>' +
-           '<b>Distance:</b> ' + linestringDistance.mi + ' miles &nbsp (' + linestringDistance.km + ' km)<br>' +
-           '<b>Moving Time:</b> ' + linestringMovingDuration.string + '<br>' +
-           '<b>Average Moving Speed:</b> ' + avgMovingSpeed.mph + ' mph &nbsp (' + avgMovingSpeed.kph + ' kph)<br>' +
-           '<b>Elapsed Time:</b> ' + linestringElapsedDuration.string + '<br>' +
-           '<b>Average Elapsed Speed:</b> ' + avgElapsedSpeed.mph + ' mph &nbsp (' + avgElapsedSpeed.kph + ' kph)<br>' +
-           '<b>Minimum Elevation:</b> ' + elevationStats.min_ft + ' feet &nbsp (' + elevationStats.min_m + ' meters)<br>' +
-           '<b>Maximum Elevation:</b> ' + elevationStats.max_ft + ' feet &nbsp (' + elevationStats.max_m + ' meters)<br>' +
-           '<b>Total Climb:</b> ' + elevationStats.gain_ft + ' feet &nbsp (' + elevationStats.gain_m + ' meters)<br>' +
-           '<b>Total Descent:</b> ' + elevationStats.descent_ft + ' feet &nbsp (' + elevationStats.descent_m + ' meters)';
+    return `<b>Start Time:</b>            ${formattedStartTimeString}<br>
+            <b>Distance:</b>              ${linestringDistance.mi} miles &nbsp (${linestringDistance.km} km)<br>
+            <b>Moving Time:</b>           ${linestringMovingDuration.string}<br>
+            <b>Average Moving Speed:</b>  ${avgMovingSpeed.mph} mph &nbsp (${avgMovingSpeed.kph} kph)<br>
+            <b>Elapsed Time:</b>          ${linestringElapsedDuration.string}<br>
+            <b>Average Elapsed Speed:</b> ${avgElapsedSpeed.mph} mph &nbsp (${avgElapsedSpeed.kph} kph)<br>
+            <b>Minimum Elevation:</b>     ${elevationStats.min_ft} feet &nbsp (${elevationStats.min_m} meters)<br>
+            <b>Maximum Elevation:</b>     ${elevationStats.max_ft} feet &nbsp (${elevationStats.max_m} meters)<br>
+            <b>Total Climb:</b>           ${elevationStats.gain_ft} feet &nbsp (${elevationStats.gain_m} meters)<br>
+            <b>Total Descent:</b>         ${elevationStats.descent_ft} feet &nbsp (${elevationStats.descent_m} meters)`;
 }
 
 // *********************************************************************************************************************
@@ -398,7 +434,7 @@ function showGeoJSONInTextArea(geoJson){
 //      that is likely not necessary, but will be good if in the future
 //      we want to allow the ability to re-import GPX files
 // ************************************************************************
-function addRideToMap(operation){
+function addRideToMap(){
   
     // if we're updating the map (only used in create-ride interface), 
     // then the geoJsonLayerGroup will be set to undefined
@@ -409,29 +445,19 @@ function addRideToMap(operation){
       geoJsonLayerGroup.remove();
     }
     
-    currentRideMetadata = geoJsonData.metadata;
     // *****************************************************************
     //   CREATE (OR RE-CREATE) THE GEOJSONLAYERGROUP AND ADD TO THE MAP
     // *****************************************************************
-    geoJsonLayerGroup = L.geoJson(geoJsonData, { 
-                                                                pane: 'bikeRidesPane', // the "pane" option is inherited from the "Layer" object
-                                                                filter: filterFunction,
-                                                                pointToLayer: pointToLayerFunction,
-                                                                onEachFeature: onEachFeatureFunction,
-                                                                style: styleFunction,
-                                                                metadata: currentRideMetadata
-                                                                // style: { fillOpacity: 0.0, weight: 4, opacity: 1, color: geoJsonData.metadata.lineColor}
-                                                            });
-
+    geoJsonLayerGroup = createGeoJsonLayerGroupForRide(geoJsonData, geoJsonData.metadata);
 
     // add it to the map
     geoJsonLayerGroup.addTo(map);
     
     
     // *************************************************************
-    //     ADD THE BASIC LAYERS TO THE ACTUAL MAP
+    //     DISPLAY ALL OF THE UI AND INFO FOR THE RIDE
     // ************************************************************* 
-    displaySelectedRide(currentRideMetadata, geoJsonLayerGroup, allowHiddenVideoDisplayDiv = false);
+    displaySelectedRide(geoJsonData.metadata, geoJsonLayerGroup, allowHiddenVideoDisplayDiv = false);
 
     reCenterMap(geoJsonLayerGroup);
 }
@@ -511,7 +537,7 @@ function saveChangesButtonHandler(event){
         // print GeoJson to textarea
         showGeoJSONInTextArea(geoJsonData);
         
-        addRideToMap("update");
+        addRideToMap();
         
         //******** update save button and clear helper text *********************************
         unsavedChanges(false);

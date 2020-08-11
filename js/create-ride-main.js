@@ -8,8 +8,8 @@ minimumZoom = 2;
 // override global padding to use when first displaying ride
 // when clicking on a BikeLapse ride, we will zoom into the ride
 // these two settings will tell the zoom function to add padding
-paddingTopLeft = [0, 0]; //[leftside, top]
-paddingBottomRight = [0, 100]; //[rightside, bottom]
+flyToPaddingTopLeft = [0, 0]; //[leftside, top]
+flyToPaddingBottomRight = [0, 100]; //[rightside, bottom]
 
 // this is the object to hold our GeoJson that the user will download
 let geoJsonData;
