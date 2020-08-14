@@ -184,17 +184,61 @@
     }
 
     /* ELEVATION CONTROL CSS OVERRIDES */
+
+    /* controls the background color of the elevation DIV */
     .steelblue-theme.leaflet-control.elevation .background {
-      background-color:rgba(70,130,180,0);
+      /* THE ALPHA IS SET TO 0 HERE */
+      background-color:rgba(92, 92, 92,0);
 
       /* Original Value from "leaflet.elevation-0.0.4.css" */
       /* background-color:rgba(70,130,180,0.2); */
     }
-
+    
+    /* controls the area fill of the plot in elevation DIV */
     .steelblue-theme.leaflet-control.elevation .area{
-      fill:#a0a0a0;
+      /* fill:#a0a0a0; */
+      fill:rgb(160, 160, 160, 1.0);
     }
 
+    /* controls the mouse drag area fill when click/drag on elevation div */
+    .steelblue-theme.leaflet-control.elevation .mouse-drag{
+        fill: rgba(73, 73, 73, 0.4);
+    }
+    
+    /* controls the height marker that draws on top of the route */
+    .steelblue-theme.height-focus{
+      /* controls the line part and outline of round part */
+      stroke:rgb(145, 145, 145);
+
+      /* controls the fill of the round part */
+      fill:rgb(99, 99, 99);
+    }
+    
+    /* controls the line part of heigh marker that draws on top of the route */
+    .steelblue-theme.height-focus.line{
+      pointer-events:none;
+      stroke-width:3
+    }
+
+    .steelblue-theme.height-focus-label{
+      font-size: large;
+    }
+
+    /* .steelblue-theme.height-focus-label::after{
+      content:'';
+      position: relative;
+      background-color: rgb(255, 255, 255);
+      border:rgb(14, 14, 14) solid 4px;
+      height: 100px;
+      width: 100px;
+      top: 10;
+      bottom: 10;
+      left: 10;
+      right: 10;
+    }  */
+
+
+    /* pixel pushing the entire div down and left slightly */
     .steelblue-theme.leaflet-control.elevation {
       /* background-color:rgba(70,130,180,0); */
       margin-left: -30px;
@@ -212,7 +256,6 @@
       border-radius: 5px;      
       overflow: hidden;
     }
-
 
 
   </style>
@@ -299,10 +342,11 @@
   <!-- ########### OTHER PEOPLE'S MAPING RELATED LIBRARIES WE'RE USING ############ -->
   <script type="text/javascript" src='js/lib/geojson-tools.js'></script>
   <script type="text/javascript" src="js/lib/leaflet.elevation-0.0.4.min.js"></script>
+  <!-- <script type="text/javascript" src="js/lib/leaflet.elevation-0.0.4.src.js"></script> -->
 
   <!-- API key -->
-  <script type="text/javascript" src="js/config/mapbox_api_key.js"></script>
-  <!-- <script type="text/javascript" src="js/config/mapbox_api_key_test.js"></script> -->
+  <!-- <script type="text/javascript" src="js/config/mapbox_api_key.js"></script> -->
+  <script type="text/javascript" src="js/config/mapbox_api_key_test.js"></script>
 
   <!-- Our JS -->
   <!-- shared JS functionality -->
