@@ -10,7 +10,7 @@ let map = L.map("map", {
 
 // map zoom parameters
 let minimumZoom = 10;
-let maximumZoom = 18;
+let maximumZoom = 20;
 let defaultRideViewZoom = 12;
 
 // when clicking on a BikeLapse ride, we will zoom into the ride
