@@ -257,6 +257,38 @@
       overflow: hidden;
     }
 
+    /* ▼ */
+    #collapse-button.btn.p-2.collapse-but::after{
+      content: "Hide Video";
+    }
+
+    #collapse-button.btn.p-2.collapse-but.collapsed::after{
+      content: "Show Video";
+    }
+    
+
+    .collapse-but{
+      background-color: rgba(255,255,255,0.8);
+      height: 1.4rem;
+      position: absolute;
+      top: -1.9rem;
+      padding-top: 2px !important;
+      vertical-align: middle;
+      border-color: lightslategray;
+      border-top-width: 1px;
+      border-right-width: 1px;
+      border-left-width: 1px;
+      border-bottom-width: 0px;
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+      /* box-shadow: 0px 0px 50px lightslategray; */
+      /* padding-bottom: 0px;
+      margin-top: 0px;
+      margin-bottom: 0px; */
+      font-size: 0.8rem;
+    }
+
+
 
   </style>
 
@@ -303,10 +335,13 @@
         we need to wrap it in this "player-parent" div and reference the "player-parent"
         in our logic whenever we want to hide/unhide the video player -->
   <div id="player-parent" hidden>
-    <div id="player">
+    <div class="d-flex flex-row-reverse" style="position :relative; height:0px" >
+      <button id="collapse-button" class="btn p-2 collapse-but" data-toggle="collapse" data-target="#player"></button><br>
+    </div>
+    <div id="player" class="collapse show">
       video iFrame will replace this div
     </div>
-    <div class="transport-controls">
+    <div class="transport-controls" style="width:450px">
       <button id="play-pause" class="play btn btn-primary "></button>
       <!-- <button id="stop">▇</button> -->
       <input type="range" min="0" max="100" value="0" class="slider" id="slider">
