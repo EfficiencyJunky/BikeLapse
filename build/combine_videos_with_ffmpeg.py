@@ -4,7 +4,7 @@ from os import system
 import subprocess
 
 # the extension to search for and its path
-baseFolderPath = "../reference_info/TESTING_MODULES/ffmpeg_combine_videos/input/"
+baseFolderPath = "../_TESTING_MODULES/ffmpeg_combine_videos/input/"
 fileExtensionToSearchFor = "*.MOV"
 pathOfExtensionToSearchFor = baseFolderPath + fileExtensionToSearchFor
 

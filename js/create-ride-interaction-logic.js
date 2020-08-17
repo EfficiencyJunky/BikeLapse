@@ -359,7 +359,7 @@ function createPointFeature(routeLineString, pointName, pointLocationName = 'Loc
               "description": (pointName === "DETAILS") ? 
                               createDetailsDescription(routeLineString, formattedDateTimeString) :
                               `<b>Location Name:</b> ${pointLocationName}
-                               <br><br> +
+                               <br><br>
                                <b>Time:</b> ${formattedDateTimeString}<br>
                                <b>Elevation:</b> ${Math.round(pointCoords[2]*3.28084)} feet &nbsp (${Math.round(pointCoords[2])} meters)`
             }

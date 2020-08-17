@@ -55,8 +55,14 @@ let videoDisplayDiv;
 // *******************************************
 // YOUTUBE PLAYER PARAMETERS
 // *******************************************
-let videoHeight = 250;
-let videoWidth = Math.round(videoHeight * 1.777777);    // 250 * 1.77777 == 444 just so you know
+let videoWidth = 450; // make sure the "transport-controls" element is set to the same width
+let videoHeight =  Math.round(videoWidth * 0.5625); // 450 * 0.5625 == 253 just so you know
+
+// if we wanted to scale the video by height instead of width, but we really don't
+// let videoHeight = 250;
+// let videoWidth = Math.round(videoHeight * 1.777777); // 250 * 1.77777 == 444 just so you know
+
+// this is likely obsolete now that our video player is in it's own DIV
 let bindPopupProperties = {maxWidth: videoWidth + 40};
 
 // Learn about the playerVars that can be used for this "youTubePlayerOptions" object here: https://developers.google.com/youtube/player_parameters.html?playerVersion=HTML5
@@ -113,12 +119,12 @@ let elevationControlOptions = {
   theme: "steelblue-theme", //default: lime-theme
   width: 600,
   height: 125,
-  // margins: {
-  //     top: 10,
-  //     right: 20,
-  //     bottom: 30,
-  //     left: 50
-  // },
+  margins: {
+      top: 20,
+      right: 60,
+      bottom: 25,
+      left: 25
+  },
   useHeightIndicator: true, //if false a marker is drawn at map position
   interpolation: d3.curveLinear, //see https://github.com/d3/d3-shape/blob/master/README.md#area_curve
   hoverNumber: {

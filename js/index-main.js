@@ -14,8 +14,8 @@ let highlightedRideID = "";
 // we can add it to the map first with baseLayer and overlayLayer arguments set as "undefined"
 // then as we asyncronously read in the rideJSON files we will add the rides to it
 let overlayLayerControl = L.control.layers(undefined, undefined, {
-  collapsed: mapUISettings.overlayLayerCtl.collapsed,
-  position: mapUISettings.overlayLayerCtl.position
+  position: mapUISettings.overlayLayerCtl.position,
+  collapsed: mapUISettings.overlayLayerCtl.collapsed
 }).addTo(map);
 
 // move the zoom control to the position specified in the mapUISettings object

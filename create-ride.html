@@ -102,10 +102,7 @@
       margin-bottom: 20px;
     }
 
-    .elevation-display-div{
-      width: 100%;
-      font-size: 12px;
-    }
+
 
     .leaflet-popup-content h3 {
       display: block;
@@ -204,26 +201,30 @@
       display: none;  
     }
 
-    #player-parent{
-      width: 460px;
-      padding: 8px 8px 8px 8px;
-      margin-bottom: 10px;
+    #player-parent, #elevation-display-div{
       background: rgb(238, 238, 238);
+      border: solid;
+      border-width: 1px;
+      border-color: rgb(207, 207, 207);
     }
 
+    /* #elevation-display-div{
+      background: rgb(238, 238, 238);
+    } */
 
     /* ELEVATION CONTROL CSS OVERRIDES */
-    /* .steelblue-theme.leaflet-control.elevation .background {
+    .elevation.steelblue-theme.leaflet-control.elevation .background {
       background-color:rgba(70,130,180,0);
     }
 
-    .steelblue-theme.leaflet-control.elevation {
-      margin-left: -30px;
-      margin-bottom: -10px;
-      padding-top: -10px;
-    } */
+    /* .steelblue-theme.leaflet-control.elevation { */
+      /* margin-left: 0px;
+      margin-bottom: 30px;
+      padding-bottom: 20px; */
+      /* margin-right: -50px; */
+    /* } */
 
-    /* .elevation-container {
+    /* .elevation-control-styles {
       padding: 10px 0px 10px 10px;
       font: 14px/16px Arial, Helvetica, sans-serif;
       background: white; */
@@ -369,10 +370,10 @@
 
       <!-- ########### COLUMN 2 - VIDEO, MAP, ELEVATION ############ -->
       <div class="col-lg-8">
-        <div class="row mb-2">
+        <div class="row mb-4">
 
           
-          <div class="col-lg-8">
+          <div class="col-lg-8 d-flex">
             <!-- The YouTube API requires that we place an empty div with id="player" on the page.
               When the YouTube API is first initialized, it will steal this "player" div, and
               transform it into an iFrame with a video player inside it that we can control with the API.
@@ -403,16 +404,25 @@
 
         </div>
 
-        <div id="map" class="map-div"><h1 class="map-placeholder-text">You <i>should</i> see a map here...</h1></div>
+        <div class="row mb-2">
+          <div class="col-lg-12">
 
+            <div id="map" class="map-div"><h1 class="map-placeholder-text">You <i>should</i> see a map here...</h1></div>
+          </div>
+        </div>
 
   
-
-        <div id="elevation-display-div" class="elevation-container">
-          <div><h5>Elevation</h5></div>
-          
+        <div class="row">
+          <div class="col-lg-12 d-flex">
+            <div id="elevation-display-div" class="elevation-control-styles">
+              <div>
+                <h5>Elevation</h5>
+              </div>
+              
+            </div>
+          </div>
         </div>
-          
+
         <br>
         <!-- <div id="elevation-display-div" class="leaflet-bar leaflet-control elevation-div"></div> -->
       </div>

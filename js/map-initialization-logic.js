@@ -163,6 +163,7 @@ function initializeMapOverlaysAndUI(hideElevationDisplayDiv = true, hideVideoDis
     // initialize the elevationControl by adding to the map
     elevationControl = L.control.elevation(elevationControlOptions);
     elevationControl.addTo(map);
+    let elevationControlDiv = elevationControl.getContainer();
     
     // ##### OPTIONAL: CREATE A DIV TO DISPLAY THE ELEVATIOIN CONTROL IN #######
     // if we havent't yet defined the div to put our elevationControl inside of
@@ -172,32 +173,65 @@ function initializeMapOverlaysAndUI(hideElevationDisplayDiv = true, hideVideoDis
     // afterwards we will take the elevationControl and place it in this new layer/div
     if(elevationDisplayDiv === undefined){
 
+        // // create a new Control Layer that we will use to contain the elevationControl on the map
+        // let elevationControlContainerLayer = L.control({
+        //         position: mapUISettings.elevation.position
+        //     });
+
+        // // define the layer's onAdd function
+        // elevationControlContainerLayer.onAdd = function(mymap){
+        //     // create a div and give it the "elevation-display-div" ID and "elevation-container" class
+        //     let div = L.DomUtil.create('elevation-display-div', 'elevation-container');
+
+        //     // add some HTML to display the title "Elevation". 
+        //     // later we will add the elevationControl beneath the title
+        //     div.innerHTML = "<div><h5>Elevation</h5></div>";
+
+        //     return div;
+        // };
+
+        // // add the new layer to the map to create the div defined in the onAdd function
+        // elevationControlContainerLayer.addTo(map)
+
+        // // get a reference to the container/div that the Layer created in the onAdd function
+        // // and store it in our globally accessible "elevationDisplayDiv" variable so we can hide/unhide later
+        // elevationDisplayDiv = elevationControlContainerLayer.getContainer();
+
+
         // create a new Control Layer that we will use to contain the elevationControl on the map
-        let elevationControlContainerLayer = L.control({position: mapUISettings.elevation.position});
+        let elevationDisplayLayer = L.control({
+                position: mapUISettings.elevation.position
+            });
 
         // define the layer's onAdd function
-        elevationControlContainerLayer.onAdd = function(mymap){
+        elevationDisplayLayer.onAdd = function(mymap){
             // create a div and give it the "elevation-display-div" ID and "elevation-container" class
-            let div = L.DomUtil.create('elevation-display-div', 'elevation-container');
+            // let div = L.DomUtil.create('elevation-display-div', 'elevation-container');
+            let div = L.DomUtil.get('elevation-display-div');
 
             // add some HTML to display the title "Elevation". 
             // later we will add the elevationControl beneath the title
-            div.innerHTML = "<div><h5>Elevation</h5></div>";
+            // div.innerHTML = "<div><h5>Elevation</h5></div>";
 
             return div;
         };
 
         // add the new layer to the map to create the div defined in the onAdd function
-        elevationControlContainerLayer.addTo(map)
+        elevationDisplayLayer.addTo(map)
 
         // get a reference to the container/div that the Layer created in the onAdd function
         // and store it in our globally accessible "elevationDisplayDiv" variable so we can hide/unhide later
-        elevationDisplayDiv = elevationControlContainerLayer.getContainer();
+        elevationDisplayDiv = elevationDisplayLayer.getContainer();
+
+        // we don't want clicks on this layer/div to propagate to the layers below
+        // otherwise, our custom video playhead slider will malfunction
+        elevationControlDiv.setAttribute("id", "elevation-control-div");
+        elevationControlDiv.classList.add("collapse", "show");
     }
 
 
     // grab the container/div that contains the elevationControl layer and move it to our elevationDisplayDiv
-    elevationDisplayDiv.appendChild(elevationControl.getContainer());
+    elevationDisplayDiv.appendChild(elevationControlDiv);
 
     // set the elevationDisplayDiv's hidden attribute to the variable we passed in (true by default meaning we want it to NOT be visible)
     elevationDisplayDiv.hidden = hideElevationDisplayDiv;
@@ -218,26 +252,28 @@ function initializeMapOverlaysAndUI(hideElevationDisplayDiv = true, hideVideoDis
     if(videoDisplayDiv === undefined){
         
         // create the layer
-        let videoIframeContainerLayer = L.control({position: mapUISettings.videoViewer.position});
+        let videoDisplayLayer = L.control({
+                position: mapUISettings.videoViewer.position
+            });
 
         // define the layer's onAdd function
-        videoIframeContainerLayer.onAdd = function(mymap){
+        videoDisplayLayer.onAdd = function(mymap){
           // get the div in our HTML who's child will be the youtube iFrame
           // and the video playback controls
           let div = L.DomUtil.get('player-parent');
 
           // unhide this div as we will control visibility through the Container Layer's div
-          div.hidden = false;
+        //   div.hidden = false;
         
           return div;
         };
         
         // add the layer to the map
-        videoIframeContainerLayer.addTo(map);
+        videoDisplayLayer.addTo(map);
 
         // get a reference to the container/div that the Layer created in the onAdd function
         // store this div in our globally accessible "videoDisplayDiv" variable so we can hide/unhide later
-        videoDisplayDiv = videoIframeContainerLayer.getContainer();
+        videoDisplayDiv = videoDisplayLayer.getContainer();
 
         // we don't want clicks on this layer/div to propagate to the layers below
         // otherwise, our custom video playhead slider will malfunction

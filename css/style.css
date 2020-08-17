@@ -151,18 +151,18 @@ we would also need to add this class along with the usual class for each icon */
 }
 
 
+/* ELEVATION AND VIDEO PLAYER DIVS */
+#player-parent, #elevation-display-div{
+  padding: 8px 8px 4px 8px;
+  border-radius: 5px;
+  /* font: 12px/14px Arial, Helvetica, sans-serif; */
+  /* background: white; */
+}
+
+
 /* YOUTUBE PLAYER CSS */
 .transport-controls{
   margin: 5px 0px;
-}
-
-#player-parent{
-  padding: 8px 8px 4px 8px;
-  /* font: 12px/14px Arial, Helvetica, sans-serif; */
-  /* background: white; */
-  background: rgba(255,255,255,0.8);
-  box-shadow: 0 0 15px rgba(0,0,0,0.2);
-  border-radius: 5px;
 }
 
 #play-pause, #stop{
@@ -263,65 +263,58 @@ we would also need to add this class along with the usual class for each icon */
 }
 
 
+/* ELEVATION CONTROL CSS OVERRIDES */
 
-
-/* .steelblue-theme.leaflet-control.elevation .background{
-  background-color:rgba(70,130,180,.2);
-  -webkit-border-radius:5px;
-  -moz-border-radius:5px;
-  -ms-border-radius:5px;
-  -o-border-radius:5px;border-radius:5px
+/* making the font for elevation numbering a bit larger 
+and pixel pushing the entire div down and left slightly 
+this is because the "margins" are set in the "elevationControlOptions"
+in the "global-settings.js" file and they make things act a little weird */
+.steelblue-theme.leaflet-control.elevation, .steelblue-theme.height-focus-label{
+  /* background-color:rgba(70,130,180,0); */
+  font: 18px/20px Arial, Helvetica, sans-serif;
+  margin-left: 0px;
+  margin-bottom: 0px;
+  margin-right: -50px;
 }
 
-.steelblue-theme.leaflet-control.elevation .axis line,
-.steelblue-theme.leaflet-control.elevation .axis path{
-  fill:none;
-  stroke:#0d1821;
-  stroke-width:2
-} */
 
-/* .steelblue-theme.leaflet-control.elevation .mouse-drag{
-  fill:rgba(23, 117, 31, 0.4)
-} */
-/* .steelblue-theme.leaflet-control.elevation .elevation-toggle{
-  cursor:pointer;
-  box-shadow:0 1px 7px rgba(0,0,0,.4);
-  -webkit-border-radius:5px;
-  border-radius:5px;
-  width:36px;
-  height:36px;
-  background-color:#f8f8f9
+/* controls the background color of the elevation DIV */
+.steelblue-theme.leaflet-control.elevation .background {
+  /* THE ALPHA IS SET TO 0 HERE */
+  background-color:rgba(92, 92, 92,0);
+
+  /* Original Value from "leaflet.elevation-0.0.4.css" */
+  /* background-color:rgba(70,130,180,0.2); */
 }
-.steelblue-theme.leaflet-control.elevation .elevation-toggle-icon{
-  background:url(images/elevation-steelblue.png) no-repeat center center
-}
+
+/* controls the area fill of the plot in elevation DIV */
 .steelblue-theme.leaflet-control.elevation .area{
-  fill:#4682b4
+  /* fill:#a0a0a0; */
+  fill:rgb(160, 160, 160, 1.0);
 }
 
-.steelblue-theme.leaflet-control.elevation .mouse-focus-lin{
-    pointer-events:none;
-    stroke-width:1;
-    stroke:#210d0d
+/* controls the mouse drag area fill when click/drag on elevation div */
+.steelblue-theme.leaflet-control.elevation .mouse-drag{
+    fill: rgba(73, 73, 73, 0.4);
 }
 
-.steelblue-theme.leaflet-control.elevation-collapsed .background{
-  display:none
-}
-
-.steelblue-theme.leaflet-control.elevation-collapsed .elevation-toggle{
-  display:block
-}
-
+/* controls the height marker that draws on top of the route */
 .steelblue-theme.height-focus{
-  stroke:#46b458;
-  fill:#b44646;
-  font-weight: 900;
+  /* controls the line part and outline of round part */
+  stroke:rgb(145, 145, 145);
+
+  /* controls the fill of the round part */
+  fill:rgb(99, 99, 99);
 }
+
+/* controls the line part of heigh marker that draws on top of the route */
 .steelblue-theme.height-focus.line{
   pointer-events:none;
-  stroke-width:2
-} */
+  stroke-width:3
+}
+
+
+
 
 
 

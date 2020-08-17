@@ -183,95 +183,18 @@
       }
     }
 
-    /* ELEVATION CONTROL CSS OVERRIDES */
-
-    /* controls the background color of the elevation DIV */
-    .steelblue-theme.leaflet-control.elevation .background {
-      /* THE ALPHA IS SET TO 0 HERE */
-      background-color:rgba(92, 92, 92,0);
-
-      /* Original Value from "leaflet.elevation-0.0.4.css" */
-      /* background-color:rgba(70,130,180,0.2); */
-    }
-    
-    /* controls the area fill of the plot in elevation DIV */
-    .steelblue-theme.leaflet-control.elevation .area{
-      /* fill:#a0a0a0; */
-      fill:rgb(160, 160, 160, 1.0);
-    }
-
-    /* controls the mouse drag area fill when click/drag on elevation div */
-    .steelblue-theme.leaflet-control.elevation .mouse-drag{
-        fill: rgba(73, 73, 73, 0.4);
-    }
-    
-    /* controls the height marker that draws on top of the route */
-    .steelblue-theme.height-focus{
-      /* controls the line part and outline of round part */
-      stroke:rgb(145, 145, 145);
-
-      /* controls the fill of the round part */
-      fill:rgb(99, 99, 99);
-    }
-    
-    /* controls the line part of heigh marker that draws on top of the route */
-    .steelblue-theme.height-focus.line{
-      pointer-events:none;
-      stroke-width:3
-    }
-
-    .steelblue-theme.height-focus-label{
-      font-size: large;
-    }
-
-    /* .steelblue-theme.height-focus-label::after{
-      content:'';
-      position: relative;
-      background-color: rgb(255, 255, 255);
-      border:rgb(14, 14, 14) solid 4px;
-      height: 100px;
-      width: 100px;
-      top: 10;
-      bottom: 10;
-      left: 10;
-      right: 10;
-    }  */
-
-
-    /* pixel pushing the entire div down and left slightly */
-    .steelblue-theme.leaflet-control.elevation {
-      /* background-color:rgba(70,130,180,0); */
-      margin-left: -30px;
-      margin-bottom: -10px;
-      padding-top: -10px;
-    }
-
-
-    .elevation-container{
-      padding: 10px 0px 10px 10px;
-      font: 14px/16px Arial, Helvetica, sans-serif;
-      /* background: white; */
+    #player-parent, #elevation-display-div{
       background: rgba(255,255,255,0.8);
       box-shadow: 0 0 15px rgba(0,0,0,0.2);
-      border-radius: 5px;      
-      overflow: hidden;
     }
 
-    /* ▼ */
-    #collapse-button.btn.p-2.collapse-but::after{
-      content: "Hide Video";
-    }
 
-    #collapse-button.btn.p-2.collapse-but.collapsed::after{
-      content: "Show Video";
-    }
-    
-
-    .collapse-but{
+    #collapse-button-video{
       background-color: rgba(255,255,255,0.8);
-      height: 1.4rem;
+      color: rgb(58, 109, 151);
+      height: 1.6rem;
       position: absolute;
-      top: -1.9rem;
+      top: -2.1rem;
       padding-top: 2px !important;
       vertical-align: middle;
       border-color: lightslategray;
@@ -285,9 +208,27 @@
       /* padding-bottom: 0px;
       margin-top: 0px;
       margin-bottom: 0px; */
-      font-size: 0.8rem;
+      /* font-size: 0.8rem; */
     }
 
+    #collapse-button-elevation{      
+      color: rgb(58, 109, 151);
+      height: 1.6rem;
+      padding-top: 0px !important;
+      /* padding-top: 2px !important;
+      font-size: 0.8rem; */
+    }
+
+    /* ▼ */
+    #collapse-button-video.btn.p-2::after, 
+    #collapse-button-elevation.btn.p-2::after{
+      content: "Hide";
+    }
+
+    #collapse-button-video.btn.p-2.collapsed::after, 
+    #collapse-button-elevation.btn.p-2.collapsed::after{
+      content: "Show";
+    }
 
 
   </style>
@@ -335,8 +276,8 @@
         we need to wrap it in this "player-parent" div and reference the "player-parent"
         in our logic whenever we want to hide/unhide the video player -->
   <div id="player-parent" hidden>
-    <div class="d-flex flex-row-reverse" style="position :relative; height:0px" >
-      <button id="collapse-button" class="btn p-2 collapse-but" data-toggle="collapse" data-target="#player"></button><br>
+    <div class="d-flex flex-row-reverse" style="position :relative; height:0px;" >
+      <button id="collapse-button-video" class="btn p-2" data-toggle="collapse" data-target="#player"></button><br>
     </div>
     <div id="player" class="collapse show">
       video iFrame will replace this div
@@ -348,7 +289,18 @@
     </div>
   </div>
 
-
+  
+  <div id="elevation-display-div" hidden>
+    <div class="d-flex flex-row-reverse" style="position :relative; height:0px" >
+      <button id="collapse-button-elevation" class="btn p-2" data-toggle="collapse" data-target="#elevation-control-div"></button><br>
+    </div>
+    <div style="width:450px">
+      <h5>Elevation</h5>
+    </div>
+    <!-- <div id="elevation-control-div" class="collapse show">
+      elevation will replace this div
+    </div> -->
+  </div>
 
 
 
