@@ -1,3 +1,8 @@
+// GLOBAL CONVERSION PERAMETERS
+const feetPerMeter = 3.28084;
+const milesPerKilometer = 0.621371;
+
+
 // ****************************************************************************
 // _toRadian and getDistance functions were originally sourced
 // from this repository: https://github.com/MovingGauteng/GeoJSON-Tools
@@ -70,8 +75,8 @@ let getDistance = function (array, decimals, latLonReversed = false) {
     distance = Math.round(distance * Math.pow(10, decimals)) / Math.pow(10, decimals);
 
     let distWithBothUnits = {
-      "km": Number(distance.toFixed(2)),
-      "mi": Number((distance * 0.62137119).toFixed(2))
+      "km": distance,
+      "mi": _toMiles(distance)
     }
 
     return distWithBothUnits;
@@ -210,19 +215,15 @@ function getRideDuration(coordTimesArray, timeType){
 
   let durationInfo = {
     "string": durationString,
-    "hours": Number(rideDuration.asHours().toFixed(2)),
+    "hours": Number(rideDuration.asHours().toFixed(6)),
+    "milliseconds": rideDuration.asMilliseconds(),
     "duration": rideDuration // moment duration object
   }
-
-  // console.log(timeType, ": ", durationString);
 
   // return the formatted string
   return durationInfo;
 
 }
-
-
-
 
 
 
@@ -241,9 +242,13 @@ function getRideDuration(coordTimesArray, timeType){
 function getAvgSpeed(duration, distance){
 
   // console.log("duration type: ", typeof(duration.hours));
+
+  let decimals_mi = countDecimals(distance.mi);
+  let decimals_km = countDecimals(distance.km);
+
   return {
-            "mph": (distance.mi / duration.hours).toFixed(2),
-            "kph": (distance.km / duration.hours).toFixed(2)
+            "mph": Number((distance.mi / duration.hours).toFixed(decimals_mi)),
+            "kph": Number((distance.km / duration.hours).toFixed(decimals_km))
           }
 }
 
@@ -270,8 +275,8 @@ function getElevationStats(coordsArray){
   // and get rid of poential anomalies (like if elevation drops below 0 suddenly)
   const maxAllowedElevationGain = 2.0,
         minElevationGainThreshold = 0.12,
-        alpha = 0.85,
-        feetPerMeter = 3.28084;
+        alpha = 0.85;
+        // feetPerMeter = 3.28084; // defined at top of file in global parameters
         
 
   // the elevation is in the 3rd position at each point in the coordsArray
@@ -292,6 +297,7 @@ function getElevationStats(coordsArray){
 
     // subtract from previous elevation to get the delta between current elevation and previous elevation
     let delta = Number((elevation - prevElevation).toFixed(2));
+    // let delta = elevation - prevElevation;
 
     // if the absolute value of the delta is really big, then something likely went wrong with the data
     // or we stopped and started somewhere else
@@ -321,28 +327,76 @@ function getElevationStats(coordsArray){
   });
 
 
-  let elevationInfo = {
+  let elevationStats = {
     "min_m": Math.round(min_m),
     "max_m": Math.round(max_m),
     "gain_m": Math.round(gain_m),
-    "descent_m": Math.round(Math.abs(descent_m)),
-    "min_ft": Math.round(min_m * feetPerMeter),
-    "max_ft": Math.round(max_m * feetPerMeter),
-    "gain_ft": Math.round(gain_m * feetPerMeter),
-    "descent_ft": Math.round(Math.abs(descent_m * feetPerMeter))
+    "descent_m": Math.abs( Math.round(descent_m) ),
+    "min_ft": _toFeet(min_m, 0),
+    "max_ft": _toFeet(max_m, 0),
+    "gain_ft": _toFeet(gain_m, 0),
+    "descent_ft": Math.abs( _toFeet(descent_m, 0) )
   }
 
-  return elevationInfo;
+  // let elevationStats = {
+  //   "min_m": min_m,
+  //   "max_m": max_m,
+  //   "gain_m": gain_m,
+  //   "descent_m": Math.abs( descent_m ),
+  //   "min_ft": _toFeet(min_m),
+  //   "max_ft": _toFeet(max_m),
+  //   "gain_ft": _toFeet(gain_m),
+  //   "descent_ft": Math.abs( _toFeet(descent_m) )
+  // }
+
+  
+  return elevationStats;
 
 }
 
 
 
 
+/**
+ * converts meters to feet
+ *
+ * @param {Number} meters distance in meters
+ * @param {Number} decimals number of decimals to round to. Defaults to 0 if none passed.
+ * @returns {Number} distance in feet
+ */
+let _toFeet = function (meters, decimals) {
+
+  // if decimals isn't defined, default to the same number of decimals places as the number that was passed in
+  decimals = (decimals !== undefined) ? decimals : countDecimals(meters);
+
+  return Number( (meters * feetPerMeter).toFixed(decimals) );
+};
 
 
+/**
+ * converts kilometers to miles
+ *
+ * @param {Number} kilometers distance in meters
+ * @param {Number} decimals number of decimals to round to. Defaults to 0 if none passed.
+ * @returns {Number} distance in miles
+ */
+let _toMiles = function (kilometers, decimals) {
 
+  // if decimals isn't defined, default to the same number of decimals places as the number that was passed in
+  decimals = (decimals !== undefined) ? decimals : countDecimals(kilometers);
 
+  return Number( (kilometers * milesPerKilometer).toFixed(decimals) );
+};
 
+/**
+ * counts the number of decimals of the given number
+ *
+ * @param {Number} value the number who's decimals we want to count
+ * @returns {Number} returns the number of decimals
+ */
+let countDecimals = function (value) {
+  if(Math.floor(value) === value) return 0;
+  return value.toString().split(".")[1].length || 0; 
+}
 
 

@@ -4,7 +4,8 @@
 
 // these are the indexes (starting at 1 not 0) in the bikeRideJSONFileNames object/file
 // for the rides we want to dislay on the map first  
-let initialRidesToDisplay = [1, 3, 7, 10];
+// let initialRidesToDisplay = [1, 3, 7, 10];
+let initialRidesToDisplay = [1, 3, 7, 8];
 
 // this will be used to remember which ride is currently highlighted
 // (meaning it was the last one to be clicked)

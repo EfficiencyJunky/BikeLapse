@@ -73,11 +73,10 @@ function showElevationForLineStringFeature(lineStringFeature){
   // clear the display on the elevationControl
   elevationControl.clear();
 
-  // if a highlight layer already exists, we need to remove it, 
+  // if a follow marker layer already exists, we need to remove it, 
   // otherwise it will stay on the map forever
   if(elevationFollowMarkerLayer !== undefined){
     elevationFollowMarkerLayer.remove();
-    // elevationFollowMarkerLayer.clearLayers();
   }
 
   let elevationFollowMarkerGeoJSON = {
@@ -91,10 +90,11 @@ function showElevationForLineStringFeature(lineStringFeature){
                 "type":"LineString",
                 "coordinates": lineStringFeature.geometry.coordinates
             },
-            "properties":null
+            "properties": null
         }
     ]
-  };        
+  };
+
 
   // assign a new geoJson layer with the 'elevationFollowMarkerGeoJSON' data to the 'elevationFollowMarkerLayer' object
   // this also adds the data to display in the elevationControl
@@ -110,7 +110,6 @@ function showElevationForLineStringFeature(lineStringFeature){
 
   // add the highlight layer to the map
   elevationFollowMarkerLayer.addTo(map);
-
 
 }
 

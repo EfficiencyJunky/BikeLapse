@@ -20,6 +20,18 @@ L.Layer.include({
   }
 });
 
+// *************************************************************************************** 
+// EXTEND THE ELEVATION CONTROL CLASS ALSO
+//    We want to be able to get access to the "_data" member of the Elevation Control
+//    because it does a lot of calculations for us
+// *************************************************************************************** 
+L.Control.Elevation.include({
+  getData: function () {
+    let data = this._data = this._data || {}; // Initialize the data, if missing.
+    return data;
+  }
+});
+
 
 
 // *************************************************************************************** 
@@ -185,7 +197,7 @@ function createGeoJsonLayerGroupForRide(geoJson, rideMetadata){
           layer.bindPopup(createPopupHTMLDetailsPoint(properties), bindPopupProperties);
         }
         else{
-          layer.bindPopup(createPopupHTMLBasicPoints(properties), bindPopupProperties);
+          layer.bindPopup(createPopupHTMLBasicPoints(feature), bindPopupProperties);
         }
         
         break;
@@ -262,14 +274,22 @@ function createGeoJsonLayerGroupForRide(geoJson, rideMetadata){
                           </a>
                         </h3>` : 'no googlemap URL');
 
+    // get the description from the details point properties and create one if it's not defined   
+    let rideStats = validate(rideMetadata.rideStats);
+    let rideStatsHTML = (rideStats !== "" ? 
+                          getRideStatsHTML(rideStats) : "no ride stats found");
+
 
     // get the description from the details point properties and create one if it's not defined   
     let detailsPointDescription = validate(properties.description);
     let detailsPointDescriptionHTML = (detailsPointDescription !== "" ? 
-                                      detailsPointDescription : 'no description found');
-  
+                                      detailsPointDescription + "<br>THIS IS THE OLD METHOD" : "no description found");
+
+    let finalStatsHTML = (rideStatsHTML !== "no ride stats found") ? rideStatsHTML : detailsPointDescriptionHTML;
+
+
     return  `<h2>RIDE: ${rideName}</h2>
-            ${detailsPointDescriptionHTML}
+            ${finalStatsHTML}
             <br><br>
             ${stravaHTML}
             ${googleMapHTML}`;
@@ -296,19 +316,92 @@ function createGeoJsonLayerGroupForRide(geoJson, rideMetadata){
   }
 
 
+
+  // *********************************************************************************************************************
+  // THIS IS THE FUNCTION WHERE WE CREATE THE RIDESTATS HTML FOR THE RIDESTATS IN THE RIDE'S METADATA OBJECT
+  // the description is made up of calculations from the data in the route LineString
+  //      Time: Sunday, June 21, 2020 9:20 AM PDT<br>
+  //      Distance: 26.38 miles<br>
+  //      Duration: 3 hours, 11 minutes, and 11 seconds<br>
+  //      Average Speed: 10.8 mph<br>
+  //      Minimum Elevation: 24 feet<br>
+  //      Maximum Elevation: 599 feet<br>
+  //      Total climb: 1526 feet<br>
+  //      Total descent: 100 feet
+  // *********************************************************************************************************************
+  function getRideStatsHTML(rideStats){
+
+    return `<b>Start Time:</b>            ${getFormattedDateTimeStringFromISO(rideStats.startTime)}<br>
+            <b>Distance:</b>              ${rideStats.distance.mi} miles &nbsp (${rideStats.distance.km} km)<br>
+            <b>Moving Time:</b>           ${rideStats.movingDuration.string}<br>
+            <b>Average Moving Speed:</b>  ${rideStats.avgMovingSpeed.mph} mph &nbsp (${rideStats.avgMovingSpeed.kph} kph)<br>
+            <b>Elapsed Time:</b>          ${rideStats.elapsedDuration.string}<br>
+            <b>Average Elapsed Speed:</b> ${rideStats.avgElapsedSpeed.mph} mph &nbsp (${rideStats.avgElapsedSpeed.kph} kph)<br>
+            <b>Minimum Elevation:</b>     ${rideStats.elevationStats.min_ft} feet &nbsp (${rideStats.elevationStats.min_m} meters)<br>
+            <b>Maximum Elevation:</b>     ${rideStats.elevationStats.max_ft} feet &nbsp (${rideStats.elevationStats.max_m} meters)<br>
+            <b>Total Climb:</b>           ${rideStats.elevationStats.gain_ft} feet &nbsp (${rideStats.elevationStats.gain_m} meters)<br>
+            <b>Total Descent:</b>         ${rideStats.elevationStats.descent_ft} feet &nbsp (${rideStats.elevationStats.descent_m} meters)`;
+  }
+
+
+
+
+
+
+
+
+
+  
+
   // ####### CREATE THE HTML FOR START/FINISH POINT POPUP BINDING #####################################
   // creates the HTML code necessary for the "START" and "FINISH" Popups
   // probably need to re-name this function
-  function createPopupHTMLBasicPoints(properties){
+  function createPopupHTMLBasicPoints(feature){
+
+    const properties = feature.properties;
+    const pointCoords = feature.geometry.coordinates;
+
     let markerTypeText = mapIcons[properties.name].displayText;
 
     // let rideName = ridesData[currentRidezID].metadata.rideName;
     let rideName = rideMetadata.rideName;
     
+    // get the meta from the point properties and create one if it's not defined   
+    let pointMeta = validate(properties.meta);
+    let pointMetaHTML = (pointMeta !== "" ? 
+                          getPointMetaHTML(pointMeta, pointCoords) : "no point meta found");
+
+    // console.log(pointMetaHTML);
+
+    // get the description from the point properties and create one if it's not defined   
+    let pointDescription = validate(properties.description);
+    let pointDescriptionHTML = (pointDescription !== "" ? 
+                                pointDescription + "<br>THIS TOO SHALL PASS" : "no description found");
+
+    let finalPointMetaHTML = (pointMetaHTML !== "no point meta found") ? pointMetaHTML : pointDescriptionHTML;
+
+    // console.log(pointDescriptionHTML);
+
     return  `<h3><b>${markerTypeText}</b>: ${rideName}</h3>
-                    ${properties.description}`;
-            // "<b>Location Details:</b><br>" + properties.description;
+                    ${finalPointMetaHTML}`;
 
   }
 
 }
+
+
+function getPointMetaHTML(pointMeta, pointCoords){
+
+  return `<b>Location Name:</b> ${pointMeta.locationName}
+          <br><br>
+          <b>Time:</b> ${getFormattedDateTimeStringFromISO(pointMeta.time)}<br>
+          <b>Elevation:</b> ${_toFeet(pointCoords[elevationIndex], 0)} feet &nbsp (${Math.round(pointCoords[elevationIndex])} meters)`
+
+}
+
+
+// format the isoTime to look like this -> 1:32 PM on Saturday, November 16, 2019
+function getFormattedDateTimeStringFromISO(isoTime){
+    return moment(isoTime).format("h:mm A [on] dddd, MMMM Do, YYYY");
+}
+

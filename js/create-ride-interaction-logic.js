@@ -133,7 +133,7 @@ function handleGpxFileSelectionCombineAndConvertToGeoJson(event) {
         // get user input from text fields
         // add "metadata" object with those user inputs
         // add "START" and "FINISH" points with user inputs
-        // add "DETAILS" point with ride details calculated from GeoJson
+        // add "DETAILS" point
         geoJsonData = addSupplementalGeoJSONFeatures(tempGeoJson);
         
         //******** Print GPX and GeoJson Contents to Textareas *************************
@@ -175,15 +175,16 @@ function handleGpxFileSelectionCombineAndConvertToGeoJson(event) {
 // AND ADDS INFORMATION TO IT SO THAT IT ADHERES TO THE CORRECT SPECIFICATIONS FOR THE BIKELAPSE WEBSITE
 function addSupplementalGeoJSONFeatures(tempGeoJson){
 
+    // rename linestring to ROUTE, create an alert if conditions are not met
+    // return the LineString Feature
+    let routeLineString = renameLineStringToROUTE(tempGeoJson);
+
     // get all the user input from the text fields
     let userInput = getUserInputsFromTextFields();
 
     // add metadata from form inputs
     tempGeoJson["metadata"] = userInput.rideInfo;
-
-    // rename linestring to ROUTE, create an alert if conditions are not met
-    // return the LineString Feature
-    let routeLineString = renameLineStringToROUTE(tempGeoJson);
+    tempGeoJson.metadata["rideStats"] = getRideStats(routeLineString);
 
     // create Point Features for START/FINISH/DETAILS from the start/end and middle coordinate of the routeLineString
     let startPoint = createPointFeature(routeLineString, "START", userInput.startName);
@@ -246,24 +247,25 @@ function renameLineStringToROUTE(tempGeoJson) {
 function getUserInputsFromTextFields(){
 
     // defining a function and calling it all at once because I'm lazy
-    let selectedRadio = ( function() {
+    const selectedRadio = ( function() {
         // get reference to all radios with name "rideType"
         // NOTE: this returns a NodeList object, not an Array
-        let radios = document.getElementsByName('rideType');
-        let checkedRadioValue = undefined;
+        const radios = document.getElementsByName('rideType');
 
         // need to use a for loop because radios is a NodeList not an Array
         for (let i = 0; i < radios.length; i++) {
+
+            // if the radio is checked, return its value
             if(radios[i].checked){
-                checkedRadioValue = radios[i].value;
+                return radios[i].value;
             }
         }
-    
-        return checkedRadioValue;
+
+        return "none_checked";
     })();
 
 
-    let rideInfo = {    
+    const rideInfo = {    
         "rideName": document.getElementById('rideName').value,
         "rideType": selectedRadio,
         "hasBikeLapseSync": (selectedRadio === "bikelapse"),
@@ -275,8 +277,8 @@ function getUserInputsFromTextFields(){
         "lineColorHard": "red"
     }
 
-    let startLocationName = document.getElementById('startLocationName').value;
-    let finishLocationName = document.getElementById('finishLocationName').value;
+    const startLocationName = document.getElementById('startLocationName').value;
+    const finishLocationName = document.getElementById('finishLocationName').value;
 
     return { 
                 "rideInfo": rideInfo, 
@@ -298,14 +300,9 @@ function getUserInputsFromTextFields(){
 // *********************************************************************************************************************
 function createPointFeature(routeLineString, pointName, pointLocationName = 'Location Name'){
 
-    // get the LineString Feature from the Features array in the GeoJSON object
-    // who's properties.name "ROUTE" and geometry.type is "LineString"     
-    // let routeLineString = getROUTELineStringFromGeoJson(tempGeoJson);
-
-
     // get the coordTimes and coordinates arrays from the ROUTE LineString
-    let routeCoordTimes = routeLineString.properties.coordTimes;
-    let routeCoordinates = routeLineString.geometry.coordinates;
+    const routeCoordTimes = routeLineString.properties.coordTimes;
+    const routeCoordinates = routeLineString.geometry.coordinates;
 
     // do a cheeky little check to see if they are the same length and print to the console.log if they are not
     if(routeCoordTimes.length !== routeCoordinates.length){
@@ -315,65 +312,61 @@ function createPointFeature(routeLineString, pointName, pointLocationName = 'Loc
     }
 
     // create placeholders for the information we want to show on the pin
-    let pointTime = '';
     let pointCoords = [];
+    let properties = {
+        "name": pointName
+    };
 
-    // fill in the information based on if it's a START or FINISH point feature
+
+    // get the index into the coords array for each point
+    const pointIndex =  (pointName === "START") ? 0 :
+                        (pointName === "FINISH") ? routeCoordinates.length - 1 :
+                        (pointName === "DETAILS") ? Math.round(routeCoordinates.length/2) :
+                        "Point Name not recognized";
+
+
+
+    // get the point coords and add the "meta" information to .properties for the "START/FINISH" points
     switch (pointName) {
         case "START":
-            pointTime = routeCoordTimes[0];
-            pointCoords = routeCoordinates[0];
-          break;
         case "FINISH":
-            pointTime = routeCoordTimes[routeCoordTimes.length - 1];
-            pointCoords = routeCoordinates[routeCoordinates.length - 1];
+            pointCoords = routeCoordinates[pointIndex];
+
+            properties["meta"] = {
+                "locationName": pointLocationName,
+                "time": routeCoordTimes[pointIndex],
+                "elevation": {
+                    "m": pointCoords[elevationIndex],
+                    "ft": _toFeet(pointCoords[elevationIndex])
+                }
+            }
           break;
-        case "DETAILS":
-            pointTime = routeLineString.properties.time;    
-            pointCoords = routeCoordinates[Math.round(routeCoordinates.length/2)];
-            // console.log("DETAILS timecoords length: ", routeCoordTimes.length);
-            // console.log("DETAILS coords length: ", routeCoordinates.length);
-            // console.log("DETAILS index: ", Math.round(routeCoordinates.length/2));
-            // console.log("DETAILS pointCoords: ", pointCoords);
+        case "DETAILS":    
+            pointCoords = routeCoordinates[pointIndex];
           break;
         default:
             console.log("Point Name not recognized");
       }
 
-    // format the pointTime to look like this -> 1:32 PM on Saturday, November 16, 2019
-    let formattedDateTimeString = moment(pointTime).format("h:mm A [on] dddd, MMMM Do, YYYY");
-
-
-    // the HTML description should look like this: 
-    //      Location Name: <pulled from form input>
-    //      Time: <pulled from from first/last index of "coordTimes" list in "properties" of LineString feature>
-    //      Elevation: <pulled from from first/last coordinates of LineString feature>
-    let pointFeature = {
-            "type": "Feature",
-            "geometry": {
-              "type": "Point",
-              "coordinates": pointCoords
-            },
-            "properties": {
-              "name": pointName,
-              "description": (pointName === "DETAILS") ? 
-                              createDetailsDescription(routeLineString, formattedDateTimeString) :
-                              `<b>Location Name:</b> ${pointLocationName}
-                               <br><br>
-                               <b>Time:</b> ${formattedDateTimeString}<br>
-                               <b>Elevation:</b> ${Math.round(pointCoords[2]*3.28084)} feet &nbsp (${Math.round(pointCoords[2])} meters)`
-            }
-          }
-
-    // console.log(pointName, " Point Feature: ", pointFeature);
+    // create the point feature
+    const pointFeature = {
+        "type": "Feature",
+        "geometry": {
+            "type": "Point",
+            "coordinates": pointCoords
+        },
+        "properties": properties
+    }
 
     return pointFeature;
 
 }
 
 // *********************************************************************************************************************
-// THIS IS THE FUNCTION WHERE WE CREATE THE DESCRIPTION HTML FOR THE DETAILS PIN
-// the description is made up of calculations from the data in the route LineString
+// THIS IS THE FUNCTION WHERE WE CALCULATE THE RIDE STATS FOR THE RIDE
+// The ride stats are calculated from the data in the route LineString
+// When we display the ride, we'll display these stats along with it
+// EXAMPLE:
 //      Time: Sunday, June 21, 2020 9:20 AM PDT<br>
 //      Distance: 26.38 miles<br>
 //      Duration: 3 hours, 11 minutes, and 11 seconds<br>
@@ -383,32 +376,34 @@ function createPointFeature(routeLineString, pointName, pointLocationName = 'Loc
 //      Total climb: 1526 feet<br>
 //      Total descent: 100 feet
 // *********************************************************************************************************************
-function createDetailsDescription(routeLineString, formattedStartTimeString){
+function getRideStats(routeLineString){
 
     const coordTimes = routeLineString.properties.coordTimes;
     const coordinates = routeLineString.geometry.coordinates;
 
-    let linestringDistance = getDistance(coordinates, 6, latLonReversed = true);
+    let distance = getDistance(coordinates, 2, latLonReversed = true);
     
-    let linestringMovingDuration = getRideDuration(coordTimes, 'moving');
-    let avgMovingSpeed = getAvgSpeed(linestringMovingDuration, linestringDistance);
+    let movingDuration = getRideDuration(coordTimes, 'moving');
+    let avgMovingSpeed = getAvgSpeed(movingDuration, distance);
 
-    let linestringElapsedDuration = getRideDuration(coordTimes, 'elapsed');    
-    let avgElapsedSpeed = getAvgSpeed(linestringElapsedDuration, linestringDistance);
+    let elapsedDuration = getRideDuration(coordTimes, 'elapsed');    
+    let avgElapsedSpeed = getAvgSpeed(elapsedDuration, distance);
 
     let elevationStats = getElevationStats(coordinates);
 
-    return `<b>Start Time:</b>            ${formattedStartTimeString}<br>
-            <b>Distance:</b>              ${linestringDistance.mi} miles &nbsp (${linestringDistance.km} km)<br>
-            <b>Moving Time:</b>           ${linestringMovingDuration.string}<br>
-            <b>Average Moving Speed:</b>  ${avgMovingSpeed.mph} mph &nbsp (${avgMovingSpeed.kph} kph)<br>
-            <b>Elapsed Time:</b>          ${linestringElapsedDuration.string}<br>
-            <b>Average Elapsed Speed:</b> ${avgElapsedSpeed.mph} mph &nbsp (${avgElapsedSpeed.kph} kph)<br>
-            <b>Minimum Elevation:</b>     ${elevationStats.min_ft} feet &nbsp (${elevationStats.min_m} meters)<br>
-            <b>Maximum Elevation:</b>     ${elevationStats.max_ft} feet &nbsp (${elevationStats.max_m} meters)<br>
-            <b>Total Climb:</b>           ${elevationStats.gain_ft} feet &nbsp (${elevationStats.gain_m} meters)<br>
-            <b>Total Descent:</b>         ${elevationStats.descent_ft} feet &nbsp (${elevationStats.descent_m} meters)`;
+    return  {
+        "startTime": routeLineString.properties.time, // string formatted as an ISO timestamp
+        "distance": distance, // distance object with .km and .mi properties
+        "movingDuration": movingDuration, // duration object with .string == (hh [hours,] mm [minutes, and] ss [seconds] ) --- .hours == number of hours in float form --- .duration == moment duration object
+        "avgMovingSpeed": avgMovingSpeed,  // speed object with .kph and .mph properties
+        "elapsedDuration": elapsedDuration, // string
+        "avgElapsedSpeed": avgElapsedSpeed, // speed object
+        "elevationStats": elevationStats // elevation object
+    }
+
 }
+
+
 
 // *********************************************************************************************************************
 //      shows the geoJson in the text area
@@ -501,13 +496,14 @@ function saveChangesButtonHandler(event){
     // check to make sure the GeoJson has been created first
     if(geoJsonData !== undefined){
         // get user inputs from text fields
-        let userInput = getUserInputsFromTextFields();
+        const userInput = getUserInputsFromTextFields();
+
+        // pull the rideStats off the metadata
+        const rideStats = geoJsonData.metadata.rideStats;
 
         // replace fields in GeoJson with user inputs from text fields
         geoJsonData.metadata = userInput.rideInfo;
-        
-        // get a reference to the GeoJson object for easier to read code
-        let routeLineString = getROUTELineStringFromGeoJson(geoJsonData)
+        geoJsonData.metadata.rideStats = rideStats;
 
         // loop through all the features in the GeoJson
         // replace the description for the features who's names are "START" and "FINISH" 
@@ -520,15 +516,11 @@ function saveChangesButtonHandler(event){
                 case "FINISH":
                     // if the feature's name is "START" use the user input from the Start Name box
                     // otherwise use the user input from the Finish Name box
-                    let newLocationName = (featureName === "START") ? userInput.startName : userInput.finishName;
-                    
-                    // create a new point feature of type "featureName" and set the location to "newLocationName"
-                    // the only reason we create a whole new point is to update the HTML of the point
-                    // in the future we should move away from storing the HTML directly in the point
-                    let newPointFeature = createPointFeature(routeLineString, featureName, newLocationName);
+                    const newLocationName = (featureName === "START") ? userInput.startName : userInput.finishName;
 
-                    // replace the existing properties.description for this point with the new one
-                    feature.properties.description = newPointFeature.properties.description;
+                    // replace the existing name with the new one
+                    feature.properties.meta.locationName = newLocationName;
+
                     break;
             }
     

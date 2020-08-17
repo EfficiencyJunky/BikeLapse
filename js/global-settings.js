@@ -11,6 +11,8 @@ let map = L.map("map", {
 // map zoom parameters
 let minimumZoom = 10;
 let maximumZoom = 20;
+let terrainMaximumZoom = 18; // the stamen.com terrain map only has tiles for max zoom of 18
+let tonerMaximumZoom = 20; // the stamen.com toner map only has tiles for max zoom of 20
 let defaultRideViewZoom = 12;
 
 // when clicking on a BikeLapse ride, we will zoom into the ride
@@ -190,3 +192,8 @@ let routeLineProperties = {
 
 let routeIconBaseClass = "legend-route-icon";
 
+
+// CONVERSION CONSTANTS
+
+// const milesPerKilometer = 0.62137119;
+const elevationIndex = 2;

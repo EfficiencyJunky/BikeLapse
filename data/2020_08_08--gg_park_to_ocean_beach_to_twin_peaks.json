@@ -23475,7 +23475,14 @@
             },
             "properties": {
                 "name": "START",
-                "description": "<b>Location Name:</b> Cole Valley<br><br><b>Time:</b> 4:44 PM on Saturday, August 8th, 2020<br><b>Elevation:</b> 323 feet &nbsp (98 meters)"
+                "meta": {
+                    "locationName": "Cole Valley",
+                    "time": "2020-08-08T23:44:47Z",
+                    "elevation": {
+                        "m": 98.431728,
+                        "ft": 322.93875
+                    }
+                }
             }
         },
         {
@@ -23490,7 +23497,14 @@
             },
             "properties": {
                 "name": "FINISH",
-                "description": "<b>Location Name:</b> Cole Valley<br><br><b>Time:</b> 6:57 PM on Saturday, August 8th, 2020<br><b>Elevation:</b> 356 feet &nbsp (109 meters)"
+                "meta": {
+                    "locationName": "Cole Valley",
+                    "time": "2020-08-09T01:57:28Z",
+                    "elevation": {
+                        "m": 108.500332,
+                        "ft": 355.972229
+                    }
+                }
             }
         },
         {
@@ -23504,8 +23518,7 @@
                 ]
             },
             "properties": {
-                "name": "DETAILS",
-                "description": "<b>Start Time:</b> 4:44 PM on Saturday, August 8th, 2020<br><b>Distance:</b> 18.45 miles &nbsp (29.69 km)<br><b>Moving Time:</b> 2 hours, 0 minutes, and 59 seconds<br><b>Average Moving Speed:</b> 9.13 mph &nbsp (14.70 kph)<br><b>Elapsed Time:</b> 2 hours, 12 minutes, and 41 seconds<br><b>Average Elapsed Speed:</b> 8.35 mph &nbsp (13.43 kph)<br><b>Minimum Elevation:</b> 3 feet &nbsp (1 meters)<br><b>Maximum Elevation:</b> 872 feet &nbsp (266 meters)<br><b>Total Climb:</b> 2509 feet &nbsp (765 meters)<br><b>Total Descent:</b> 2308 feet &nbsp (703 meters)"
+                "name": "DETAILS"
             }
         }
     ],
@@ -23518,6 +23531,43 @@
         "googleMapURL": "",
         "lineColor": "rgba(62, 146, 204, 1)",
         "lineColorEasy": "green",
-        "lineColorHard": "red"
+        "lineColorHard": "red",
+        "rideStats": {
+            "startTime": "2020-08-08T23:44:47Z",
+            "distance": {
+                "km": 29.69,
+                "mi": 18.45
+            },
+            "movingDuration": {
+                "string": "2 hours, 0 minutes, and 59 seconds",
+                "hours": 2.016389,
+                "milliseconds": 7259000,
+                "duration": "PT2H59S"
+            },
+            "avgMovingSpeed": {
+                "mph": 9.15,
+                "kph": 14.72
+            },
+            "elapsedDuration": {
+                "string": "2 hours, 12 minutes, and 41 seconds",
+                "hours": 2.211389,
+                "milliseconds": 7961000,
+                "duration": "PT2H12M41S"
+            },
+            "avgElapsedSpeed": {
+                "mph": 8.34,
+                "kph": 13.43
+            },
+            "elevationStats": {
+                "min_m": 4,
+                "max_m": 265,
+                "gain_m": 409,
+                "descent_m": 402,
+                "min_ft": 12,
+                "max_ft": 868,
+                "gain_ft": 1342,
+                "descent_ft": 1320
+            }
+        }
     }
 }
