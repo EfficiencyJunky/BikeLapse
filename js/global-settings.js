@@ -123,9 +123,9 @@ let elevationControlOptions = {
   height: 125,
   margins: {
       top: 20,
-      right: 60,
+      right: 80,
       bottom: 25,
-      left: 25
+      left: 35
   },
   useHeightIndicator: true, //if false a marker is drawn at map position
   interpolation: d3.curveLinear, //see https://github.com/d3/d3-shape/blob/master/README.md#area_curve

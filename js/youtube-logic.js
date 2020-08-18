@@ -27,6 +27,9 @@ let framesPerSecond = 15;
 let frameOffset = 0;
 let rabbitAndSliderSyncInterval = 250; // time in milliseconds between updating the rabbit
 let rabbitAndSliderSyncTimerID;
+const playbackRatesArray = [0.25, 0.5, 0.75, 1.0, 1.5, 2.0];
+let playbackRateIndex = 3;
+const defaultPlaybackRateIndex = playbackRateIndex;
 
 let consoleLogsOn = false;
 
@@ -37,6 +40,7 @@ let consoleLogsOn = false;
 // references to our video control buttons
 let playPauseButton = document.getElementById('play-pause');
 let stopButton = document.getElementById('stop')
+let playbackRateButton = document.getElementById('playback-rate')
 
 // for updating the playPauseButton's class to change its CSS and content
 let playButtonClass = "play";
@@ -73,7 +77,8 @@ function onYouTubeIframeAPIReady() {
         events: {
             'onReady': onPlayerReady,
             'onStateChange': onPlayerStateChange,
-            'onError': onPlayerError
+            'onError': onPlayerError,
+            'onPlaybackRateChange': onPlaybackRateChange
         },
         
     });
@@ -148,6 +153,9 @@ function onPlayerStateChange(event) {
             playPauseButton.className = playButtonClass;
             // stopRabbitAndSliderSyncronizer();
             updateRabbitAndSliderPosition();
+
+            playbackRateIndex = defaultPlaybackRateIndex;
+            player.setPlaybackRate(playbackRatesArray[playbackRateIndex]);
             break;
         default:
             break;
@@ -163,6 +171,17 @@ function onPlayerError(e){
     console.log('ERROR YouTube API "onPlayerError"');
     console.log(e);
 }
+
+
+function onPlaybackRateChange(event){
+    
+    let playbackRate = event.data;
+
+    playbackRateButton.innerHTML = playbackRate + "x";
+}
+
+
+
 
 
 
@@ -332,18 +351,34 @@ slider.oninput = function(event){
 }
 
 
+// PLAYBACK RATE BUTTON HANDLER SETUP
+if(playbackRateButton !== null){
+    playbackRateButton.onclick = playbackButtonHandler;
+}
 
+// when the playback-button is pressed, we want to cycle through the playback options
+// as defined in the playbackRatesArray
+function playbackButtonHandler(event){
 
+    // increment the playbackRateIndex and 
+    // if it is greater than or equal to the length of the playbackRatesArray
+    // we should reset it to 0, otherwise just use the newly incremented value
+    playbackRateIndex = ((playbackRateIndex += 1) >= playbackRatesArray.length) ?
+                                 0 : playbackRateIndex;
 
-
-
-
-
-
-
-
-
-
-
-
-
+    // grab the playback rate specified at that index in the playbackRatesArray
+    const newPlaybackRate = playbackRatesArray[playbackRateIndex];
+    
+    // if the newPlaybackRate is one of the available rates, set the playbackRate to the new rate
+    if(player.getAvailablePlaybackRates().includes(newPlaybackRate)){
+        player.setPlaybackRate(newPlaybackRate);
+    }
+    // if the newPlaybackRate is NOT one of the available rates, 
+    // recursively call our function to do it all again until we find one that works
+    // worst case we land back at 1.0 and the button appears to do nothing
+    else{        
+        console.log(`playback rate "${newPlaybackRate}" not allowed`);
+        console.log(`Available playback rates are: ${player.getAvailablePlaybackRates()}`);
+        playbackButtonHandler();
+    }
+}

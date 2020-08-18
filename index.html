@@ -282,15 +282,17 @@
     <div id="player" class="collapse show">
       video iFrame will replace this div
     </div>
-    <div class="transport-controls" style="width:450px">
-      <button id="play-pause" class="play btn btn-primary "></button>
+    <!-- <div class="transport-controls d-flex align-items-center" style="width:450px"> -->
+    <div class="transport-controls d-flex align-items-center" style="width:450px">
+      <button id="play-pause" class="play"></button>
       <!-- <button id="stop">▇</button> -->
-      <input type="range" min="0" max="100" value="0" class="slider" id="slider">
+      <input type="range" min="0" max="100" value="0" id="slider" class="slider ml-2 mr-2 flex-fill" >
+      <button id="playback-rate">1x</button>
     </div>
   </div>
 
   
-  <div id="elevation-display-div" hidden>
+  <div id="elevation-display-div" style="width:550px" hidden>
     <div class="d-flex flex-row-reverse" style="position :relative; height:0px" >
       <button id="collapse-button-elevation" class="btn p-2" data-toggle="collapse" data-target="#elevation-control-div"></button><br>
     </div>

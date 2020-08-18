@@ -3,7 +3,8 @@
 
 /* ************************** MARKER AND LEGEND ICON STYLING AND REFERENCES ************************** */
 /* set up the map icon sprites to reference the strava sprite sheet */
-.start-icon, .finish-icon {
+.start-icon, 
+.finish-icon {
   background-image: url('https://d3nn82uaxijpm6.cloudfront.net/assets/sprites/sprites-map-9edbefa3bd42dbf847ae5421c0fa9b65ec40ea91ec53f5d42555a61f9af64fc6.png');
   background-repeat: no-repeat;
 }
@@ -152,7 +153,8 @@ we would also need to add this class along with the usual class for each icon */
 
 
 /* ELEVATION AND VIDEO PLAYER DIVS */
-#player-parent, #elevation-display-div{
+#player-parent, 
+#elevation-display-div{
   padding: 8px 8px 4px 8px;
   border-radius: 5px;
   /* font: 12px/14px Arial, Helvetica, sans-serif; */
@@ -165,7 +167,9 @@ we would also need to add this class along with the usual class for each icon */
   margin: 5px 0px;
 }
 
-#play-pause, #stop{
+#play-pause, 
+#stop, 
+#playback-rate{
   font-family: Arial, Helvetica, sans-serif;
   height: 2rem;
   width: 2rem; /* if using "►" or "⎮⎮" for button text */
@@ -198,13 +202,20 @@ we would also need to add this class along with the usual class for each icon */
   cursor: pointer;
 }
 
-#stop{
-  margin-left: 5px;
+#playback-rate{
+  width: 3rem;
 }
 
-#play-pause:hover, #stop:hover, .slider::-webkit-slider-thumb:hover  {
+#play-pause:hover, 
+#stop:hover, 
+.slider::-webkit-slider-thumb:hover,
+#playback-rate:hover  {
   /* opacity: 1; */
   background: #3c8b3e;
+}
+
+#stop{
+  margin-left: 6px;
 }
 
 /* HTML SYMBOLS LIST: http://www.scrollseek.com/wd/html_symbols_complete.html */
@@ -220,13 +231,16 @@ we would also need to add this class along with the usual class for each icon */
     content: "►";
 }
 
-#play-pause.pause:after{
+#play-pause.pause::after{
     content: "⎮⎮";
 }
 
+
 .slider{
   -webkit-appearance: none;
-  width: 80%; /* Width of the outside container */
+  /* Width of the outside container */
+  /* width: 75%; */
+  /* width: auto; */
   vertical-align: middle;
   margin-left: 5px;
   height: 1rem; /* height of the bar the "thumb" slides on */
