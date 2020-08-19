@@ -183,7 +183,9 @@
       }
     }
 
-    #player-parent, #elevation-display-div{
+    #player-parent, 
+    #elevation-display-div,
+    #layer-control-display-div{
       background: rgba(255,255,255,0.8);
       box-shadow: 0 0 15px rgba(0,0,0,0.2);
     }
@@ -211,7 +213,8 @@
       /* font-size: 0.8rem; */
     }
 
-    #collapse-button-elevation{      
+    #collapse-button-elevation,
+    #collapse-button-layer-control{      
       color: rgb(58, 109, 151);
       height: 1.6rem;
       padding-top: 0px !important;
@@ -221,14 +224,31 @@
 
     /* ▼ */
     #collapse-button-video.btn.p-2::after, 
-    #collapse-button-elevation.btn.p-2::after{
+    #collapse-button-elevation.btn.p-2::after,
+    #collapse-button-layer-control.btn.p-2::after{
       content: "Hide";
     }
 
     #collapse-button-video.btn.p-2.collapsed::after, 
-    #collapse-button-elevation.btn.p-2.collapsed::after{
+    #collapse-button-elevation.btn.p-2.collapsed::after,
+    #collapse-button-layer-control.btn.p-2.collapsed::after{
       content: "Show";
     }
+
+
+    /* #layer-control-parent-div{
+      background-color: white;
+    } */
+
+
+  #layer-control-div{
+    margin:0px;
+    padding:0px;
+    border:0px;
+    background: none;
+    box-shadow: none;
+  }
+
 
 
   </style>
@@ -272,9 +292,11 @@
   <!-- The YouTube API requires that we place an empty div with id="player" on the page.
         When the YouTube API is first initialized, it will steal this "player" div, and
         transform it into an iFrame with a video player inside it that we can control with the API.
-        BUT....in order to hide/unhide the iFrame that the YouTube API creates (as well as style it), 
-        we need to wrap it in this "player-parent" div and reference the "player-parent"
-        in our logic whenever we want to hide/unhide the video player -->
+        BUT....in order to hide/unhide the iFrame that the YouTube API creates 
+        (as well as style it) AND add our own transport controls and collapse (show/hide) button...
+        we need to wrap "player" and all our controls in this "player-parent" div 
+        and reference the "player-parent" in our logic whenever we want to completely
+        hide/unhide the entire component -->
   <div id="player-parent" hidden>
     <div class="d-flex flex-row-reverse" style="position :relative; height:0px;" >
       <button id="collapse-button-video" class="btn p-2" data-toggle="collapse" data-target="#player"></button><br>
@@ -282,16 +304,19 @@
     <div id="player" class="collapse show">
       video iFrame will replace this div
     </div>
-    <!-- <div class="transport-controls d-flex align-items-center" style="width:450px"> -->
     <div class="transport-controls d-flex align-items-center" style="width:450px">
       <button id="play-pause" class="play"></button>
-      <!-- <button id="stop">▇</button> -->
+      <!-- <button id="stop">▇</button>  --> <!-- uncomment this line if you want a stop button  --> 
       <input type="range" min="0" max="100" value="0" id="slider" class="slider ml-2 mr-2 flex-fill" >
       <button id="playback-rate">1x</button>
     </div>
   </div>
 
-  
+
+  <!--  Similar to what we're doing with our YouTube component, 
+        we are doing the same thing with the elevation div here 
+        we define the container div, and then append the elevation Control
+        to it once we create it in the JS code. then we can hide/unhide the whole thing -->  
   <div id="elevation-display-div" style="width:550px" hidden>
     <div class="d-flex flex-row-reverse" style="position :relative; height:0px" >
       <button id="collapse-button-elevation" class="btn p-2" data-toggle="collapse" data-target="#elevation-control-div"></button><br>
@@ -300,7 +325,26 @@
       <h5>Elevation</h5>
     </div>
     <!-- <div id="elevation-control-div" class="collapse show">
-      elevation will replace this div
+      when we create our elevation control it will generate this child element
+    </div> -->
+  </div>
+
+
+  <!--  Similar to what we're doing with our YouTube component, 
+        we are doing the same thing with the layer control div here 
+        we define the container div, and then append the Layer Control
+        to it once we create it in the JS code -->  
+  <div id="layer-control-display-div" style="min-width:250px">
+    
+    <div class="d-flex flex-row-reverse" style="position :relative; height:0px" >
+      <button id="collapse-button-layer-control" class="btn p-2" data-toggle="collapse" data-target="#layer-control-div"></button><br>
+    </div>
+    <div>
+      <h5>Rides</h5>
+    </div>
+    
+    <!-- <div id="layer-control-div" class="collapse show">
+      when we create our layer control (L.Control.Layers) it will generate this child element
     </div> -->
   </div>
 

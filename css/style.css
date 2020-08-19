@@ -154,7 +154,8 @@ we would also need to add this class along with the usual class for each icon */
 
 /* ELEVATION AND VIDEO PLAYER DIVS */
 #player-parent, 
-#elevation-display-div{
+#elevation-display-div,
+#layer-control-display-div{
   padding: 8px 8px 4px 8px;
   border-radius: 5px;
   /* font: 12px/14px Arial, Helvetica, sans-serif; */
