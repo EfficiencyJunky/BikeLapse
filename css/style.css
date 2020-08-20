@@ -155,7 +155,8 @@ we would also need to add this class along with the usual class for each icon */
 /* ELEVATION AND VIDEO PLAYER DIVS */
 #player-parent, 
 #elevation-display-div,
-#layer-control-display-div{
+#layer-control-display-div,
+#ride-stats-parent{
   padding: 8px 8px 4px 8px;
   border-radius: 5px;
   /* font: 12px/14px Arial, Helvetica, sans-serif; */
@@ -332,6 +333,48 @@ in the "global-settings.js" file and they make things act a little weird */
 
 
 
+/* RIDE STATS CSS */
+.title-text {
+  font-weight: 700;
+  font-size: 22px;
+  line-height: 28px;
+}
 
 
 
+.stat-subtext {
+  font-size: 12px;
+  font-weight: 400;
+  color: #737375;
+  line-height: 1.2;
+  font-family: "MaisonNeue", "Segoe UI", "Helvetica Neue", -apple-system, system-ui, BlinkMacSystemFont, Roboto, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+}
+
+.stat-text {
+  font-weight: 400;
+  line-height: 1;
+  margin-top: 2px;
+  white-space: nowrap;
+  -webkit-font-smoothing: antialiased;
+}
+
+.stat {
+  font-size: 20px;
+  /* display: -webkit-box;
+  display: -ms-flexbox; */
+  /* display: flex; */
+  /* -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: column; */
+  /* flex-direction: column; */
+}
+
+
+.timestamp {
+  display: block;
+  font-size: 11px;
+  color: #666;
+  margin-top: -4px;
+  padding: 0;
+  white-space: nowrap;
+}

@@ -202,7 +202,14 @@
     }
 
     #player-parent, #elevation-display-div{
-      background: rgb(238, 238, 238);
+      background: rgb(243, 243, 243);
+      border: solid;
+      border-width: 1px;
+      border-color: rgb(207, 207, 207);
+    }
+    
+    #ride-stats-parent{
+      background: rgb(247, 247, 247);
       border: solid;
       border-width: 1px;
       border-color: rgb(207, 207, 207);
@@ -233,6 +240,12 @@
       border-radius: 5px;
     } */
 
+    /* #ride-stats{
+      background: rgb(238, 238, 238);
+      border: solid;
+      border-width: 1px;
+      border-color: rgb(207, 207, 207);
+    }     */
 
 
     </style>
@@ -370,16 +383,88 @@
 
       <!-- ########### COLUMN 2 - VIDEO, MAP, ELEVATION ############ -->
       <div class="col-lg-8">
+        <!-- ########### COLUMN 2 - RIDE STATS ############ -->
         <div class="row mb-4">
+          <div class="col-12">  
 
-          
-          <div class="col-lg-8 d-flex">
+            <!-- MAIN RIDE STATS CONTAINER -->
+            <div id="ride-stats-parent" class="p-3" >
+
+              <!-- Ride Stats TITLE ROW -->
+              <div>
+                <h3 id="ride-title" class="title-text">GG Park to Ocean Beach to Twin Peaks</h3>
+                <div id="ride-start-datetime" class="timestamp">
+                  4:44 PM on Saturday, August 8th, 2020
+                </div>
+              </div>
+
+            <!-- <div class="row mt-2">
+              <div class="col-3"> -->
+
+              <!-- Ride Stats STATS ROW -->
+              <div class="d-flex mt-3 justify-content-between">
+
+                <div id="distance-tot" class="stat">
+                  <div class="stat-subtext">Distance:</div> 
+                  <div class="stat-text">
+                    18.45 mi
+                  </div>
+                </div>
+
+                <!-- </div>
+                <div class="col-3"> -->
+
+                <div id="elevation-gain-tot" class="stat">
+                  <div class="stat-subtext">Elev Gain:</div> 
+                  <div class="stat-text">
+                    1342 ft
+                  </div>
+                </div>
+
+                <!-- </div>
+                <div class="col-3"> -->
+
+                <div id="moving-time-tot" class="stat">
+                  <div class="stat-subtext">Moving Time:</div> 
+                  <div class="stat-text">
+                    2h 3m
+                  </div>
+                </div>
+
+                <!-- </div>
+                <div class="col-3"> -->
+
+                <div id="avg-moving-speed-tot" class="stat">
+                  <div class="stat-subtext">Avg Speed:</div> 
+                  <div class="stat-text">
+                    9.15 mph
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
+              <!-- </div>              
+            </div> -->
+            
+              <!-- <b>Elapsed Time:</b> <br>
+                <b>Average Elapsed Speed:</b> <br>
+                <b>Minimum Elevation:</b> <br>
+                <b>Maximum Elevation:</b> <br>  
+                <b>Total Descent:</b> -->
+          </div>
+        </div>
+
+
+        <!-- ########### COLUMN 2 ROW 2 - VIDEO ############ -->
+        <div class="row mb-4">
+          <div class="col-lg-8 d-flex mb-2">
             <!-- The YouTube API requires that we place an empty div with id="player" on the page.
               When the YouTube API is first initialized, it will steal this "player" div, and
               transform it into an iFrame with a video player inside it that we can control with the API.
               BUT....in order to hide/unhide the iFrame that the YouTube API creates (as well as style it), 
               we need to wrap it in this "player-parent" div and reference the "player-parent"
-              in our logic whenever we want to hide/unhide the video player -->
+              in our logic whenever we want to hide/unhide the video player -->            
             <div id="player-parent">
               <div id="player">
                 video iFrame will replace this div
@@ -393,8 +478,8 @@
             </div>  
           </div>
           
-          <div class="col-lg-4" hidden>
-            <div class="card bg-light mb-4">  
+          <div class="col-lg-4" >
+            <div class="card bg-light">  
               <div class="card-body">
 
                 <h5 class="card-title text-center">Video Info</h5>
@@ -426,6 +511,10 @@
 
         <br>
         <!-- <div id="elevation-display-div" class="leaflet-bar leaflet-control elevation-div"></div> -->
+
+
+
+
       </div>
 
     </div>

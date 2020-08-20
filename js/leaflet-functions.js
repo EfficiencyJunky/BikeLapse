@@ -288,7 +288,7 @@ function createGeoJsonLayerGroupForRide(geoJson, rideMetadata){
     let finalStatsHTML = (rideStatsHTML !== "no ride stats found") ? rideStatsHTML : detailsPointDescriptionHTML;
 
 
-    return  `<h2>RIDE: ${rideName}</h2>
+    return  `<h2>${rideName}</h2>
             ${finalStatsHTML}
             <br><br>
             ${stravaHTML}
@@ -376,14 +376,22 @@ function createGeoJsonLayerGroupForRide(geoJson, rideMetadata){
     // get the description from the point properties and create one if it's not defined   
     let pointDescription = validate(properties.description);
     let pointDescriptionHTML = (pointDescription !== "" ? 
-                                pointDescription + "<br>THIS TOO SHALL PASS" : "no description found");
+                                pointDescription + "<br>OLD METHOD" : "no description found");
 
-    let finalPointMetaHTML = (pointMetaHTML !== "no point meta found") ? pointMetaHTML : pointDescriptionHTML;
+    // let finalPointMetaHTML = (pointMetaHTML !== "no point meta found") ? pointMetaHTML : pointDescriptionHTML;
 
-    // console.log(pointDescriptionHTML);
+    if(pointMetaHTML !== "no point meta found") {
+      return  `<h3><b>${markerTypeText}</b>: ${pointMeta.locationName}</h3>
+               <b>Time:</b> ${getFormattedDateTimeStringFromISO(pointMeta.time)}<br>
+               <b>Elevation:</b> ${_toFeet(pointCoords[elevationIndex], 0)} feet &nbsp (${Math.round(pointCoords[elevationIndex])} meters)`;                   
+    }
+    else{
+      return  `<h3><b>${markerTypeText}</b>: ${rideName}</h3>
+                      ${pointDescriptionHTML}`;
+    }
 
-    return  `<h3><b>${markerTypeText}</b>: ${rideName}</h3>
-                    ${finalPointMetaHTML}`;
+    // return  `<h3><b>${markerTypeText}</b>: ${rideName}</h3>
+    //                 ${finalPointMetaHTML}`;
 
   }
 

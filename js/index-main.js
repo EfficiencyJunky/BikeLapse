@@ -11,10 +11,13 @@ let initialRidesToDisplay = [1, 3, 7, 8];
 // (meaning it was the last one to be clicked)
 let highlightedRideID = "";
 
-/******* CREATE OUR LAYER CONTROL ********** */
-// "overlayLayerControl" layer is the L.control with checkboxes to hide/unhide rides on the map
-// we can add it to the map first with baseLayer and overlayLayer arguments set as "undefined"
-// then as we asyncronously read in the rideJSON files we will add the rides to it
+
+// ******************************************************************* 
+// CREATE OUR LAYER CONTROL AND GET REFERENCE TO ITS HTML CONTAINER
+//    "overlayLayerControl" layer is the L.control with checkboxes to hide/unhide rides on the map
+//    we can add it to the map first with baseLayer and overlayLayer arguments set as "undefined"
+//    then as we asyncronously read in the rideJSON files we will add the rides to it
+// *******************************************************************  
 let overlayLayerControl = L.control.layers(undefined, undefined, {
   // position: mapUISettings.overlayLayerCtl.position,
   collapsed: mapUISettings.overlayLayerCtl.collapsed
@@ -28,31 +31,36 @@ overlayLayerControlDiv.setAttribute("id", "layer-control-div");
 overlayLayerControlDiv.classList.add("collapse", "show");
 
 
-/******* CREATE CONTAINER LAYER FOR THE LAYER CONTROL ********** */
-// create a new Control Layer that we will use to contain the elevationControl on the map
+// ******************************************************************* 
+// CREATE CONTAINER LAYER FOR THE LAYER CONTROL
+//    create a new Control Layer that we will use to contain the elevationControl on the map
+// *******************************************************************  
 let layerControlDisplayLayer = L.control({
   position: mapUISettings.overlayLayerCtl.position
 });
 
 // define the layer's onAdd function
 layerControlDisplayLayer.onAdd = function(mymap){
-    // get the div in our HTML that we've plan on using as 
-    // the container for the layer control and it's title + show/hide button
-    let div = L.DomUtil.get('layer-control-display-div');
-    
-    // append the overlayLayerControlDiv to it
-    div.appendChild(overlayLayerControlDiv);
-
-    return div;
+  // get the div in our HTML that we've plan on using as 
+  // the container for the layer control and it's title + show/hide button
+  let div = L.DomUtil.get('layer-control-display-div');
+  
+  // append the overlayLayerControlDiv to it
+  div.appendChild(overlayLayerControlDiv);
+  
+  return div;
 };
 
 // add the new layer to the map to create the div defined in the onAdd function
 layerControlDisplayLayer.addTo(map)
 
 
-/******* POSITION THE ZOOM CONTROL ********** */
-// move the zoom control to the position specified in the mapUISettings object
+// ******************************************************************* 
+// POSITION THE ZOOM CONTROL
+//    move the zoom control to the position specified in the mapUISettings object
+// *******************************************************************  
 map.zoomControl.setPosition(mapUISettings.zoomCtl.position);
+
 
 /* ###############################################################################
    ****  INITIALIZE OUR MAP WITH AVAILABLE BASEMAPS AND UI OVERLAYS ELEMENTS ****
