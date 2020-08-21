@@ -1,62 +1,118 @@
 // #############################################################################
 // *********  GLOBAL VARIABLES ***********************
 // #############################################################################
+if(document.getElementById('distance-tot')){
+  var distTotDiv       = document.getElementById('distance-tot').getElementsByClassName("stat-text")[0];
+  var elevTotDiv       = document.getElementById('elevation-tot').getElementsByClassName("stat-text")[0];
+  var durMovingTotDiv  = document.getElementById('duration-moving-tot').getElementsByClassName("stat-text")[0];
+  var spdMovingAvgDiv  = document.getElementById('speed-moving-avg').getElementsByClassName("stat-text")[0];
+}
+
+// RIDE STATS DISPLAY
+if(document.getElementById('ride-stats-cumulative')){
+  // store a refrence to a JQuery object for the DIV in our HTML with id="#ride-stats-cumulative"
+  // this is the only time in our entire program that we are going to use JQuery because Bootstrap requires it
+  var rideStatsCumRow_JQ = $("#ride-stats-cumulative");
+
+  // all of our elements in the cumulative ride stats display section
+  var distCumDiv      = document.getElementById('distance-cum').getElementsByClassName("stat-text")[0];
+  var elevCumDiv      = document.getElementById('elevation-cum').getElementsByClassName("stat-text")[0];
+  var durMovingCumDiv = document.getElementById('duration-moving-cum').getElementsByClassName("stat-text")[0];
+  var spdMovingNowDiv = document.getElementById('speed-moving-now').getElementsByClassName("stat-text")[0];
+}
+
+
+let cumulativeRideStats;
 
 
 
-// #############################################################################
-// *********  DISPLAY SELECTED RIDE AND ASSOCIATED DATA ***********************
-// #############################################################################
-function displaySelectedRide(rideMetadata, geoJsonLGroup, allowHiddenVideoDisplayDiv = true){
+// ################################################################################
+// *********  DISPLAY SELECTED RIDE AND ASSOCIATED DATA *************************
+// ################################################################################
+function displaySelectedRide(rideMetadata, geoJsonLGroup, allowVideoDisplayDivToBeHidden = true){
 
-  // *************************************************************
-  //  GET REFERENCES TO THE RIDE METADATA AND LINESTRING
-  // *************************************************************
+  // ****************************************************************************
+  //  GET REFERENCE TO THE ROUTE LINESTRING
+  // ****************************************************************************
   
   // get the feature who's name is ROUTE and who's type is "LineString"
   // so we can use its coordinatesArray to create the elevationHighlightGeoJSON we'll use to create the elevationFollowMarkerLayer
-  let lineStringFeature = getROUTELineStringFeatureFromGeoJsonLayerGroup(geoJsonLGroup);
+  let lineStringFeature = getFeatureFromGeoJsonLayerGroup(geoJsonLGroup , "ROUTE", "LineString");
 
-  // *************************************************************
+
+
+  // ****************************************************************************
+  //  UPDATE THE RIDE INFO DISPLAY
+  // ****************************************************************************
+
+  let rideStats = rideMetadata.rideStats;
+
+  if(distTotDiv){
+    distTotDiv.textContent      = `${rideStats.distance.mi} mi`;
+    elevTotDiv.textContent      = `${rideStats.elevation.gain.ft} ft`;
+    durMovingTotDiv.textContent = `${getFormattedDurationStringFromISO(rideStats.duration.moving)}`;
+    spdMovingAvgDiv.textContent = `${rideStats.avgSpeed.moving.mph} mph`;
+  }
+
+  // ****************************************************************************
   //  UPDATE THE ELEVATION DISPLAY
-  // *************************************************************
+  // ****************************************************************************
   showElevationForLineStringFeature(lineStringFeature);
 
   // make sure the div that contains the elevationControl display is not hidden
   elevationDisplayDiv.hidden = false;
 
-  // *************************************************************
-  //  UPDATE THE YOUTUBE VIDEO PLAYER / RABBIT MARKER
-  // *************************************************************
+
+
+
+  // ****************************************************************************
+  //  UPDATE THE YOUTUBE VIDEO PLAYER / RABBIT MARKER / CUMULATIVE RIDE STATS
+  // ****************************************************************************
   
   // returns true if the youTubeVideoID is not an empty string
+  // (probably need a better validation method)
   let youTubeVideoID = rideMetadata.youTubeVideoID;
   let hasValidVideoID = (youTubeVideoID !== "");
 
   // lets us know if this video is syncronized BikeLapse style (meaning it needs a rabbit)
   let hasBikeLapseSync = rideMetadata.hasBikeLapseSync;
-  showRabbitOnRoute = (typeof(hasBikeLapseSync) !== undefined) ? hasBikeLapseSync : false;
+  showRabbitOnRoute = (typeof(hasBikeLapseSync) !== "undefined") ? hasBikeLapseSync : false;
 
   // if the video exists and it has BikeLapse Sync
   // re-set the rabbitCoordsArray with the coordinates from the new ride
   // and set the rabbit marker to the start of the ride
+  // also, show the rideStats section under the video
   if(hasValidVideoID && showRabbitOnRoute){ 
     rabbitCoordsArray = lineStringFeature.geometry.coordinates;
+    if(rideStatsCumRow_JQ){
+      rideStatsCumRow_JQ.collapse('show');
+
+      cumulativeRideStats = getCumulativeStatsArrayFromLineString(lineStringFeature, "moving");
+    }
   }    
   else {
+    showRabbitOnRoute = false;
     rabbitCoordsArray = undefined;
     rabbitMarker.remove();
+    if(rideStatsCumRow_JQ){
+      rideStatsCumRow_JQ.collapse('hide');
+      cumulativeRideStats = undefined;
+    }    
   }
 
 
-  // load the youtube video and initialize the rabbit
+  // if the video ID is valid (probably need a better validation method)
   if(hasValidVideoID){
-    // the youTube player needs to know if the video has bikeLapse sync
+    // load the youtube video
     loadYouTubeVideo(youTubeVideoID);
-  }    
+  }
+  else{
+    // reset the video player with an empty video
+    loadYouTubeVideo("");    
+  }
 
   // set the visibility of the videoDisplayDiv according to "hasValidVideoID" and if we are allowing the videoDisplayDiv to be hidden or not
-  videoDisplayDiv.hidden = !hasValidVideoID && allowHiddenVideoDisplayDiv;
+  videoDisplayDiv.hidden = !hasValidVideoID && allowVideoDisplayDivToBeHidden;
 
 }
   
@@ -124,7 +180,7 @@ function showElevationForLineStringFeature(lineStringFeature){
 
 
 // #############################################################################
-// *********  RABBIT DISPLAY FUNCTION ************************
+// *********  RABBIT DISPLAY UPDATE FUNCTION ************************
 // #############################################################################
 
 function syncRabbitMarkerToVideo(valType, value){
@@ -163,6 +219,45 @@ function getRabbitCoords(){
 }
 
 
+// #############################################################################
+// *********  RIDE STATS DISPLAY UPDATE FUNCTION ************************
+// #############################################################################
+
+function syncCumulativeRideStatsToVideo(valType, value){
+
+  let eleContDataAtIndex;
+  let elevationControlData = elevationControl.getData();
+
+  let cumStatsDataAtIndex;
+
+
+  // console.log(elevationControlData);
+
+  // get the latlon from the coordsArray based on the
+  // value type that is passed in
+  switch(valType){
+    // notice we don't use a break for "percentWatched" 
+    // because we also want the logic from "frameIndex" to be executed
+    case "percentWatched":
+        value = Math.round(value * elevationControlData.length);
+    case "frameIndex":
+        let frameIndex = (value < elevationControlData.length) ? value : elevationControlData.length - 1;
+        eleContDataAtIndex = elevationControlData[frameIndex];
+        cumStatsDataAtIndex = cumulativeRideStats[frameIndex];
+        break;
+  }
+
+  if(distCumDiv){
+    distCumDiv.textContent      = eleContDataAtIndex.dist.toFixed(2);
+    elevCumDiv.textContent      = eleContDataAtIndex.altitude.toFixed(0);
+    durMovingCumDiv.textContent = getFormattedDurationStringFromISO(cumStatsDataAtIndex.duration);
+    spdMovingNowDiv.textContent = _toMiles(cumStatsDataAtIndex.speed, 2);
+  }
+
+}
+
+
+
 
 // *****************************************************************
 //     RE-CENTER/ZOOM THE MAP 
@@ -195,6 +290,30 @@ function reCenterMap(geoJsonLGroup){
 // #############################################################################
 // *********  UTILITY FUNCTIONS ************************
 // #############################################################################
+
+
+// this function is temporarily going to live here
+// once we update all of the rides to have the proper metadata,
+// we can move it to a more appropriate location (like geojson-tools)
+function getFormattedDurationStringFromISO(isoDuration){
+
+  let duration = moment.duration(isoDuration);
+
+  // use the minutes and seconds to create a string that is formatted as "[minutes] minutes, and [seconds] seconds"
+  let durationString = duration.minutes() + "m "  + duration.seconds() + "s";
+
+  // if the duration lasted more than 1 hour, pre-pend the string with "[hours] hours, "
+  if(duration.hours() > 0){
+    durationString = duration.hours() + "h " + durationString;
+  }
+
+  return durationString;
+}
+
+
+
+
+
 /**
  * Get the feature 
  * who's .properties.name attribute is "featureName" and

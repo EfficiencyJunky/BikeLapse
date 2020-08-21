@@ -381,24 +381,37 @@ function getRideStats(routeLineString){
     const coordTimes = routeLineString.properties.coordTimes;
     const coordinates = routeLineString.geometry.coordinates;
 
+    // distance object with .km and .mi properties
     let distance = getDistance(coordinates, 2, latLonReversed = true);
     
-    let movingDuration = getRideDuration(coordTimes, 'moving');
-    let avgMovingSpeed = getAvgSpeed(movingDuration, distance);
+    // duration object with 
+    //      .string == (hh [hours,] mm [minutes, and] ss [seconds] )
+    //      .hours == number of hours in float form
+    //      .milliseconds == number of milliseconds
+    //      .duration == moment duration object (ISO formatted duration)
+    let durationMoving = getRideDuration(coordTimes, 'moving');
 
-    let elapsedDuration = getRideDuration(coordTimes, 'elapsed');    
-    let avgElapsedSpeed = getAvgSpeed(elapsedDuration, distance);
+    // speed object with .kph and .mph properties
+    let avgSpeedMoving = getAvgSpeed(durationMoving, distance);
 
+    let durationTotal = getRideDuration(coordTimes, 'elapsed');    
+    let avgSpeedTotal = getAvgSpeed(durationTotal, distance);
+
+    // elevation object with min/max/gain/descent in m/ft
     let elevationStats = getElevationStats(coordinates);
 
     return  {
         "startTime": routeLineString.properties.time, // string formatted as an ISO timestamp
         "distance": distance, // distance object with .km and .mi properties
-        "movingDuration": movingDuration, // duration object with .string == (hh [hours,] mm [minutes, and] ss [seconds] ) --- .hours == number of hours in float form --- .duration == moment duration object
-        "avgMovingSpeed": avgMovingSpeed,  // speed object with .kph and .mph properties
-        "elapsedDuration": elapsedDuration, // string
-        "avgElapsedSpeed": avgElapsedSpeed, // speed object
-        "elevationStats": elevationStats // elevation object
+        "duration": {
+            "moving": durationMoving,
+            "total": durationTotal
+        },
+        "avgSpeed": {
+            "moving": avgSpeedMoving,
+            "total": avgSpeedTotal
+        },
+        "elevation": elevationStats 
     }
 
 }
@@ -454,6 +467,9 @@ function addRideToMap(){
     // ************************************************************* 
     displaySelectedRide(geoJsonData.metadata, geoJsonLayerGroup, allowHiddenVideoDisplayDiv = false);
 
+    // *************************************************************
+    //     RECENTER THE MAP ON OUR RIDE
+    // ************************************************************* 
     reCenterMap(geoJsonLayerGroup);
 }
 

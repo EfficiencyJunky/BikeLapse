@@ -206,22 +206,23 @@ function getRideDuration(coordTimesArray, timeType){
 
 
   // use the minutes and seconds to create a string that is formatted as "[minutes] minutes, and [seconds] seconds"
-  let durationString = rideDuration.minutes() + " minutes, and "  + rideDuration.seconds() + " seconds";
+  // let durationString = rideDuration.minutes() + " minutes, and "  + rideDuration.seconds() + " seconds";
 
-  // if the duration lasted more than 1 hour, pre-pend the string with "[hours] hours, "
-  if(rideDuration.hours() > 0){
-    durationString = rideDuration.hours() + " hours, " + durationString;
-  }
+  // // if the duration lasted more than 1 hour, pre-pend the string with "[hours] hours, "
+  // if(rideDuration.hours() > 0){
+  //   durationString = rideDuration.hours() + " hours, " + durationString;
+  // }
 
-  let durationInfo = {
-    "string": durationString,
-    "hours": Number(rideDuration.asHours().toFixed(6)),
-    "milliseconds": rideDuration.asMilliseconds(),
-    "duration": rideDuration // moment duration object
-  }
+  // let durationInfo = {
+  //   "string": durationString,
+  //   "hours": Number(rideDuration.asHours().toFixed(6)),
+  //   "milliseconds": rideDuration.asMilliseconds(),
+  //   "duration": rideDuration // moment duration object
+  // }
 
   // return the formatted string
-  return durationInfo;
+  // return durationInfo;
+  return rideDuration;
 
 }
 
@@ -247,8 +248,8 @@ function getAvgSpeed(duration, distance){
   let decimals_km = countDecimals(distance.km);
 
   return {
-            "mph": Number((distance.mi / duration.hours).toFixed(decimals_mi)),
-            "kph": Number((distance.km / duration.hours).toFixed(decimals_km))
+            "mph": Number((distance.mi / duration.asHours()).toFixed(decimals_mi)),
+            "kph": Number((distance.km / duration.asHours()).toFixed(decimals_km))
           }
 }
 
@@ -326,17 +327,36 @@ function getElevationStats(coordsArray){
 
   });
 
-
+// ABRACADABRA - THIS IS WHERE WE NEED TO STOP ROUNDING
   let elevationStats = {
-    "min_m": Math.round(min_m),
-    "max_m": Math.round(max_m),
-    "gain_m": Math.round(gain_m),
-    "descent_m": Math.abs( Math.round(descent_m) ),
-    "min_ft": _toFeet(min_m, 0),
-    "max_ft": _toFeet(max_m, 0),
-    "gain_ft": _toFeet(gain_m, 0),
-    "descent_ft": Math.abs( _toFeet(descent_m, 0) )
+    "min": {
+      "m": Math.round(min_m),
+      "ft": _toFeet(min_m, 0)
+    },
+    "max": {
+      "m": Math.round(max_m),
+      "ft": _toFeet(max_m, 0)
+    },
+    "gain": {
+      "m": Math.round(gain_m),
+      "ft": _toFeet(gain_m, 0)
+    },
+    "descent": {
+      "m": Math.abs( Math.round(descent_m) ),
+      "ft": Math.abs( _toFeet(descent_m, 0) )
+    }
   }
+
+  // let elevationStats = {
+  //   "min_m": Math.round(min_m),
+  //   "max_m": Math.round(max_m),
+  //   "gain_m": Math.round(gain_m),
+  //   "descent_m": Math.abs( Math.round(descent_m) ),
+  //   "min_ft": _toFeet(min_m, 0),
+  //   "max_ft": _toFeet(max_m, 0),
+  //   "gain_ft": _toFeet(gain_m, 0),
+  //   "descent_ft": Math.abs( _toFeet(descent_m, 0) )
+  // }
 
   // let elevationStats = {
   //   "min_m": min_m,
@@ -356,7 +376,156 @@ function getElevationStats(coordsArray){
 
 
 
+// #############################################################################
+// *********  CUMULATIVE STATS ARRAYS GENERATION ****************
+// #############################################################################
+// this is how we calculat our in-ride stats display where we show the cumulative stats as the user plays the video
+// we can get the Distance and Elevation from our Elevation Control class
+// but we still need to get the Elapsed Time and Speed for each frameIndex
 
+function getCumulativeStatsArrayFromLineString(lineString, timeType){
+
+  // ****************************************************************************
+  //  INITIALIZE CONSTANTS
+  // ****************************************************************************
+  const times = lineString.properties.coordTimes;
+  const coords = lineString.geometry.coordinates;
+
+  // the maxAllowableDurationDiff is the maximum amount of time we can allow to pass between points
+  // to consider adding it to the total duration of our "moving time" calculation
+  // basically we are assuming that the rider wasn't really moving if the time
+  // between the two moments was more than this amount of time
+  const maxAllowableDurationDiffSeconds = 45;
+  const alphaSlow = 0.9;
+  const alphaFast = 0.4;
+  let alpha = alphaSlow;
+
+  // ****************************************************************************
+  //  INITIALIZE MUTABLE VARIABLES TO USE IN THE LOOP
+  // ****************************************************************************
+  let cumStatsArray = [
+    {
+      "distance": 0,
+      "duration": moment.duration(0),
+      "speed": 0
+    }
+  ]
+
+  // initialize prevMoment as a moment of the first index in the time array
+  let prevMoment = moment(times[0]);
+
+
+  // ****************************************************************************
+  //  ITTERATE OVER THE COORDS AND TIMES ARRAYS AND PERFORM CALCULATIONS
+  // ****************************************************************************
+  for (let i = 1; i < coords.length; i++) {
+
+    // ***********************************
+    //  CALCULATE THE DISTANCE TRAVELED
+    // ***********************************
+    
+    // calculate the delta between the previous coordinate and the current coordinate
+    // the distance will be in meters
+    const distanceDelta = calcDistance(coords[i-1], coords[i], latLonReversed = true);
+    
+    // add the delta to the distance from our last iteration
+    const cumDistance = cumStatsArray[i-1].distance + distanceDelta;
+    
+
+    // ***********************************
+    //  CALCULATE THE MOVING DURATION 
+    // ***********************************
+
+    // create a moment object for the current time in the array
+    const currentMoment = moment(times[i]);
+
+    // use moment function to calculate the duration of time between the previous and current moment
+    const durationDiff = moment.duration(currentMoment.diff(prevMoment));
+
+    // console.log(getFormattedDurationStringFromISO(durationDiff));
+
+    // const durationDiffClone = durationDiff.clone();
+    // if the durration is an acceptable durration
+    const cumDuration = (durationDiff.asSeconds() < maxAllowableDurationDiffSeconds) ?
+                          // add it to the previous durration and save as current durration
+                          // we have to clone it first though because these guys are mutating!!
+                          // moment.duration().add() Mutates the original duration by adding time.
+                          cumStatsArray[i-1].duration.clone().add(durationDiff) :
+                          // otherwise just re-use the previous durration
+                          cumStatsArray[i-1].duration;
+
+    prevMoment = currentMoment;    
+
+    
+    // ****************************************************************************
+    //  CALCULATE THE INSTANTANEOUS SPEED
+    // ****************************************************************************
+
+    // if distanceDelta == 0 then speed: 0
+    // if durationDiff == 0 then speed: Infinity
+    // if BOTH == 0 then speed: NaN
+    // let currentSpeed = distanceDelta / durationDiff.asHours() / 1000;
+
+    // if(!isFinite(currentSpeed)){
+    //   console.log(currentSpeed);
+    //   currentSpeed = 0;
+    // }
+
+    // if we haven't moved in space AND time then maybe the pictures took too fast
+    // or there was a glitch of some sort
+    if(distanceDelta === 0 && durationDiff.asHours() === 0.0){
+      currentSpeed = cumStatsArray[i-1].speed;
+      alpha = alphaSlow;
+    }
+    // if we haven't moved in space BUT we have moved in time
+    // then chances are we are stopped
+    else if(distanceDelta === 0){
+      currentSpeed = 0;
+      alpha = alphaFast;
+    }
+    // if we have moved in space BUT we have NOT moved in time
+    // then chances are we are moving very fast
+    else if(durationDiff.asHours() === 0.0){
+      currentSpeed = cumStatsArray[i-1].speed;
+      alpha = alphaSlow;
+    }
+    // otherwise just do the normal calculation and use the normal alpha
+    else{
+      currentSpeed = distanceDelta / durationDiff.asHours() / 1000;
+      alpha = alphaSlow;
+    }
+
+    const speed = currentSpeed * (1 - alpha) + cumStatsArray[i-1].speed * alpha;
+
+
+    // ****************************************************************************
+    //  LOAD VALUES INTO "cumStatsArray"
+    // ****************************************************************************    
+    cumStatsArray.push(
+      {
+        "distance": cumDistance,
+        "duration": cumDuration,
+        "speed": speed
+      }
+    );
+
+  }
+
+  return cumStatsArray;
+
+}
+
+
+
+
+
+
+
+
+
+// #############################################################################
+// *********  HELPER FUNCTIONS ****************
+// #############################################################################
 /**
  * converts meters to feet
  *

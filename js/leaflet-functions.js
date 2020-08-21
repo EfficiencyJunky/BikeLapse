@@ -20,6 +20,7 @@ L.Layer.include({
   }
 });
 
+
 // *************************************************************************************** 
 // EXTEND THE ELEVATION CONTROL CLASS ALSO
 //    We want to be able to get access to the "_data" member of the Elevation Control
@@ -39,6 +40,7 @@ L.Control.Elevation.include({
 // ***************************************************************************************     
 function createGeoJsonLayerGroupForRide(geoJson, rideMetadata){  
 
+
   let geoJsonLGroup = L.geoJson(geoJson, { 
                                             pane: 'bikeRidesPane', // the "pane" option is inherited from the "Layer" object
                                             filter: filterFunction,
@@ -50,7 +52,8 @@ function createGeoJsonLayerGroupForRide(geoJson, rideMetadata){
                                           });
 
 
-  return geoJsonLGroup;                       
+  return geoJsonLGroup;
+
   // ************************************************************************************************************************************
   // THESE ARE THE FUNCTIONS PASSED IN AS OPTIONS TO THE GEOJSON LAYER UPON CREATION
   //     Information on the usage of these functions can be found here: https://leafletjs.com/reference-1.6.0.html#geojson
@@ -333,18 +336,34 @@ function createGeoJsonLayerGroupForRide(geoJson, rideMetadata){
 
     return `<b>Start Time:</b>            ${getFormattedDateTimeStringFromISO(rideStats.startTime)}<br>
             <b>Distance:</b>              ${rideStats.distance.mi} miles &nbsp (${rideStats.distance.km} km)<br>
-            <b>Moving Time:</b>           ${rideStats.movingDuration.string}<br>
-            <b>Average Moving Speed:</b>  ${rideStats.avgMovingSpeed.mph} mph &nbsp (${rideStats.avgMovingSpeed.kph} kph)<br>
-            <b>Elapsed Time:</b>          ${rideStats.elapsedDuration.string}<br>
-            <b>Average Elapsed Speed:</b> ${rideStats.avgElapsedSpeed.mph} mph &nbsp (${rideStats.avgElapsedSpeed.kph} kph)<br>
-            <b>Minimum Elevation:</b>     ${rideStats.elevationStats.min_ft} feet &nbsp (${rideStats.elevationStats.min_m} meters)<br>
-            <b>Maximum Elevation:</b>     ${rideStats.elevationStats.max_ft} feet &nbsp (${rideStats.elevationStats.max_m} meters)<br>
-            <b>Total Climb:</b>           ${rideStats.elevationStats.gain_ft} feet &nbsp (${rideStats.elevationStats.gain_m} meters)<br>
-            <b>Total Descent:</b>         ${rideStats.elevationStats.descent_ft} feet &nbsp (${rideStats.elevationStats.descent_m} meters)`;
+            <b>Moving Time:</b>           ${getFormattedDurationStringFromISO(rideStats.duration.moving)}<br>
+            <b>Avg Speed Moving:</b>      ${rideStats.avgSpeed.moving.mph} mph &nbsp (${rideStats.avgSpeed.moving.kph} kph)<br>
+            <b>Total Time:</b>            ${getFormattedDurationStringFromISO(rideStats.duration.total)}<br>
+            <b>Avg Speed Total:</b>       ${rideStats.avgSpeed.total.mph} mph &nbsp (${rideStats.avgSpeed.total.kph} kph)<br>
+            <b>Minimum Elevation:</b>     ${rideStats.elevation.min.ft} feet &nbsp (${rideStats.elevation.min.m} meters)<br>
+            <b>Maximum Elevation:</b>     ${rideStats.elevation.max.ft} feet &nbsp (${rideStats.elevation.max.m} meters)<br>
+            <b>Total Climb:</b>           ${rideStats.elevation.gain.ft} feet &nbsp (${rideStats.elevation.gain.m} meters)<br>
+            <b>Total Descent:</b>         ${rideStats.elevation.descent.ft} feet &nbsp (${rideStats.elevation.descent.m} meters)`;
   }
 
 
+  // takes an ISO formatted duration and converts to a custom formatted string
+  function getFormattedDurationStringFromISO(isoDuration){
 
+    let duration = moment.duration(isoDuration);
+
+    // use the minutes and seconds to create a string that is formatted as "[minutes] minutes, and [seconds] seconds"
+    // let durationString = duration.minutes() + "m "  + duration.seconds() + "s";
+    let durationString = duration.minutes() + " minutes, and "  + duration.seconds() + " seconds";
+
+    // if the duration lasted more than 1 hour, pre-pend the string with "[hours] hours, "
+    if(duration.hours() > 0){
+      // durationString = duration.hours() + "h " + durationString;
+      durationString = duration.hours() + " hours, " + durationString;
+    }
+
+    return durationString;
+  }
 
 
 

@@ -39,8 +39,8 @@ let consoleLogsOn = false;
 // BUTTONS
 // references to our video control buttons
 let playPauseButton = document.getElementById('play-pause');
-let stopButton = document.getElementById('stop')
-let playbackRateButton = document.getElementById('playback-rate')
+let stopButton = document.getElementById('stop');
+let playbackRateButton = document.getElementById('playback-rate');
 
 // for updating the playPauseButton's class to change its CSS and content
 let playButtonClass = "play";
@@ -49,6 +49,8 @@ let pauseButtonClass = "pause";
 // SLIDER
 let slider = document.getElementById('slider');
 let sliderAvailable = true;
+
+
 
 // YOUTUBE PLAYER INITIALIZATION
 // 1. This code loads the IFrame Player API code asynchronously.
@@ -140,7 +142,8 @@ function onPlayerStateChange(event) {
         // notice we don't have a "break;" below for the "ENEDED" state because we want to update the button in both the ended and paused states. Leaving out the break means the code in both cases will execute if the state is "ENDED"
         // (ended) -- what happens when the video finishes playing on its own
         case YT.PlayerState.ENDED:
-            (consoleLogsOn === true) ? printRabbitInfo() : undefined; // can eventually remove this
+            updateUIElementsFromVideoTimeStamp();    
+            //(consoleLogsOn === true) ? printRabbitInfo() : undefined; // can eventually remove this            
         // (unstarted) -- what happens when the video is initially loaded and ready, or is "stopped" by the player.stopVideo(); command
         case YT.PlayerState.UNSTARTED:            
             stopRabbitAndSliderSyncronizer();
@@ -152,7 +155,7 @@ function onPlayerStateChange(event) {
         case YT.PlayerState.CUED:
             playPauseButton.className = playButtonClass;
             // stopRabbitAndSliderSyncronizer();
-            updateRabbitAndSliderPosition();
+            updateUIElementsFromVideoTimeStamp();
 
             playbackRateIndex = defaultPlaybackRateIndex;
             player.setPlaybackRate(playbackRatesArray[playbackRateIndex]);
@@ -209,7 +212,7 @@ function startRabbitAndSliderSyncronizer() {
     if(rabbitAndSliderSyncTimerID === undefined){
         (consoleLogsOn === true) ? console.log("START - interval timer") : undefined;
         
-        rabbitAndSliderSyncTimerID = window.setInterval( updateRabbitAndSliderPosition, rabbitAndSliderSyncInterval);
+        rabbitAndSliderSyncTimerID = window.setInterval( updateUIElementsFromVideoTimeStamp, rabbitAndSliderSyncInterval);
     }
 
 }
@@ -219,11 +222,12 @@ function startRabbitAndSliderSyncronizer() {
 // we get the frame index of the video, 
 // and use that as the index into the coordsArray
 // in the LineString of our GeoJSON file
-function updateRabbitAndSliderPosition(){
+function updateUIElementsFromVideoTimeStamp(){
 
     //current time of the playhead (a float that is accurate to many milliseconds)
     let vCurrentTime = player.getCurrentTime();
     
+    // we only want to update the rabbit and ride stats if "showRabbitOnRoute" is true
     if(showRabbitOnRoute){
         
         // multiply that time by 15 frames per second (the framerate of BikeLapse videos)
@@ -232,6 +236,8 @@ function updateRabbitAndSliderPosition(){
         let frameIndex = Math.round(vCurrentTime * framesPerSecond) + frameOffset;
         syncRabbitMarkerToVideo("frameIndex", frameIndex);
         // setRabbitLatLonFromFrameIndex();
+
+        syncCumulativeRideStatsToVideo("frameIndex", frameIndex);
 
         // duration only is reported once the video starts playing
         // if the video has just been cued, the duration will return 0

@@ -23538,36 +23538,40 @@
                 "km": 29.69,
                 "mi": 18.45
             },
-            "movingDuration": {
-                "string": "2 hours, 0 minutes, and 59 seconds",
-                "hours": 2.016389,
-                "milliseconds": 7259000,
-                "duration": "PT2H59S"
+            "duration":{
+                "moving": "PT2H59S",
+                "total": "PT2H12M41S"
             },
-            "avgMovingSpeed": {
-                "mph": 9.15,
-                "kph": 14.72
+            "avgSpeed": {
+                "moving": {
+                    "mph": 9.15,
+                    "kph": 14.72
+                },
+                "total": {
+                    "mph": 8.34,
+                    "kph": 13.43
+                }
             },
-            "elapsedDuration": {
-                "string": "2 hours, 12 minutes, and 41 seconds",
-                "hours": 2.211389,
-                "milliseconds": 7961000,
-                "duration": "PT2H12M41S"
-            },
-            "avgElapsedSpeed": {
-                "mph": 8.34,
-                "kph": 13.43
-            },
-            "elevationStats": {
-                "min_m": 4,
-                "max_m": 265,
-                "gain_m": 409,
-                "descent_m": 402,
-                "min_ft": 12,
-                "max_ft": 868,
-                "gain_ft": 1342,
-                "descent_ft": 1320
-            }
+            "elevation": {
+                "min": {
+                  "m": 4,
+                  "ft": 12
+                },
+                "max": {
+                  "m": 265,
+                  "ft": 868
+                },
+                "gain": {
+                  "m": 409,
+                  "ft": 1342
+                },
+                "descent": {
+                  "m": 402,
+                  "ft": 1320
+                }
+              }
         }
     }
 }
+
+
