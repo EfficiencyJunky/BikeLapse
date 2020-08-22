@@ -14,6 +14,13 @@ flyToPaddingBottomRight = [0, 100]; //[rightside, bottom]
 // this is the object to hold our GeoJson that the user will download
 let geoJsonData;
 
+
+// This is the div in our HTML where we will display the elevationControl
+// we need to grab a reference to it and store it here so our
+// "initializeMapOverlaysAndUI()" function can add the elevationControl to it
+rideInfoDisplayDiv = document.getElementById('ride-info-parent');
+
+
 // This is the div in our HTML where we will display the elevationControl
 // we need to grab a reference to it and store it here so our
 // "initializeMapOverlaysAndUI()" function can add the elevationControl to it
@@ -45,7 +52,7 @@ let geoJsonTextarea = document.getElementById('geojson-textarea');
 map.setView([30, 0], minimumZoom);
 
 initializeBaseMaps();
-initializeMapOverlaysAndUI(hideElevationDisplayDiv = false, hideVideoDisplayDiv = false);
+initializeMapOverlaysAndUI(hideElevationDisplayDiv = false, hideVideoDisplayDiv = false, hideRideInfoDisplayDiv = false);
 
 
 

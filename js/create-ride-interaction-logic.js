@@ -246,7 +246,7 @@ function renameLineStringToROUTE(tempGeoJson) {
 // *********************************************************************************************************************
 function getUserInputsFromTextFields(){
 
-    // defining a function and calling it all at once because I'm lazy
+    // defining a function and calling it all at once because I'm lazy and dumb
     const selectedRadio = ( function() {
         // get reference to all radios with name "rideType"
         // NOTE: this returns a NodeList object, not an Array
@@ -271,10 +271,7 @@ function getUserInputsFromTextFields(){
         "hasBikeLapseSync": (selectedRadio === "bikelapse"),
         "youTubeVideoID": document.getElementById('youTubeVideoID').value,
         "stravaURL": document.getElementById('stravaURL').value,
-        "googleMapURL": document.getElementById('googleMapURL').value,
-        "lineColor": "rgba(62, 146, 204, 1)",
-        "lineColorEasy": "green",
-        "lineColorHard": "red"
+        "googleMapURL": document.getElementById('googleMapURL').value
     }
 
     const startLocationName = document.getElementById('startLocationName').value;
@@ -361,61 +358,6 @@ function createPointFeature(routeLineString, pointName, pointLocationName = 'Loc
     return pointFeature;
 
 }
-
-// *********************************************************************************************************************
-// THIS IS THE FUNCTION WHERE WE CALCULATE THE RIDE STATS FOR THE RIDE
-// The ride stats are calculated from the data in the route LineString
-// When we display the ride, we'll display these stats along with it
-// EXAMPLE:
-//      Time: Sunday, June 21, 2020 9:20 AM PDT<br>
-//      Distance: 26.38 miles<br>
-//      Duration: 3 hours, 11 minutes, and 11 seconds<br>
-//      Average Speed: 10.8 mph<br>
-//      Minimum Elevation: 24 feet<br>
-//      Maximum Elevation: 599 feet<br>
-//      Total climb: 1526 feet<br>
-//      Total descent: 100 feet
-// *********************************************************************************************************************
-function getRideStats(routeLineString){
-
-    const coordTimes = routeLineString.properties.coordTimes;
-    const coordinates = routeLineString.geometry.coordinates;
-
-    // distance object with .km and .mi properties
-    let distance = getDistance(coordinates, 2, latLonReversed = true);
-    
-    // duration object with 
-    //      .string == (hh [hours,] mm [minutes, and] ss [seconds] )
-    //      .hours == number of hours in float form
-    //      .milliseconds == number of milliseconds
-    //      .duration == moment duration object (ISO formatted duration)
-    let durationMoving = getRideDuration(coordTimes, 'moving');
-
-    // speed object with .kph and .mph properties
-    let avgSpeedMoving = getAvgSpeed(durationMoving, distance);
-
-    let durationTotal = getRideDuration(coordTimes, 'elapsed');    
-    let avgSpeedTotal = getAvgSpeed(durationTotal, distance);
-
-    // elevation object with min/max/gain/descent in m/ft
-    let elevationStats = getElevationStats(coordinates);
-
-    return  {
-        "startTime": routeLineString.properties.time, // string formatted as an ISO timestamp
-        "distance": distance, // distance object with .km and .mi properties
-        "duration": {
-            "moving": durationMoving,
-            "total": durationTotal
-        },
-        "avgSpeed": {
-            "moving": avgSpeedMoving,
-            "total": avgSpeedTotal
-        },
-        "elevation": elevationStats 
-    }
-
-}
-
 
 
 // *********************************************************************************************************************

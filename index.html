@@ -56,6 +56,10 @@
   integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
   crossorigin=""></script>
 
+  <!-- Leaflet "topcenter" Add-on for positioning controls  -->
+  <link rel="stylesheet" type="text/css" href="css/lib/leaflet-control-topcenter.css">
+  <script type="text/javascript" src="js/lib/leaflet-control-topcenter.js"></script>
+
   <!-- Stamen Map Tiles -  -->
   <!-- Leaflet Map TileSets from Stamen.com -- Doesn't have secure SSL Certificate so don't use this -->
   <!-- <script type="text/javascript" src="http://maps.stamen.com/js/tile.stamen.js?v1.3.0"></script> -->
@@ -185,11 +189,16 @@
 
     #player-parent, 
     #elevation-display-div,
-    #layer-control-display-div{
+    #layer-control-display-div,
+    #ride-info-parent{
       background: rgba(255,255,255,0.8);
       box-shadow: 0 0 15px rgba(0,0,0,0.2);
     }
 
+    #ride-info-parent{
+      max-width: 500px;
+      border-radius: 5px;
+    }
 
     #collapse-button-video{
       background-color: rgba(255,255,255,0.8);
@@ -279,7 +288,7 @@
 
 
 
-
+  <!-- ########### MAP ############ -->
   <!-- The div where we will inject our map -->
   <div id="map">
     <!-- you <em>should</em> see a map here...<br>
@@ -287,16 +296,102 @@
     if that doesn't work, try opening the console on your browser to find the error and fix it! -->
   </div>
 
+
+
+
+
+
+  <!-- ########### LAYER CONTROL - TURN LAYERS ON OFF WITH CHECK BOXES ############ -->
+  <!--  Similar to what we're doing with our YouTube component, 
+        we are doing the same thing with the layer control div here 
+        we define the container div, and then append the Layer Control
+        to it once we create it in the JS code -->  
+  <div id="layer-control-display-div" style="min-width:250px">
+
+    <div class="d-flex flex-row-reverse" style="position :relative; height:0px" >
+      <button id="collapse-button-layer-control" class="btn p-2" data-toggle="collapse" data-target="#layer-control-div"></button><br>
+    </div>
+    <div>
+      <h5>Rides</h5>
+    </div>    
+    <!-- <div id="layer-control-div" class="collapse show">
+      when we create our layer control (L.Control.Layers) it will generate this child element
+    </div> -->
+
+  </div>  
   
 
+
+
+  <!-- ########### RIDE INFO CONTAINER - TOTAL RIDE STATS ############ -->
+  <!-- ABRACADABRA ABRACADABRA ABRACADABRA ABRACADABRA ABRACADABRA -->
+  <!-- <div id="ride-info-parent" > -->
+  <div id="ride-info-parent" class="p-3" >
+
+    <!-- Ride Info TITLE ROW -->
+    <div>
+      <h3 id="ride-name" class="title-text">Ride Name Will Appear Here</h3>
+      <div class="d-flex mr-2">
+        <div id="ride-start-datetime" class="mr-auto timestamp">
+          ride date/time will appear here
+        </div>        
+        <a id="ride-strava-url" class="ml-3 timestamp" href="" target="_blank" hidden>Strava</a>
+        <a id="ride-googlemap-url" class="ml-3 timestamp" href="" target="_blank" hidden>Google Map</a>
+      </div>
+
+
+
+    </div>
+
+
+    <!-- Ride Info STATS ROW -->
+    <!-- <div class="d-flex flex-wrap justify-content-between mt-3"> -->
+    <!-- <div class="row mt-2 mb-1 mr-1"></div> -->
+    <div class="row mt-2 mr-1">
+      <div class="col-6 col-sm-3">
+        <div id="duration-moving-tot" class="stat">
+          <div class="stat-subtext">Moving Time:</div> 
+          <div class="stat-text">00h 00m</div>
+        </div>
+      </div>      
+      <div class="col-6 col-sm-3">
+        <div id="distance-tot" class="stat">
+          <div class="stat-subtext">Distance:</div> 
+          <div class="stat-text">00.00 mi</div>                    
+        </div>
+      </div>
+      <div class="col-6 mt-3 col-sm-3 mt-sm-0">
+        <div id="elevation-tot" class="stat">
+          <div class="stat-subtext">Elev Gain:</div> 
+          <div class="stat-text">0000 ft</div>
+        </div>
+      </div>      
+      <div class="col-6 mt-3 col-sm-3 mt-sm-0 ">
+        <div id="speed-moving-avg" class="stat">
+          <div class="stat-subtext">Avg Speed:</div> 
+          <div class="stat-text">00.00 mph</div>
+        </div>
+      </div>      
+    </div>
+  </div>
+<!-- </div> -->
+
+  <!-- ABRACADABRA ABRACADABRA ABRACADABRA ABRACADABRA ABRACADABRA -->
+
+
+
+
+
+
+  <!-- ########### YOUTUBE VIDEO PLAYER - PLAYBACK CONTROLS - RIDE STATS DISPLAY ############ -->
   <!-- The YouTube API requires that we place an empty div with id="player" on the page.
-        When the YouTube API is first initialized, it will steal this "player" div, and
-        transform it into an iFrame with a video player inside it that we can control with the API.
-        BUT....in order to hide/unhide the iFrame that the YouTube API creates 
-        (as well as style it) AND add our own transport controls and collapse (show/hide) button...
-        we need to wrap "player" and all our controls in this "player-parent" div 
-        and reference the "player-parent" in our logic whenever we want to completely
-        hide/unhide the entire component -->
+      When the YouTube API is first initialized, it will steal this "player" div, and
+      transform it into an iFrame with a video player inside it that we can control with the API.
+      BUT....in order to hide/unhide the iFrame that the YouTube API creates 
+      (as well as style it) AND add our own transport controls and collapse (show/hide) button...
+      we need to wrap "player" and all our controls in this "player-parent" div 
+      and reference the "player-parent" in our logic whenever we want to completely
+      hide/unhide the entire component -->
   <div id="player-parent" hidden>
     <div class="d-flex flex-row-reverse" style="position :relative; height:0px;" >
       <button id="collapse-button-video" class="btn p-2" data-toggle="collapse" data-target="#player"></button><br>
@@ -312,45 +407,40 @@
     </div>
 
     <!-- CUMULATIVE Ride Stats STATS ROW / COLLAPSIBLE PANEL -->
-    <div id="ride-stats-cumulative"  class="collapse show">
-      <div class="d-flex justify-content-between mt-3">
-
-        <div id="distance-cum" class="stat pb-2">
+    <!-- <div id="ride-stats-cumulative"  class="collapse show"> -->
+    <!-- <div class="d-flex justify-content-between mt-3"> -->
+    <div id="ride-stats-cumulative" class="row mt-2 mb-1 mr-1 collapse show">
+      <div class="col-3">
+        <div id="duration-moving-cum" class="stat">
+          <div class="stat-subtext">Moving:</div> 
+          <div class="stat-text">0h 0m</div>
+        </div>
+      </div>
+      <div class="col-3">
+        <div id="distance-cum" class="stat">
           <div class="stat-subtext">Distance:</div> 
-          <div class="stat-text">
-            0.00 mi
-          </div>
+          <div class="stat-text">0.00 mi</div>
         </div>
-
-
-        <div id="elevation-cum" class="stat pb-2">
+      </div>
+      <div class="col-3">
+        <div id="elevation-cum" class="stat">
           <div class="stat-subtext">Elevation:</div> 
-          <div class="stat-text">
-            0 ft
-          </div>
+          <div class="stat-text">0 ft</div>
         </div>
-
-
-        <div id="duration-moving-cum" class="stat pb-2">
-          <div class="stat-subtext">Moving Time:</div> 
-          <div class="stat-text">
-            0h 0m
-          </div>
-        </div>
-
-
+      </div>
+      <div class="col-3">
         <div id="speed-moving-now" class="stat">
           <div class="stat-subtext">Speed:</div> 
-          <div class="stat-text">
-            0.00 mph
-          </div>
+          <div class="stat-text">0.00 mph</div>
         </div>
-
-      </div>    
+      </div>
+      <!-- </div>     -->
     </div>    
-  </div>
+  </div>    
 
 
+
+  <!-- ########### ELEVATION DISPLAY ############ -->
   <!--  Similar to what we're doing with our YouTube component, 
         we are doing the same thing with the elevation div here 
         we define the container div, and then append the elevation Control
@@ -368,23 +458,7 @@
   </div>
 
 
-  <!--  Similar to what we're doing with our YouTube component, 
-        we are doing the same thing with the layer control div here 
-        we define the container div, and then append the Layer Control
-        to it once we create it in the JS code -->  
-  <div id="layer-control-display-div" style="min-width:250px">
-    
-    <div class="d-flex flex-row-reverse" style="position :relative; height:0px" >
-      <button id="collapse-button-layer-control" class="btn p-2" data-toggle="collapse" data-target="#layer-control-div"></button><br>
-    </div>
-    <div>
-      <h5>Rides</h5>
-    </div>
-    
-    <!-- <div id="layer-control-div" class="collapse show">
-      when we create our layer control (L.Control.Layers) it will generate this child element
-    </div> -->
-  </div>
+
 
 
 
@@ -413,13 +487,25 @@
   <!-- Latest jQuery, Daterangepicker (requires jQuery), Moment (only requires jQuery for stuff we likely don't need) -->
   <!-- <script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script> -->
   <!-- <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script> -->
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+  <!-- <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script> -->
+  
+  
 
 
+
+
+
+
+  
   <!-- ########### OTHER PEOPLE'S MAPING RELATED LIBRARIES WE'RE USING ############ -->
-  <script type="text/javascript" src='js/lib/geojson-tools.js'></script>
+  <script type="text/javascript" src="js/lib/moment.min.js"></script>
   <script type="text/javascript" src="js/lib/leaflet.elevation-0.0.4.min.js"></script>
   <!-- <script type="text/javascript" src="js/lib/leaflet.elevation-0.0.4.src.js"></script> -->
+
+
+  
+  <!-- ########### MY LIBRARIES ############ -->
+  <script type="text/javascript" src='js/lib/geojson-tools.js'></script>
 
   <!-- API key -->
   <script type="text/javascript" src="js/config/mapbox_api_key.js"></script>

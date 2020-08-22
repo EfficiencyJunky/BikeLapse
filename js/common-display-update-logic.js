@@ -1,11 +1,17 @@
 // #############################################################################
 // *********  GLOBAL VARIABLES ***********************
 // #############################################################################
-if(document.getElementById('distance-tot')){
-  var distTotDiv       = document.getElementById('distance-tot').getElementsByClassName("stat-text")[0];
-  var elevTotDiv       = document.getElementById('elevation-tot').getElementsByClassName("stat-text")[0];
-  var durMovingTotDiv  = document.getElementById('duration-moving-tot').getElementsByClassName("stat-text")[0];
-  var spdMovingAvgDiv  = document.getElementById('speed-moving-avg').getElementsByClassName("stat-text")[0];
+if(document.getElementById('ride-info-parent')){
+  var rideNameDiv      = document.getElementById('ride-name');
+  var startTimeDiv     = document.getElementById('ride-start-datetime');
+  var stravaURLDiv     = document.getElementById('ride-strava-url');
+  var googleMapURLDiv  = document.getElementById('ride-googlemap-url');
+
+
+  var distanceTotalDiv        = document.getElementById('distance-tot').getElementsByClassName("stat-text")[0];
+  var elevationTotalDiv       = document.getElementById('elevation-tot').getElementsByClassName("stat-text")[0];
+  var durationMovingTotalDiv  = document.getElementById('duration-moving-tot').getElementsByClassName("stat-text")[0];
+  var speedMovingAvgDiv       = document.getElementById('speed-moving-avg').getElementsByClassName("stat-text")[0];
 }
 
 // RIDE STATS DISPLAY
@@ -15,10 +21,10 @@ if(document.getElementById('ride-stats-cumulative')){
   var rideStatsCumRow_JQ = $("#ride-stats-cumulative");
 
   // all of our elements in the cumulative ride stats display section
-  var distCumDiv      = document.getElementById('distance-cum').getElementsByClassName("stat-text")[0];
-  var elevCumDiv      = document.getElementById('elevation-cum').getElementsByClassName("stat-text")[0];
-  var durMovingCumDiv = document.getElementById('duration-moving-cum').getElementsByClassName("stat-text")[0];
-  var spdMovingNowDiv = document.getElementById('speed-moving-now').getElementsByClassName("stat-text")[0];
+  var distanceCumDiv      = document.getElementById('distance-cum').getElementsByClassName("stat-text")[0];
+  var elevationCumDiv      = document.getElementById('elevation-cum').getElementsByClassName("stat-text")[0];
+  var durationMovingCumDiv = document.getElementById('duration-moving-cum').getElementsByClassName("stat-text")[0];
+  var speedMovingNowDiv = document.getElementById('speed-moving-now').getElementsByClassName("stat-text")[0];
 }
 
 
@@ -29,7 +35,7 @@ let cumulativeRideStats;
 // ################################################################################
 // *********  DISPLAY SELECTED RIDE AND ASSOCIATED DATA *************************
 // ################################################################################
-function displaySelectedRide(rideMetadata, geoJsonLGroup, allowVideoDisplayDivToBeHidden = true){
+function displaySelectedRide(rideMetadata, geoJsonLGroup, allowVideoDisplayDivToBeHidden = true, ){
 
   // ****************************************************************************
   //  GET REFERENCE TO THE ROUTE LINESTRING
@@ -42,27 +48,69 @@ function displaySelectedRide(rideMetadata, geoJsonLGroup, allowVideoDisplayDivTo
 
 
   // ****************************************************************************
-  //  UPDATE THE RIDE INFO DISPLAY
+  //  RIDE INFO DISPLAY UPDATE
   // ****************************************************************************
+  if(document.getElementById('ride-info-parent')){
 
-  let rideStats = rideMetadata.rideStats;
+    // ********  THIS IS HOW WE CAN SWITCH BETWEEN CALCULATING RIDE STATS ******
+    // the top option grabs it from the ride's metadata
+    // the bottom option does the calculations from the route Linestring
+    // let rideStats = rideMetadata.rideStats;
+    let rideStats = getRideStats(lineStringFeature);
+    // abracadabra
 
-  if(distTotDiv){
-    distTotDiv.textContent      = `${rideStats.distance.mi} mi`;
-    elevTotDiv.textContent      = `${rideStats.elevation.gain.ft} ft`;
-    durMovingTotDiv.textContent = `${getFormattedDurationStringFromISO(rideStats.duration.moving)}`;
-    spdMovingAvgDiv.textContent = `${rideStats.avgSpeed.moving.mph} mph`;
+
+    // update ride name display
+    if(rideMetadata.rideName !== ""){
+      rideNameDiv.textContent   = `${rideMetadata.rideName}`;
+    }
+    else{
+      rideNameDiv.textContent = "!! no ride name given !!"
+    }
+
+    // update date/time display
+    startTimeDiv.textContent = `${getFormattedDateTimeStringFromISO(lineStringFeature.properties.time)}`;
+
+    // update Strava URL display
+    stravaURLDiv.hidden = (rideMetadata.stravaURL === "");
+    stravaURLDiv.href = rideMetadata.stravaURL;
+    
+    // update Google Map URL display
+    googleMapURLDiv.hidden = (rideMetadata.googleMapURL === "");
+    googleMapURLDiv.href = rideMetadata.googleMapURL;
+    
+    // update all the ride stats
+    if(rideStats !== undefined){
+      durationMovingTotalDiv.textContent = `${getFormattedDurationStringFromISO(rideStats.duration.moving)}`;
+
+      if(displayUnits === "metric"){
+        distanceTotalDiv.textContent  = `${rideStats.distance.km.toFixed(2)} km`;
+        elevationTotalDiv.textContent = `${rideStats.elevation.gain.m.toFixed(0)} m`;
+        speedMovingAvgDiv.textContent = `${rideStats.avgSpeed.moving.kph.toFixed(2)} kph`;
+      }
+      else{
+        distanceTotalDiv.textContent  = `${rideStats.distance.mi.toFixed(2)} mi`;
+        elevationTotalDiv.textContent = `${rideStats.elevation.gain.ft.toFixed(0)} ft`;
+        speedMovingAvgDiv.textContent = `${rideStats.avgSpeed.moving.mph.toFixed(2)} mph`;
+      }
+    }
+    else{
+      distanceTotalDiv.textContent = elevationTotalDiv.textContent = durationMovingTotalDiv.textContent = speedMovingAvgDiv.textContent = 0;
+    }
   }
 
+  
+  // make sure the div that contains the rideInfo display is not hidden
+  rideInfoDisplayDiv.hidden = false;
+  
+  
   // ****************************************************************************
   //  UPDATE THE ELEVATION DISPLAY
   // ****************************************************************************
   showElevationForLineStringFeature(lineStringFeature);
-
+  
   // make sure the div that contains the elevationControl display is not hidden
   elevationDisplayDiv.hidden = false;
-
-
 
 
   // ****************************************************************************
@@ -225,33 +273,40 @@ function getRabbitCoords(){
 
 function syncCumulativeRideStatsToVideo(valType, value){
 
-  let eleContDataAtIndex;
-  let elevationControlData = elevationControl.getData();
+  let cumulativeStatsAtIndex;
 
-  let cumStatsDataAtIndex;
-
-
-  // console.log(elevationControlData);
-
-  // get the latlon from the coordsArray based on the
-  // value type that is passed in
+  // get the frameIndex and the cumulativeStatsAtIndex based on the value type that is passed in
   switch(valType){
     // notice we don't use a break for "percentWatched" 
     // because we also want the logic from "frameIndex" to be executed
     case "percentWatched":
-        value = Math.round(value * elevationControlData.length);
+        value = Math.round(value * cumulativeRideStats.length);
     case "frameIndex":
-        let frameIndex = (value < elevationControlData.length) ? value : elevationControlData.length - 1;
-        eleContDataAtIndex = elevationControlData[frameIndex];
-        cumStatsDataAtIndex = cumulativeRideStats[frameIndex];
+        let frameIndex = (value < cumulativeRideStats.length) ? value : cumulativeRideStats.length - 1;
+        cumulativeStatsAtIndex = cumulativeRideStats[frameIndex];
         break;
   }
 
-  if(distCumDiv){
-    distCumDiv.textContent      = eleContDataAtIndex.dist.toFixed(2);
-    elevCumDiv.textContent      = eleContDataAtIndex.altitude.toFixed(0);
-    durMovingCumDiv.textContent = getFormattedDurationStringFromISO(cumStatsDataAtIndex.duration);
-    spdMovingNowDiv.textContent = _toMiles(cumStatsDataAtIndex.speed, 2);
+  // if the ride-stats-cumulative HTML Div actually exists...
+  if(document.getElementById('ride-stats-cumulative')){
+
+    durationMovingCumDiv.textContent = getFormattedDurationStringFromISO(cumulativeStatsAtIndex.duration);
+
+    if(displayUnits === "metric"){
+      distanceCumDiv.textContent    = `${cumulativeStatsAtIndex.distance.toFixed(2)} km`;
+      elevationCumDiv.textContent   = `${cumulativeStatsAtIndex.elevation.toFixed(0)} m`;
+      speedMovingNowDiv.textContent = `${cumulativeStatsAtIndex.speed.toFixed(2)} kph`;
+    }
+    else{
+      distanceCumDiv.textContent    = `${_toMiles(cumulativeStatsAtIndex.distance / 1000, 2)} mi`;
+      elevationCumDiv.textContent   = `${_toFeet(cumulativeStatsAtIndex.elevation, 0)} ft`;
+      speedMovingNowDiv.textContent = `${_toMiles(cumulativeStatsAtIndex.speed, 2)} mph`;
+    }
+
+    // durationMovingCumDiv.textContent = getFormattedDurationStringFromISO(cumulativeStatsAtIndex.duration);
+    // distanceCumDiv.textContent      = eleContDataAtIndex.dist.toFixed(2);
+    // elevationCumDiv.textContent      = eleContDataAtIndex.altitude.toFixed(0);
+    // speedMovingNowDiv.textContent = _toMiles(cumulativeStatsAtIndex.speed, 2);
   }
 
 }
@@ -311,7 +366,10 @@ function getFormattedDurationStringFromISO(isoDuration){
 }
 
 
-
+// format the isoTime to look like this -> 1:32 PM on Saturday, November 16, 2019
+function getFormattedDateTimeStringFromISO(isoTime){
+  return moment(isoTime).format("h:mm A [on] dddd, MMMM Do, YYYY");
+}
 
 
 /**

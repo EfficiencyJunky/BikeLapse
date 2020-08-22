@@ -208,7 +208,7 @@
       border-color: rgb(207, 207, 207);
     }
     
-    #ride-stats-parent{
+    #ride-info-parent{
       background: rgb(247, 247, 247);
       border: solid;
       border-width: 1px;
@@ -383,67 +383,57 @@
 
       <!-- ########### COLUMN 2 - VIDEO, MAP, ELEVATION ############ -->
       <div class="col-lg-8">
+
         <!-- ########### COLUMN 2 - RIDE STATS ############ -->
         <div class="row mb-4">
           <div class="col-12">  
-
-            <!-- MAIN RIDE STATS CONTAINER -->
-            <div id="ride-stats-parent" class="p-3" >
+            
+            <!-- ##### RIDE INFO CONTAINER - TOTAL RIDE STATS ##### -->
+            <div id="ride-info-parent" class="p-3" >
 
               <!-- Ride Stats TITLE ROW -->
               <div>
-                <h3 id="ride-title" class="title-text">GG Park to Ocean Beach to Twin Peaks</h3>
-                <div id="ride-start-datetime" class="timestamp">
-                  4:44 PM on Saturday, August 8th, 2020
+                <h3 id="ride-name" class="title-text">Ride Name Will Appear Here</h3>
+                <div class="d-flex mr-2">
+                  <div id="ride-start-datetime" class="mr-auto timestamp">
+                    ride date/time will appear here
+                  </div>
+                  <a id="ride-strava-url" class="ml-3 timestamp" href="" target="_blank" hidden>Strava</a>
+                  <a id="ride-googlemap-url" class="ml-3 timestamp" href="" target="_blank" hidden>Google Map</a>                
                 </div>
               </div>
 
   
               <!-- Ride Stats STATS ROW -->
-              <div class="d-flex justify-content-between mt-3">
-
-                <div id="distance-tot" class="stat">
-                  <div class="stat-subtext">Total Distance:</div> 
-                  <div class="stat-text">
-                    00.00 mi
+              <!-- <div class="d-flex flex-wrap justify-content-between mt-3"> -->
+              <div class="row mt-3 mr-1">
+                <div class="col-6 col-sm-3">
+                  <div id="distance-tot" class="stat">
+                    <div class="stat-subtext">Total Distance:</div> 
+                    <div class="stat-text">00.00 mi</div>                    
                   </div>
                 </div>
-
-      
-                <div id="elevation-tot" class="stat">
-                  <div class="stat-subtext">Elev Gain:</div> 
-                  <div class="stat-text">
-                    0000 ft
+                <div class="col-6 col-sm-3">
+                  <div id="elevation-tot" class="stat">
+                    <div class="stat-subtext">Elev Gain:</div> 
+                    <div class="stat-text">0000 ft</div>
+                  </div>
+                </div>      
+                <div class="col-6 mt-3 col-sm-3 mt-sm-0">
+                  <div id="duration-moving-tot" class="stat">
+                    <div class="stat-subtext">Moving Time:</div> 
+                    <div class="stat-text">00h 00m</div>
                   </div>
                 </div>
-
-      
-                <div id="duration-moving-tot" class="stat">
-                  <div class="stat-subtext">Moving Duration:</div> 
-                  <div class="stat-text">
-                    00h 00m
+                <div class="col-6 mt-3 col-sm-3 mt-sm-0">
+                  <div id="speed-moving-avg" class="stat">
+                    <div class="stat-subtext">Avg Speed:</div> 
+                    <div class="stat-text">00.00 mph</div>
                   </div>
-                </div>
-
-      
-                <div id="speed-moving-avg" class="stat">
-                  <div class="stat-subtext">Avg Speed:</div> 
-                  <div class="stat-text">
-                    00.00 mph
-                  </div>
-                </div>
-
+                </div>      
               </div>
-
             </div>
-              <!-- </div>              
-            </div> -->
-            
-              <!-- <b>Elapsed Time:</b> <br>
-                <b>Average Elapsed Speed:</b> <br>
-                <b>Minimum Elevation:</b> <br>
-                <b>Maximum Elevation:</b> <br>  
-                <b>Total Descent:</b> -->
+
           </div>
         </div>
 
@@ -463,98 +453,44 @@
               </div>
               <div class="transport-controls d-flex align-items-center">
                 <button id="play-pause" class="play"></button>
-                <!-- <button id="stop">▇</button> -->
+                <!-- <button id="stop">▇</button> --> <!-- uncomment this line if you want a stop button  --> 
                 <input type="range" min="0" max="100" value="0" id="slider" class="slider ml-2 mr-2 flex-fill">
                 <button id="playback-rate">1x</button>
               </div>
               
               <!-- CUMULATIVE Ride Stats STATS ROW / COLLAPSIBLE PANEL -->
-              <div id="ride-stats-cumulative"  class="collapse">
-                <div class="d-flex justify-content-between mt-3">
-
-                  <div id="distance-cum" class="stat pb-2">
-                    <div class="stat-subtext">Distance:</div> 
-                    <div class="stat-text">
-                      0.00 mi
-                    </div>
-                  </div>
-
-        
-                  <div id="elevation-cum" class="stat pb-2">
-                    <div class="stat-subtext">Elevation:</div> 
-                    <div class="stat-text">
-                      0 ft
-                    </div>
-                  </div>
-
-        
-                  <div id="duration-moving-cum" class="stat pb-2">
+              <!-- <div id="ride-stats-cumulative"  class="collapse show"> -->
+              <!-- <div class="d-flex justify-content-between mt-3"> -->
+              <div id="ride-stats-cumulative" class="row mt-2 mb-1 mr-1 collapse show">
+                <div class="col-3">
+                  <div id="duration-moving-cum" class="stat">
                     <div class="stat-subtext">Moving Time:</div> 
-                    <div class="stat-text">
-                      0h 0m
-                    </div>
+                    <div class="stat-text">0h 0m</div>
                   </div>
-
-        
+                </div>
+                <div class="col-3">        
+                  <div id="distance-cum" class="stat">
+                    <div class="stat-subtext">Distance:</div> 
+                    <div class="stat-text">0.00 mi</div>
+                  </div>
+                </div>
+                <div class="col-3">
+                  <div id="elevation-cum" class="stat">
+                    <div class="stat-subtext">Elevation:</div> 
+                    <div class="stat-text">0 ft</div>
+                  </div>
+                </div>
+                <div class="col-3">
                   <div id="speed-moving-now" class="stat">
                     <div class="stat-subtext">Speed:</div> 
-                    <div class="stat-text">
-                      0.00 mph
-                    </div>
+                    <div class="stat-text">0.00 mph</div>
                   </div>
-
-                </div>    
+                </div>
+                <!-- </div>     -->
               </div>
-
             </div>  
           </div>
-          
-          <!-- CUMULATIVE Ride Stats STATS COLUMN -->
-          <!-- <div class="col-md-3">
-            <div class="card bg-light">  
-              <div class="card-body">
-
-                <h5 class="card-title">In-Ride Stats</h5>
-                
-                <div class="d-flex flex-wrap justify-content-between card-content">
-
-                  <div id="distance-cum" class="stat mb-2">
-                    <div class="stat-subtext">Distance:</div> 
-                    <div class="stat-text">
-                      0.00 mi
-                    </div>
-                  </div>
-
-        
-                  <div id="elevation-cum" class="stat mb-2">
-                    <div class="stat-subtext">Elevation:</div> 
-                    <div class="stat-text">
-                      0000 ft
-                    </div>
-                  </div>
-
-        
-                  <div id="ride-time-cum" class="stat mb-2">
-                    <div class="stat-subtext">Time:</div> 
-                    <div class="stat-text">
-                      0h 0m
-                    </div>
-                  </div>
-
-        
-                  <div id="ride-speed-cum" class="stat">
-                    <div class="stat-subtext">Speed:</div> 
-                    <div class="stat-text">
-                      0.00 mph
-                    </div>
-                  </div>
-
-                </div>                
-              </div>
-            </div>
-          </div> -->
-
-        </div>
+        </div><!-- ########### COLUMN 2 ROW 2 - VIDEO ############ -->
 
         <div class="row mb-2">
           <div class="col-lg-12">
@@ -574,12 +510,6 @@
             </div>
           </div>
         </div>
-
-        <br>
-        <!-- <div id="elevation-display-div" class="leaflet-bar leaflet-control elevation-div"></div> -->
-
-
-
 
       </div>
 
@@ -635,13 +565,18 @@
   <!-- <script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script> -->
   <!-- <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script> -->
   <!-- <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script> -->
+  
+  
+  <!-- ########### OTHER PEOPLE'S LIBRARIES WE'RE USING ############ -->
   <script type="text/javascript" src="js/lib/moment.min.js"></script>
-  
-  
-  <!-- ########### OTHER PEOPLE'S MAPING RELATED LIBRARIES WE'RE USING ############ -->
-  <script type="text/javascript" src='js/lib/togeojson.js'></script>
-  <script type="text/javascript" src='js/lib/geojson-tools.js'></script>
   <script type="text/javascript" src="js/lib/leaflet.elevation-0.0.4.min.js"></script>
+  <!-- <script type="text/javascript" src="js/lib/leaflet.elevation-0.0.4.src.js"></script> -->
+  
+  <!-- Specific to this page only -->
+  <script type="text/javascript" src='js/lib/togeojson.js'></script>
+  
+  <!-- ########### MY LIBRARIES ############ -->
+  <script type="text/javascript" src='js/lib/geojson-tools.js'></script>
 
   <!-- API key -->
   <script type="text/javascript" src="js/config/mapbox_api_key.js"></script>

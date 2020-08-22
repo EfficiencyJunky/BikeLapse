@@ -61,13 +61,11 @@ layerControlDisplayLayer.addTo(map)
 // *******************************************************************  
 map.zoomControl.setPosition(mapUISettings.zoomCtl.position);
 
-
 /* ###############################################################################
    ****  INITIALIZE OUR MAP WITH AVAILABLE BASEMAPS AND UI OVERLAYS ELEMENTS ****
 ################################################################################## */
 initializeBaseMaps();
 initializeMapOverlaysAndUI();
-
 
 /* ###############################################################################
    ****  LOAD THE JSON FILES FOR EACH RIDE                  ****
@@ -175,7 +173,10 @@ function geoJsonLayerGroupRemoved(event){
 
   if(removedRideID === highlightedRideID) {
 
-    // first remove the elevationFollowMarkerLayer from the map
+    // hide the rideInfoDisplayDiv
+    rideInfoDisplayDiv.hidden = true;
+
+    // remove the elevationFollowMarkerLayer from the map and hide the elevationDisplayDiv
     elevationFollowMarkerLayer.remove();
     elevationDisplayDiv.hidden = true;
 

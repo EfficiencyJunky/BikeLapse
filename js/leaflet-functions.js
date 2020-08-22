@@ -105,9 +105,6 @@ function createGeoJsonLayerGroupForRide(geoJson, rideMetadata){
   // Style's the features
   // in our case, the only feature we style is the ROUTE LineString
   function styleFunction (geoJsonFeature) {
-    
-    // console.log("style");
-    // console.log(geoJsonFeature.geometry.type);
 
     switch (geoJsonFeature.geometry.type) {
       case 'LineString':
@@ -120,17 +117,17 @@ function createGeoJsonLayerGroupForRide(geoJson, rideMetadata){
         // and the "rideType" itself is not undefined,
         // use the value stored there as the key
         // into the global line options object to get the corresponding lineColor
-        if(typeof(rideMetadata.rideType) !== undefined && rideMetadata.rideType !== undefined){
+        if(typeof(rideMetadata.rideType) !== "undefined" && rideMetadata.rideType !== undefined){
           lineColor = routeLineProperties[rideMetadata.rideType].lineColor;
         }
 
         // if the name includes a "$" then it's supposed to the easy route option and should be colored accordingly
         // if the name includes a "#" then it's supposed to the hard route option and should be colored accordingly
         if(lineStringName.includes("$")){
-          lineColor = rideMetadata.lineColorEasy;
+          lineColor = routeLineProperties.easy.lineColor;
         }
         else if(lineStringName.includes("#")){
-          lineColor = rideMetadata.lineColorHard;
+          lineColor = routeLineProperties.hard.lineColor;
         }
 
         return { fillOpacity: 0.0, weight: 4, opacity: 1, color: lineColor};
@@ -427,8 +424,5 @@ function getPointMetaHTML(pointMeta, pointCoords){
 }
 
 
-// format the isoTime to look like this -> 1:32 PM on Saturday, November 16, 2019
-function getFormattedDateTimeStringFromISO(isoTime){
-    return moment(isoTime).format("h:mm A [on] dddd, MMMM Do, YYYY");
-}
+
 

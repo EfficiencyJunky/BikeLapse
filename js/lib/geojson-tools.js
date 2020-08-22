@@ -1,8 +1,83 @@
-// GLOBAL CONVERSION PERAMETERS
+// #############################################################################
+// *********  GLOBAL VARIABLES ***********************
+// #############################################################################
+
+// Conversion constants
 const feetPerMeter = 3.28084;
 const milesPerKilometer = 0.621371;
 
 
+// the maxAllowableDurationDiff is the maximum amount of time in seconds we can allow to pass between GPS points
+// to consider adding it to the total duration of our "moving time" calculation
+// basically we are assuming that the rider wasn't really moving if the time
+// between the two GPS locations/moments was more than this amount of time
+const maxAllowableDurationDiffSeconds = 45;
+
+
+// maxAllowedElevationGain
+// minElevationGainThreshold
+// elevationAlpha -- used to smooth the noisy elevation data in the calculations below
+//                   and get rid of poential anomalies (like if elevation drops below 0 suddenly)
+const maxAllowedElevationGain = 2.0,
+      minElevationGainThreshold = 0.12,
+      elevationAlpha = 0.85;
+
+// elevationIndex -- the elevation is in the 3rd position at each point in the coordsArray
+//                   because each coordinate in a GeoJSON is a 3 point array --> [lon, lat, ele]      
+const elevationIndex = 2;      
+
+
+// #############################################################################
+// *********  MAIN FUNCTION FOR CALCULATING ALL STATS ***********************
+// #############################################################################
+function getRideStats(routeLineString){
+
+  const coordTimes = routeLineString.properties.coordTimes;
+  const coordinates = routeLineString.geometry.coordinates;
+
+  // distance object with .km and .mi properties
+  let distance = getDistance(coordinates, 4, latLonReversed = true);
+  
+  // duration object with 
+  //      .string == (hh [hours,] mm [minutes, and] ss [seconds] )
+  //      .hours == number of hours in float form
+  //      .milliseconds == number of milliseconds
+  //      .duration == moment duration object (ISO formatted duration)
+  let durationMoving = getRideDuration(coordTimes, 'moving');
+
+  // speed object with .kph and .mph properties
+  let avgSpeedMoving = getAvgSpeed(durationMoving, distance);
+
+  let durationTotal = getRideDuration(coordTimes, 'elapsed');    
+  let avgSpeedTotal = getAvgSpeed(durationTotal, distance);
+
+  // elevation object with min/max/gain/descent in m/ft
+  let elevationStats = getElevationStats(coordinates);
+
+  return  {
+      "startTime": routeLineString.properties.time, // string formatted as an ISO timestamp
+      "distance": distance, // distance object with .km and .mi properties
+      "duration": {
+          "moving": durationMoving,
+          "total": durationTotal
+      },
+      "avgSpeed": {
+          "moving": avgSpeedMoving,
+          "total": avgSpeedTotal
+      },
+      "elevation": elevationStats 
+  }
+
+}
+
+
+
+
+
+
+// #############################################################################
+// *********  OTHER PEOPLE'S FUNCTIONS THAT I MODIFIED ***********************
+// #############################################################################
 // ****************************************************************************
 // _toRadian and getDistance functions were originally sourced
 // from this repository: https://github.com/MovingGauteng/GeoJSON-Tools
@@ -130,7 +205,7 @@ function calcDistance(coord1, coord2, latLonReversed = false){
 
 
 // #############################################################################
-// *********  GEOJSON TOOLS I CREATED ************************
+// *********  TOOLS AND FUNCTIONS I CREATED ************************
 // #############################################################################
 /**
  * calculates the total duration we were actually in motion throughout the coordTimesArray
@@ -140,12 +215,7 @@ function calcDistance(coord1, coord2, latLonReversed = false){
  *                          'moving' adds up all the durations between each consecutive point in the coordTime array
  *                          that are greater than the value stored in "maxAllowableDurationDiffSeconds"
  *                          'elapsed' only calculates the duration between the first and last point in the coordTime array
- * @returns {Object} the duration of the ride in various formats put into an object
- * {
- *  string: a nicely formatted human readable string
- *  hours: number of hours in float form
- *  duration: the complete moment.duration() object
- * }
+ * @returns {Object} the duration of the ride as a moment.duration() object which stores as an ISO Formatted "Duration" string (which is actually just a string) read more here: https://en.wikipedia.org/wiki/ISO_8601#Durations
  */
 function getRideDuration(coordTimesArray, timeType){
 
@@ -163,12 +233,6 @@ function getRideDuration(coordTimesArray, timeType){
       break;
 
     case 'moving':
-
-      // the maxAllowableDurationDiff is the maximum amount of time we can allow to pass between points
-      // to consider adding it to the total duration of our "moving time" calculation
-      // basically we are assuming that the rider wasn't really moving if the time
-      // between the two moments was more than this amount of time
-      const maxAllowableDurationDiffSeconds = 45;
       
       //create a moment object for the first time in the array
       let prevMoment = moment(coordTimesArray[0]);
@@ -204,24 +268,6 @@ function getRideDuration(coordTimesArray, timeType){
       return undefined;
   }
 
-
-  // use the minutes and seconds to create a string that is formatted as "[minutes] minutes, and [seconds] seconds"
-  // let durationString = rideDuration.minutes() + " minutes, and "  + rideDuration.seconds() + " seconds";
-
-  // // if the duration lasted more than 1 hour, pre-pend the string with "[hours] hours, "
-  // if(rideDuration.hours() > 0){
-  //   durationString = rideDuration.hours() + " hours, " + durationString;
-  // }
-
-  // let durationInfo = {
-  //   "string": durationString,
-  //   "hours": Number(rideDuration.asHours().toFixed(6)),
-  //   "milliseconds": rideDuration.asMilliseconds(),
-  //   "duration": rideDuration // moment duration object
-  // }
-
-  // return the formatted string
-  // return durationInfo;
   return rideDuration;
 
 }
@@ -242,15 +288,19 @@ function getRideDuration(coordTimesArray, timeType){
  */
 function getAvgSpeed(duration, distance){
 
-  // console.log("duration type: ", typeof(duration.hours));
-
-  let decimals_mi = countDecimals(distance.mi);
-  let decimals_km = countDecimals(distance.km);
-
   return {
-            "mph": Number((distance.mi / duration.asHours()).toFixed(decimals_mi)),
-            "kph": Number((distance.km / duration.asHours()).toFixed(decimals_km))
+            "mph": distance.mi / duration.asHours(),
+            "kph": distance.km / duration.asHours()
           }
+
+  // OLD WAY OF DOING IT WHEN I WAS ROUNDING THINGS <facepalm>
+  // let decimals_mi = countDecimals(distance.mi);
+  // let decimals_km = countDecimals(distance.km);
+
+  // return {
+  //           "mph": Number((distance.mi / duration.asHours()).toFixed(decimals_mi)),
+  //           "kph": Number((distance.km / duration.asHours()).toFixed(decimals_km))
+  //         }
 }
 
 
@@ -271,19 +321,6 @@ function getAvgSpeed(duration, distance){
  */
 function getElevationStats(coordsArray){
 
-  // maxAllowedGain, deltaThreshold, and alpha are used to smooth
-  // the noisy elevation data in the calculations below
-  // and get rid of poential anomalies (like if elevation drops below 0 suddenly)
-  const maxAllowedElevationGain = 2.0,
-        minElevationGainThreshold = 0.12,
-        alpha = 0.85;
-        // feetPerMeter = 3.28084; // defined at top of file in global parameters
-        
-
-  // the elevation is in the 3rd position at each point in the coordsArray
-  // because each coordinate in a GeoJSON is a 3 point array --> [lon, lat, ele]
-  const elevationIndex = 2;
-
   let prevElevation = coordsArray[0][elevationIndex],
       min_m = prevElevation,
       max_m = prevElevation, 
@@ -294,14 +331,14 @@ function getElevationStats(coordsArray){
   coordsArray.map((coord) => {
     // get the elevation of the current coordinate
     // let elevation = coord[elevationIndex];
-    let elevation = coord[elevationIndex] * (1 - alpha) + prevElevation * alpha;
+    let elevation = coord[elevationIndex] * (1 - elevationAlpha) + prevElevation * elevationAlpha;
 
     // subtract from previous elevation to get the delta between current elevation and previous elevation
-    let delta = Number((elevation - prevElevation).toFixed(2));
-    // let delta = elevation - prevElevation;
+    // let delta = Number((elevation - prevElevation).toFixed(2));
+    let delta = elevation - prevElevation;
 
     // if the absolute value of the delta is really big, then something likely went wrong with the data
-    // or we stopped and started somewhere else
+    // or we stopped and started somewhere else at a different elevation
     // so we won't use this elevation point
     // maxAllowedElevationGain is the maximum possible number of meters we will allow to be added between two points
     if(Math.abs(delta) < maxAllowedElevationGain){
@@ -330,45 +367,42 @@ function getElevationStats(coordsArray){
 // ABRACADABRA - THIS IS WHERE WE NEED TO STOP ROUNDING
   let elevationStats = {
     "min": {
-      "m": Math.round(min_m),
-      "ft": _toFeet(min_m, 0)
+      "m": min_m,
+      "ft": _toFeet(min_m)
     },
     "max": {
-      "m": Math.round(max_m),
-      "ft": _toFeet(max_m, 0)
+      "m": max_m,
+      "ft": _toFeet(max_m)
     },
     "gain": {
-      "m": Math.round(gain_m),
-      "ft": _toFeet(gain_m, 0)
+      "m": gain_m,
+      "ft": _toFeet(gain_m)
     },
     "descent": {
-      "m": Math.abs( Math.round(descent_m) ),
-      "ft": Math.abs( _toFeet(descent_m, 0) )
+      "m": Math.abs( descent_m ),
+      "ft": Math.abs( _toFeet(descent_m) )
     }
   }
 
+  // BEFORE WE STOPPED ROUNDING
   // let elevationStats = {
-  //   "min_m": Math.round(min_m),
-  //   "max_m": Math.round(max_m),
-  //   "gain_m": Math.round(gain_m),
-  //   "descent_m": Math.abs( Math.round(descent_m) ),
-  //   "min_ft": _toFeet(min_m, 0),
-  //   "max_ft": _toFeet(max_m, 0),
-  //   "gain_ft": _toFeet(gain_m, 0),
-  //   "descent_ft": Math.abs( _toFeet(descent_m, 0) )
+  //   "min": {
+  //     "m": Math.round(min_m),
+  //     "ft": _toFeet(min_m, 0)
+  //   },
+  //   "max": {
+  //     "m": Math.round(max_m),
+  //     "ft": _toFeet(max_m, 0)
+  //   },
+  //   "gain": {
+  //     "m": Math.round(gain_m),
+  //     "ft": _toFeet(gain_m, 0)
+  //   },
+  //   "descent": {
+  //     "m": Math.abs( Math.round(descent_m) ),
+  //     "ft": Math.abs( _toFeet(descent_m, 0) )
+  //   }
   // }
-
-  // let elevationStats = {
-  //   "min_m": min_m,
-  //   "max_m": max_m,
-  //   "gain_m": gain_m,
-  //   "descent_m": Math.abs( descent_m ),
-  //   "min_ft": _toFeet(min_m),
-  //   "max_ft": _toFeet(max_m),
-  //   "gain_ft": _toFeet(gain_m),
-  //   "descent_ft": Math.abs( _toFeet(descent_m) )
-  // }
-
   
   return elevationStats;
 
@@ -391,29 +425,25 @@ function getCumulativeStatsArrayFromLineString(lineString, timeType){
   const times = lineString.properties.coordTimes;
   const coords = lineString.geometry.coordinates;
 
-  // the maxAllowableDurationDiff is the maximum amount of time we can allow to pass between points
-  // to consider adding it to the total duration of our "moving time" calculation
-  // basically we are assuming that the rider wasn't really moving if the time
-  // between the two moments was more than this amount of time
-  const maxAllowableDurationDiffSeconds = 45;
-  const alphaSlow = 0.9;
-  const alphaFast = 0.4;
-  let alpha = alphaSlow;
+  const speedAlphaSlow = 0.9;
+  const speedAlphaFast = 0.4;
+  
 
   // ****************************************************************************
   //  INITIALIZE MUTABLE VARIABLES TO USE IN THE LOOP
   // ****************************************************************************
   let cumStatsArray = [
     {
-      "distance": 0,
       "duration": moment.duration(0),
+      "distance": 0,
+      "elevation": coords[0][elevationIndex],
       "speed": 0
     }
   ]
 
   // initialize prevMoment as a moment of the first index in the time array
   let prevMoment = moment(times[0]);
-
+  let speedAlpha = speedAlphaSlow;
 
   // ****************************************************************************
   //  ITTERATE OVER THE COORDS AND TIMES ARRAYS AND PERFORM CALCULATIONS
@@ -475,27 +505,27 @@ function getCumulativeStatsArrayFromLineString(lineString, timeType){
     // or there was a glitch of some sort
     if(distanceDelta === 0 && durationDiff.asHours() === 0.0){
       currentSpeed = cumStatsArray[i-1].speed;
-      alpha = alphaSlow;
+      speedAlpha = speedAlphaSlow;
     }
     // if we haven't moved in space BUT we have moved in time
     // then chances are we are stopped
     else if(distanceDelta === 0){
       currentSpeed = 0;
-      alpha = alphaFast;
+      speedAlpha = speedAlphaFast;
     }
     // if we have moved in space BUT we have NOT moved in time
     // then chances are we are moving very fast
     else if(durationDiff.asHours() === 0.0){
       currentSpeed = cumStatsArray[i-1].speed;
-      alpha = alphaSlow;
+      speedAlpha = speedAlphaSlow;
     }
     // otherwise just do the normal calculation and use the normal alpha
     else{
       currentSpeed = distanceDelta / durationDiff.asHours() / 1000;
-      alpha = alphaSlow;
+      speedAlpha = speedAlphaSlow;
     }
 
-    const speed = currentSpeed * (1 - alpha) + cumStatsArray[i-1].speed * alpha;
+    const speed = currentSpeed * (1 - speedAlpha) + cumStatsArray[i-1].speed * speedAlpha;
 
 
     // ****************************************************************************
@@ -503,8 +533,9 @@ function getCumulativeStatsArrayFromLineString(lineString, timeType){
     // ****************************************************************************    
     cumStatsArray.push(
       {
-        "distance": cumDistance,
         "duration": cumDuration,
+        "distance": cumDistance,
+        "elevation": coords[i][elevationIndex],
         "speed": speed
       }
     );

@@ -22,12 +22,13 @@ let flyToPaddingBottomRight = [100, 0]; //[rightside, bottom]
 
 // settings for map UI elements
 let mapUISettings = {
-  "baseLayerCtl":     { "position": "topright",        "collapsed": true   },
-  "overlayLayerCtl":  { "position": "topleft",         "collapsed": false  },
+  "baseLayerCtl":     { "position": "bottomright",        "collapsed": true   },
+  "overlayLayerCtl":  { "position": "topright",         "collapsed": false  },
   "legend":           { "position": "bottomright"                          },
+  "rideInfo":         { "position": "topleft"                            },
   "videoViewer":      { "position": "bottomleft"                           },
   "elevation":        { "position": "bottomleft"                           },
-  "zoomCtl":          { "position": "topright"                             },
+  "zoomCtl":          { "position": "bottomright"                             },
 };
 
 
@@ -40,6 +41,18 @@ let mapUISettings = {
 // *************************************************************    
 map.createPane('bikeRidesPane');
 map.getPane('bikeRidesPane').style.zIndex = 399;
+
+
+/* ###################################################################
+// ****  RIDE INFO DISPLAY
+//          the rideInfoDisplayDiv is where we will display our ride info
+###################################################################### */
+let rideInfoDisplayDiv;
+let displayUnits = "imperial";
+// let units = "metric";
+
+
+
 
 
 
@@ -187,13 +200,14 @@ let routeLineProperties = {
   "bikelapse": {"legendText": "BikeLapse",      "lineFillOpacity": 1, "lineWeight": 4.0, "lineOpacity": 1, "lineColor": "rgb(236, 85, 85)" },
   "regular":   {"legendText": "Regular",        "lineFillOpacity": 1, "lineWeight": 4.0, "lineOpacity": 1, "lineColor": "rgba(62, 146, 204, 1)" },
   "selected":  {"legendText": "Selected Route", "lineFillOpacity": 1, "lineWeight": 0.5, "lineOpacity": 1, "lineColor": "black" },
-  "default":   {"legendText": "Default Color",  "lineFillOpacity": 1, "lineWeight": 4.0, "lineOpacity": 1, "lineColor": "rgba(155, 155, 155, 1)" }
+  "default":   {"legendText": "Default Color",  "lineFillOpacity": 1, "lineWeight": 4.0, "lineOpacity": 1, "lineColor": "rgba(155, 155, 155, 1)" },
+  "easy":      {"legendText": "Easy",           "lineFillOpacity": 1, "lineWeight": 4.0, "lineOpacity": 1, "lineColor": "green" },
+  "hard":      {"legendText": "Hard",           "lineFillOpacity": 1, "lineWeight": 4.0, "lineOpacity": 1, "lineColor": "red" }
 };
 
 let routeIconBaseClass = "legend-route-icon";
 
 
-// CONVERSION CONSTANTS
 
-// const milesPerKilometer = 0.62137119;
-const elevationIndex = 2;
+
+

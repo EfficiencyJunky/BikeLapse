@@ -140,7 +140,7 @@ function createBaseMaps(mapboxTilesAvailable = false){
 }
 
 
-function initializeMapOverlaysAndUI(hideElevationDisplayDiv = true, hideVideoDisplayDiv = true){
+function initializeMapOverlaysAndUI(hideElevationDisplayDiv = true, hideVideoDisplayDiv = true, hideRideInfoDisplayDiv = true){
     // *************************************************************
     //  ADD LEGEND -- LEAFLET CONTROL OBJECT
     //      set the location to mapUISettings.legend.position
@@ -153,6 +153,51 @@ function initializeMapOverlaysAndUI(hideElevationDisplayDiv = true, hideVideoDis
     
     // add it to the map
     legend.addTo(map);
+
+    // this will make sure that the zoom control stacks on top of the legend
+    map.zoomControl.remove();
+    map.zoomControl.addTo(map);
+
+    // *************************************************************
+    //  ADD RIDE INFO -- RIDE INFO CONTROL LAYER
+    //      then either remove it - if we are loading the index page
+    //      or move it to a separate div - if we are loading the create-ride page
+    // *************************************************************
+
+    if(rideInfoDisplayDiv === undefined){
+        
+        // create the layer
+        let rideInfoDisplayLayer = L.control({
+            position: mapUISettings.rideInfo.position
+        });
+
+        // define the layer's onAdd function
+        rideInfoDisplayLayer.onAdd = function(mymap){
+            // get the div in our HTML who's child elements contain the youtube iFrame and the video transport (playback) controls
+            let div = L.DomUtil.get('ride-info-parent');
+
+            // unhide this div as we will control visibility through the Container Layer's div
+            // div.hidden = false;
+        
+          return div;
+        };
+        
+        // add the layer to the map
+        rideInfoDisplayLayer.addTo(map);
+
+        // get a reference to the container/div that the Layer created in the onAdd function
+        // store this div in our globally accessible "rideInfoDisplayDiv" variable so we can hide/unhide later
+        rideInfoDisplayDiv = rideInfoDisplayLayer.getContainer();
+
+        // uncomment this if we don't want clicks on this layer/div to propagate to the layers below
+        // L.DomEvent.disableClickPropagation(rideInfoDisplayDiv);
+
+    }
+    
+    // set the elevationDisplayDiv's hidden attribute to the variable we passed in (true by default meaning we want it to NOT be visible)
+    rideInfoDisplayDiv.hidden = hideRideInfoDisplayDiv;
+
+
 
 
     // *************************************************************
@@ -335,9 +380,9 @@ function legendOnAdd(map) {
 
     // add the HTML to create the routes info in the legend
     routeLineKeys = Object.keys(routeLineProperties);
-
+ 
     routeLineKeys.forEach( (key,i) => {
-        if(key !== "default" && key !== "selected"){
+        if(key === "bikelapse" || key === "regular"){
 
             let lineColor = routeLineProperties[key].lineColor;
             let legendText = routeLineProperties[key].legendText
