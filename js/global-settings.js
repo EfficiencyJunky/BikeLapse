@@ -23,11 +23,11 @@ let flyToPaddingBottomRight = [100, 0]; //[rightside, bottom]
 // settings for map UI elements
 let mapUISettings = {
   "baseLayerCtl":     { "position": "bottomright",        "collapsed": true   },
-  "overlayLayerCtl":  { "position": "topright",         "collapsed": false  },
-  "legend":           { "position": "bottomright"                          },
-  "rideInfo":         { "position": "topleft"                            },
-  "videoViewer":      { "position": "bottomleft"                           },
-  "elevation":        { "position": "bottomleft"                           },
+  "overlayLayerCtl":  { "position": "topright",           "collapsed": false  },
+  "legend":           { "position": "bottomright"                             },
+  "rideInfo":         { "position": "topleft"                                 },
+  "videoViewer":      { "position": "bottomleft"                              },
+  "elevation":        { "position": "bottomleft"                              },
   "zoomCtl":          { "position": "bottomright"                             },
 };
 
@@ -49,7 +49,7 @@ map.getPane('bikeRidesPane').style.zIndex = 399;
 ###################################################################### */
 let rideInfoDisplayDiv;
 let displayUnits = "imperial";
-// let units = "metric";
+// let displayUnits = "metric";
 
 
 
@@ -150,7 +150,7 @@ let elevationControlOptions = {
   xTicks: undefined, //number of ticks in x axis, calculated by default according to width
   yTicks: undefined, //number of ticks on y axis, calculated by default according to height
   collapsed: false,  //collapsed mode, show chart on click or mouseover
-  imperial: true    //display imperial units instead of metric
+  imperial: (displayUnits !== "metric")    //display imperial units instead of metric
 }
 
 // ****************************************************************

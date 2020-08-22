@@ -11,6 +11,9 @@ minimumZoom = 2;
 flyToPaddingTopLeft = [0, 0]; //[leftside, top]
 flyToPaddingBottomRight = [0, 100]; //[rightside, bottom]
 
+// override the position of the baselayers
+mapUISettings.baseLayerCtl.position = "topright";
+
 // this is the object to hold our GeoJson that the user will download
 let geoJsonData;
 

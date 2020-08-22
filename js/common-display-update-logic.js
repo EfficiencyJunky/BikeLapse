@@ -81,7 +81,7 @@ function displaySelectedRide(rideMetadata, geoJsonLGroup, allowVideoDisplayDivTo
     
     // update all the ride stats
     if(rideStats !== undefined){
-      durationMovingTotalDiv.textContent = `${getFormattedDurationStringFromISO(rideStats.duration.moving)}`;
+      durationMovingTotalDiv.textContent = `${getFormattedDurationStringFromISO(rideStats.duration.moving, "longform")}`;
 
       if(displayUnits === "metric"){
         distanceTotalDiv.textContent  = `${rideStats.distance.km.toFixed(2)} km`;
@@ -293,7 +293,7 @@ function syncCumulativeRideStatsToVideo(valType, value){
     durationMovingCumDiv.textContent = getFormattedDurationStringFromISO(cumulativeStatsAtIndex.duration);
 
     if(displayUnits === "metric"){
-      distanceCumDiv.textContent    = `${cumulativeStatsAtIndex.distance.toFixed(2)} km`;
+      distanceCumDiv.textContent    = `${(cumulativeStatsAtIndex.distance / 1000).toFixed(2)} km`;
       elevationCumDiv.textContent   = `${cumulativeStatsAtIndex.elevation.toFixed(0)} m`;
       speedMovingNowDiv.textContent = `${cumulativeStatsAtIndex.speed.toFixed(2)} kph`;
     }
@@ -302,11 +302,6 @@ function syncCumulativeRideStatsToVideo(valType, value){
       elevationCumDiv.textContent   = `${_toFeet(cumulativeStatsAtIndex.elevation, 0)} ft`;
       speedMovingNowDiv.textContent = `${_toMiles(cumulativeStatsAtIndex.speed, 2)} mph`;
     }
-
-    // durationMovingCumDiv.textContent = getFormattedDurationStringFromISO(cumulativeStatsAtIndex.duration);
-    // distanceCumDiv.textContent      = eleContDataAtIndex.dist.toFixed(2);
-    // elevationCumDiv.textContent      = eleContDataAtIndex.altitude.toFixed(0);
-    // speedMovingNowDiv.textContent = _toMiles(cumulativeStatsAtIndex.speed, 2);
   }
 
 }
@@ -350,16 +345,32 @@ function reCenterMap(geoJsonLGroup){
 // this function is temporarily going to live here
 // once we update all of the rides to have the proper metadata,
 // we can move it to a more appropriate location (like geojson-tools)
-function getFormattedDurationStringFromISO(isoDuration){
+function getFormattedDurationStringFromISO(isoDuration, displayStyle = "stopwatch"){
 
   let duration = moment.duration(isoDuration);
 
-  // use the minutes and seconds to create a string that is formatted as "[minutes] minutes, and [seconds] seconds"
-  let durationString = duration.minutes() + "m "  + duration.seconds() + "s";
+  let durationString = "";
 
-  // if the duration lasted more than 1 hour, pre-pend the string with "[hours] hours, "
-  if(duration.hours() > 0){
-    durationString = duration.hours() + "h " + durationString;
+  // use the duration to create a string formatted as "mm:ss" (or "hh:mm:ss") if it has hours
+  if(displayStyle === "stopwatch"){
+
+    durationString = String(duration.minutes()).padStart(2,'0') + ":" +
+                     String(duration.seconds()).padStart(2,'0');
+    
+    // if the duration lasted more than 1 hour, pre-pend the string with "hh:"
+    if(duration.hours() > 0){
+      durationString = String(duration.hours()).padStart(2,'0') + ":" + durationString;
+    }
+  }
+  // use the duration to create a string formatted as "[mm] minutes, and [ss] seconds" (or "[hh] hours [mm] minutes and [ss] seconds")
+  else{
+    durationString = duration.minutes() + "m "  + 
+                     duration.seconds() + "s";
+  
+    // if the duration lasted more than 1 hour, pre-pend the string with "[hh] hours "
+    if(duration.hours() > 0){
+      durationString = duration.hours() + "h " + durationString;
+    }
   }
 
   return durationString;
