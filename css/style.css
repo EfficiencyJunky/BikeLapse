@@ -64,20 +64,15 @@
   border-radius: 5px;
 }
 
-/* not using this one */
-/* example of how to style elements within classed elements */
-/* 
-.info h4 {
-  margin: 0 0 5px;
-  color: #777;
-} 
+
+/* make the elements in the bottom left leaflet corner
+   display on top of all the other corners
+   by default they are set to 1000
 */
-
-/* make the legend display underneath UI elements like elevation and layer control */
-.leaflet-bottom.leaflet-right {
-  z-index: 800 !important;
-
-}
+.leaflet-bottom.leaflet-left {
+  z-index: 1001 !important;
+  /* background-color: #4CAF50; */
+} 
 
 .legend {
   line-height: 25px;
@@ -291,6 +286,7 @@ in the "global-settings.js" file and they make things act a little weird */
   margin-left: 0px;
   margin-bottom: 0px;
   margin-right: -50px;
+  margin-top: -15px;
 }
 
 
@@ -341,6 +337,15 @@ in the "global-settings.js" file and they make things act a little weird */
 }
 
 
+.stat-tot, .stat-cum {
+  padding-left: 2px;
+  margin: 2px;
+}
+
+.stat-cum {
+  margin-right: -2rem;
+}
+
 
 .stat-subtext {
   font-size: 12px;
@@ -350,7 +355,7 @@ in the "global-settings.js" file and they make things act a little weird */
   font-family: "MaisonNeue", "Segoe UI", "Helvetica Neue", -apple-system, system-ui, BlinkMacSystemFont, Roboto, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 }
 
-.stat-text {
+.stat-tot-text, .stat-cum-text {
   font-weight: 400;
   line-height: 1;
   margin-top: 2px;
@@ -358,19 +363,17 @@ in the "global-settings.js" file and they make things act a little weird */
   -webkit-font-smoothing: antialiased;
 }
 
-.stat {
+.stat-tot-text{
   font-size: 20px;
-  padding-left: 2px;
-  margin: 2px;
-  /* display: inline-block; */
-  /* display: -webkit-box;
-  display: -ms-flexbox; */
-  /* display: flex; */
-  /* -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-  -ms-flex-direction: column; */
-  /* flex-direction: column; */
+  /* margin-right: 20px; */
 }
+
+.stat-cum-text{
+  font-size: 18px;
+}
+
+
+
 
 
 .timestamp {
@@ -387,3 +390,4 @@ a.timestamp {
   color: rgb(0, 120, 168);
   -webkit-tap-highlight-color: rgba(51, 181, 229, 0.4);
 }
+

@@ -1,7 +1,23 @@
 /* ###################################################################
+   **  A GLOBAL SCALE FACTOR BASED ON THE HEIGHT OF OUR WINDOW **
+       This is used to scale the size of the youtube video player
+       on both our index.html and create-ride.html pages
+       as well as scale the height of the map on the create-ride page
+       I'm only doing it once at the beginning because I'm lazy
+###################################################################### */
+// if the height is taller than 750px then set scale factor to 1.0 otherwise set to 0.85
+// then check to see if the width is greater than 500 and leave the scale factor or set to 0.55
+const windowScaleFactor = (function (){
+  const scaleFact = (window.innerHeight >= 750) ? 1.0 : 0.85;
+  return (window.innerWidth >= 500) ? scaleFact : 0.65;
+})();
+
+console.log("window scale factor:", windowScaleFactor);
+/* ###################################################################
    ****  THE MAIN MAP OBJECTS NEED TO BE GLOBALY ACCESSIBLE
    ****  AND SOME GLOBAL MAP AND MAP UI SETTINGS
 ###################################################################### */
+
 // Create our map using the div with id="map"
 let map = L.map("map", {
   center: [37.67, -122.42], // san francisco
@@ -70,7 +86,7 @@ let videoDisplayDiv;
 // *******************************************
 // YOUTUBE PLAYER PARAMETERS
 // *******************************************
-let videoWidth = 450; // make sure the "transport-controls" element is set to the same width
+let videoWidth = 450 * windowScaleFactor; // make sure the "transport-controls" element is set to the same width
 let videoHeight =  Math.round(videoWidth * 0.5625); // 450 * 0.5625 == 253 just so you know
 
 // if we wanted to scale the video by height instead of width, but we really don't
@@ -79,6 +95,11 @@ let videoHeight =  Math.round(videoWidth * 0.5625); // 450 * 0.5625 == 253 just 
 
 // this is likely obsolete now that our video player is in it's own DIV
 let bindPopupProperties = {maxWidth: videoWidth + 40};
+
+// this line will ensure that when we click the "hide" button on our video
+// the size of the transport-controls does not shrink
+document.getElementById("transport-controls").style.minWidth = `${videoWidth}px`;
+
 
 // Learn about the playerVars that can be used for this "youTubePlayerOptions" object here: https://developers.google.com/youtube/player_parameters.html?playerVersion=HTML5
 let youTubePlayerOptions = { 
@@ -132,8 +153,8 @@ let elevationControl;
 let elevationControlOptions = {
   position: mapUISettings.elevation.position,
   theme: "steelblue-theme", //default: lime-theme
-  width: 600,
-  height: 125,
+  width: 600 * windowScaleFactor,
+  height: 125 * windowScaleFactor,
   margins: {
       top: 20,
       right: 80,

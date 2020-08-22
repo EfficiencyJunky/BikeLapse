@@ -227,6 +227,8 @@
       color: rgb(58, 109, 151);
       height: 1.6rem;
       padding-top: 0px !important;
+      /* this is so that the buttons lay on top of the other elements in the layer control (mainly the elevation control) */
+      z-Index: 801;
       /* padding-top: 2px !important;
       font-size: 0.8rem; */
     }
@@ -258,7 +260,26 @@
     box-shadow: none;
   }
 
+  /* .leaflet-right {
+    display:flex;
+    float:none;
+  } */
+  /* .leaflet-right {
+    display:inline-block;
+    float:none;
+  } */
+  
+  
+  /* .leaflet-right .leaflet-control-layers.leaflet-control{
+    display:inline-block;
 
+  } */
+  
+  /* .leaflet-right .leaflet-control-zoom { */
+  /* .leaflet-right { */
+    /* display:flex; */
+    /* float:none; */
+  /* } */
 
   </style>
 
@@ -306,19 +327,19 @@
         we are doing the same thing with the layer control div here 
         we define the container div, and then append the Layer Control
         to it once we create it in the JS code -->  
-  <div id="layer-control-display-div" style="min-width:250px">
+  <div id="layer-control-display-div" style="min-width:150px;">
 
     <div class="d-flex flex-row-reverse" style="position :relative; height:0px" >
       <button id="collapse-button-layer-control" class="btn p-2" data-toggle="collapse" data-target="#layer-control-div"></button><br>
     </div>
-    <div>
-      <h5>Rides</h5>
+    <div class="layer-control-display-title">
+      <h5>All Rides</h5>
     </div>    
     <!-- <div id="layer-control-div" class="collapse show">
       when we create our layer control (L.Control.Layers) it will generate this child element
     </div> -->
 
-  </div>  
+  </div>
   
 
 
@@ -349,27 +370,27 @@
     <!-- <div class="row mt-2 mb-1 mr-1"></div> -->
     <div class="row mt-2 mr-1">
       <div class="col-6 col-sm-3">
-        <div id="duration-moving-tot" class="stat">
+        <div id="duration-moving-tot" class="stat-tot">
           <div class="stat-subtext">Moving Time:</div> 
-          <div class="stat-text">00h 00m</div>
+          <div class="stat-tot-text">00h 00m</div>
         </div>
       </div>      
       <div class="col-6 col-sm-3">
-        <div id="distance-tot" class="stat">
+        <div id="distance-tot" class="stat-tot">
           <div class="stat-subtext">Distance:</div> 
-          <div class="stat-text">00.00 mi</div>                    
+          <div class="stat-tot-text">00.00 mi</div>                    
         </div>
       </div>
       <div class="col-6 mt-3 col-sm-3 mt-sm-0">
-        <div id="elevation-tot" class="stat">
+        <div id="elevation-tot" class="stat-tot">
           <div class="stat-subtext">Elev Gain:</div> 
-          <div class="stat-text">0000 ft</div>
+          <div class="stat-tot-text">0000 ft</div>
         </div>
       </div>      
       <div class="col-6 mt-3 col-sm-3 mt-sm-0 ">
-        <div id="speed-moving-avg" class="stat">
+        <div id="speed-moving-avg" class="stat-tot">
           <div class="stat-subtext">Avg Speed:</div> 
-          <div class="stat-text">00.00 mph</div>
+          <div class="stat-tot-text">00.00 mph</div>
         </div>
       </div>      
     </div>
@@ -396,10 +417,12 @@
     <div class="d-flex flex-row-reverse" style="position :relative; height:0px;" >
       <button id="collapse-button-video" class="btn p-2" data-toggle="collapse" data-target="#player"></button><br>
     </div>
-    <div id="player" class="collapse show">
-      video iFrame will replace this div
-    </div>
-    <div class="transport-controls d-flex align-items-center" style="width:450px">
+    <div class="d-flex justify-content-center mb-2">
+      <div id="player" class="collapse show">
+        video iFrame will replace this div
+      </div>
+    </div>    
+    <div id="transport-controls" class="transport-controls d-flex align-items-center">
       <button id="play-pause" class="play"></button>
       <!-- <button id="stop">▇</button>  --> <!-- uncomment this line if you want a stop button  --> 
       <input type="range" min="0" max="100" value="0" id="slider" class="slider ml-2 mr-2 flex-fill" >
@@ -409,29 +432,29 @@
     <!-- CUMULATIVE Ride Stats STATS ROW / COLLAPSIBLE PANEL -->
     <!-- <div id="ride-stats-cumulative"  class="collapse show"> -->
     <!-- <div class="d-flex justify-content-between mt-3"> -->
-    <div id="ride-stats-cumulative" class="row mt-2 mb-1 mr-1 collapse show">
+    <div id="ride-stats-cumulative" class="row mt-2 mb-1 mr-1 collapse">
       <div class="col-3">
-        <div id="duration-moving-cum" class="stat">
+        <div id="duration-moving-cum" class="stat-cum">
           <div class="stat-subtext">Moving:</div> 
-          <div class="stat-text">0h 0m</div>
+          <div class="stat-cum-text">0h 0m</div>
         </div>
       </div>
       <div class="col-3">
-        <div id="distance-cum" class="stat">
+        <div id="distance-cum" class="stat-cum">
           <div class="stat-subtext">Distance:</div> 
-          <div class="stat-text">0.00 mi</div>
+          <div class="stat-cum-text">0.00 mi</div>
         </div>
       </div>
       <div class="col-3">
-        <div id="elevation-cum" class="stat">
+        <div id="elevation-cum" class="stat-cum">
           <div class="stat-subtext">Elevation:</div> 
-          <div class="stat-text">0 ft</div>
+          <div class="stat-cum-text">0 ft</div>
         </div>
       </div>
       <div class="col-3">
-        <div id="speed-moving-now" class="stat">
+        <div id="speed-moving-now" class="stat-cum">
           <div class="stat-subtext">Speed:</div> 
-          <div class="stat-text">0.00 mph</div>
+          <div class="stat-cum-text">0.00 mph</div>
         </div>
       </div>
       <!-- </div>     -->
@@ -445,11 +468,11 @@
         we are doing the same thing with the elevation div here 
         we define the container div, and then append the elevation Control
         to it once we create it in the JS code. then we can hide/unhide the whole thing -->  
-  <div id="elevation-display-div" style="width:550px" hidden>
+  <div id="elevation-display-div" hidden>
     <div class="d-flex flex-row-reverse" style="position :relative; height:0px" >
       <button id="collapse-button-elevation" class="btn p-2" data-toggle="collapse" data-target="#elevation-control-div"></button><br>
     </div>
-    <div style="width:450px">
+    <div class="elevation-control-title">
       <h5>Elevation</h5>
     </div>
     <!-- <div id="elevation-control-div" class="collapse show">

@@ -153,10 +153,7 @@ function initializeMapOverlaysAndUI(hideElevationDisplayDiv = true, hideVideoDis
     
     // add it to the map
     legend.addTo(map);
-
-    // this will make sure that the zoom control stacks on top of the legend
-    map.zoomControl.remove();
-    map.zoomControl.addTo(map);
+    
 
     // *************************************************************
     //  ADD RIDE INFO -- RIDE INFO CONTROL LAYER
@@ -392,6 +389,8 @@ function legendOnAdd(map) {
         }
     });
     
+    // div.setAttribute("style","z-index:999 !important;");
+
     return div;
 }
 

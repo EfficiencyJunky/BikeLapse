@@ -1,6 +1,10 @@
 /* ###################################################################
-   ****  OVERRIDE GLOBAL VARIABLES AND SETTINGS ****
+   ****  OVERRIDE OR SET GLOBAL VARIABLES AND SETTINGS ****
 ###################################################################### */
+// the height of our map based on the windowScaleFactor set in global-settings.js
+// if you want to change the normal height it will be, just change "600" to something else
+const mapHeight = `${600 * windowScaleFactor}px`;
+
 // override global map zoom and ride ID parameters
 minimumZoom = 2;
 // maximumZoom = 18;
@@ -13,9 +17,6 @@ flyToPaddingBottomRight = [0, 100]; //[rightside, bottom]
 
 // override the position of the baselayers
 mapUISettings.baseLayerCtl.position = "topright";
-
-// this is the object to hold our GeoJson that the user will download
-let geoJsonData;
 
 
 // This is the div in our HTML where we will display the elevationControl
@@ -35,8 +36,11 @@ elevationDisplayDiv = document.getElementById('elevation-display-div');
 videoDisplayDiv = document.getElementById('player-parent');
 
 /* ###################################################################
-   ****  CREATE-RIDE SPECIFIC VARIABLES AND SETTINGS ****
+****  CREATE-RIDE SPECIFIC VARIABLES AND SETTINGS ****
 ###################################################################### */
+
+// this is the object to hold our GeoJson that the user will download
+let geoJsonData;
 
 // a globally accessible reference to the Leaflet GeoJSON Layers Group
 let geoJsonLayerGroup = undefined;
@@ -50,12 +54,22 @@ let geoJsonTextarea = document.getElementById('geojson-textarea');
 /* ###############################################################################
    ****  INITIALIZE OUR MAP WITH AVAILABLE BASEMAPS AND UI OVERLAY ELEMENTS ****
 ################################################################################## */
+// change the height of the map 
+map.getContainer().style.height = mapHeight;
+
+// Checks if the map container size changed and updates the map if so
+map.invalidateSize();
+
+// also change the placeholder text
+document.getElementById('map-placeholder-text').style.lineHeight = mapHeight;
 
 // set map initial center location and zoom for map
 map.setView([30, 0], minimumZoom);
 
+// carry out our usual initializations
 initializeBaseMaps();
 initializeMapOverlaysAndUI(hideElevationDisplayDiv = false, hideVideoDisplayDiv = false, hideRideInfoDisplayDiv = false);
+
 
 
 

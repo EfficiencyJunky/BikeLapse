@@ -8,10 +8,10 @@ if(document.getElementById('ride-info-parent')){
   var googleMapURLDiv  = document.getElementById('ride-googlemap-url');
 
 
-  var distanceTotalDiv        = document.getElementById('distance-tot').getElementsByClassName("stat-text")[0];
-  var elevationTotalDiv       = document.getElementById('elevation-tot').getElementsByClassName("stat-text")[0];
-  var durationMovingTotalDiv  = document.getElementById('duration-moving-tot').getElementsByClassName("stat-text")[0];
-  var speedMovingAvgDiv       = document.getElementById('speed-moving-avg').getElementsByClassName("stat-text")[0];
+  var distanceTotalDiv        = document.getElementById('distance-tot').getElementsByClassName("stat-tot-text")[0];
+  var elevationTotalDiv       = document.getElementById('elevation-tot').getElementsByClassName("stat-tot-text")[0];
+  var durationMovingTotalDiv  = document.getElementById('duration-moving-tot').getElementsByClassName("stat-tot-text")[0];
+  var speedMovingAvgDiv       = document.getElementById('speed-moving-avg').getElementsByClassName("stat-tot-text")[0];
 }
 
 // RIDE STATS DISPLAY
@@ -21,10 +21,10 @@ if(document.getElementById('ride-stats-cumulative')){
   var rideStatsCumRow_JQ = $("#ride-stats-cumulative");
 
   // all of our elements in the cumulative ride stats display section
-  var distanceCumDiv      = document.getElementById('distance-cum').getElementsByClassName("stat-text")[0];
-  var elevationCumDiv      = document.getElementById('elevation-cum').getElementsByClassName("stat-text")[0];
-  var durationMovingCumDiv = document.getElementById('duration-moving-cum').getElementsByClassName("stat-text")[0];
-  var speedMovingNowDiv = document.getElementById('speed-moving-now').getElementsByClassName("stat-text")[0];
+  var distanceCumDiv      = document.getElementById('distance-cum').getElementsByClassName("stat-cum-text")[0];
+  var elevationCumDiv      = document.getElementById('elevation-cum').getElementsByClassName("stat-cum-text")[0];
+  var durationMovingCumDiv = document.getElementById('duration-moving-cum').getElementsByClassName("stat-cum-text")[0];
+  var speedMovingNowDiv = document.getElementById('speed-moving-now').getElementsByClassName("stat-cum-text")[0];
 }
 
 

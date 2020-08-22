@@ -7,6 +7,9 @@
 // let initialRidesToDisplay = [1, 3, 7, 10];
 let initialRidesToDisplay = [1, 3, 7, 8];
 
+// this is the value for our static width of the Elevation Control's display container
+const elevationDisplayDivWidth = `${550 * windowScaleFactor}px`;
+
 // this will be used to remember which ride is currently highlighted
 // (meaning it was the last one to be clicked)
 let highlightedRideID = "";
@@ -61,11 +64,25 @@ layerControlDisplayLayer.addTo(map)
 // *******************************************************************  
 map.zoomControl.setPosition(mapUISettings.zoomCtl.position);
 
+
+// ******************************************************************* 
+// SET STATIC WIDTH FOR ELEVATION CONTROL DISPLAY DIV
+//    since we have a button to show/hide the elevation control
+//    we need to make sure that when we hide it...
+//    the div that contains it does not shrink
+// *******************************************************************
+document.getElementById("elevation-display-div").style.width = elevationDisplayDivWidth;
+
+
 /* ###############################################################################
    ****  INITIALIZE OUR MAP WITH AVAILABLE BASEMAPS AND UI OVERLAYS ELEMENTS ****
 ################################################################################## */
 initializeBaseMaps();
 initializeMapOverlaysAndUI();
+
+// this will make sure that the zoom control stacks on top of the legend
+map.zoomControl.remove();
+map.zoomControl.addTo(map);
 
 /* ###############################################################################
    ****  LOAD THE JSON FILES FOR EACH RIDE                  ****
@@ -113,12 +130,24 @@ bikeRideJSONFileNames.forEach( (jsonFileName, i) => {
 
       // if this is the last JSON file to load
       // update the layerControlDisplayLayer's container div to be a static width
+      // we do this so that when we hide the overlayLayerControl's div with our "hide" button
+      // we don't want the size of the layerControlDisplayLayer container to shrink
       if(i >= bikeRideJSONFileNames.length - 1){
-        let finalWidth = overlayLayerControlDiv.offsetWidth + 20;
-        // let finalWidth = overlayLayerControlDiv.clientWidth + 20;
-        // let finalWidth = overlayLayerControlDiv.scrollWidth + 20;
 
-        layerControlDisplayLayer.getContainer().setAttribute("style", `width:${finalWidth}px`);
+        // get the HTML container Div for the layerControlDisplayLayer
+        let layerControlDisplayDiv = layerControlDisplayLayer.getContainer();
+
+        // grab a reference to its current offsetWidth
+        let staticWidth = layerControlDisplayDiv.offsetWidth;
+
+        // make this the minWidth for eternity
+        layerControlDisplayDiv.style.minWidth = `${staticWidth}px`;
+
+        // if the windowScaleFactor is less than 1, then we should automatically collapse the layer control div with our rides in it
+        if(windowScaleFactor < 1){
+          let layerControlDiv_JQ = $("#layer-control-div");
+          layerControlDiv_JQ.collapse('hide');
+        }
       }
 
   });
