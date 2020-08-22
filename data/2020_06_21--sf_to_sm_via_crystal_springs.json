@@ -53332,7 +53332,14 @@
             },
             "properties": {
                 "name": "START",
-                "description": "<b>Location Name:</b> Ritual Coffee On Valencia<br><b>Time:</b> 9:20 AM on Sunday, June 21st, 2020<br><b>Elevation:</b> 84 feet &nbsp (26 meters)"
+                "meta": {
+                    "locationName": "Ritual Coffee On Valencia",
+                    "time": "2020-06-21T16:20:51Z",
+                    "elevation": {
+                        "m": 25.6,
+                        "ft": 84
+                    }
+                }
             }
         },
         {
@@ -53347,7 +53354,14 @@
             },
             "properties": {
                 "name": "FINISH",
-                "description": "<b>Location Name:</b> San Mateo Caltrain Station<br><b>Time:</b> 12:32 PM on Sunday, June 21st, 2020<br><b>Elevation:</b> 33 feet &nbsp (10 meters)"
+                "meta": {
+                    "locationName": "San Mateo Caltrain Station",
+                    "time": "2020-06-21T19:32:19Z",
+                    "elevation": {
+                        "m": 10.1,
+                        "ft": 33.1
+                    }
+                }
             }
         },
         {
@@ -53361,20 +53375,54 @@
                 ]
             },
             "properties": {
-                "name": "DETAILS",
-                "description": "<b>Start Time:</b> 9:20 AM on Sunday, June 21st, 2020<br><b>Distance:</b> 26.6 miles &nbsp (42.81 km)<br><b>Duration:</b> 3 hours, 11 minutes, and 28 seconds<br><b>Average Speed:</b> 8.34 mph &nbsp (13.42 kph)<br><b>Minimum Elevation:</b> 24 feet &nbsp (7 meters)<br><b>Maximum Elevation:</b> 615 feet &nbsp (187 meters)<br><b>Total Climb:</b> 1111 feet &nbsp (339 meters)<br><b>Total Descent:</b> 1447 feet &nbsp (441 meters)"
+                "name": "DETAILS"
             }
         }
     ],
     "metadata": {
         "rideName": "SF to SM via Crystal Springs",
-        "rideType": "regular",
         "hasBikeLapseSync": false,
         "youTubeVideoID": "YN9b3LK1la0",
         "stravaURL": "https://www.strava.com/activities/3650907808",
         "googleMapURL": "https://www.google.com/maps/d/edit?mid=10cQNnnBswOwCTTvcCW36Qsjviech_7ZL&usp=sharing",
-        "lineColor": "rgba(62, 146, 204, 1)",
-        "lineColorEasy": "green",
-        "lineColorHard": "red"
+        "rideStats": {
+            "startTime": "2020-06-21T16:20:51Z",
+            "distance": {
+                "km": 42.813,
+                "mi": 26.603
+            },
+            "duration": {
+                "moving": "PT2H37M10S",
+                "total": "PT3H11M28S"
+            },
+            "avgSpeed": {
+                "moving": {
+                    "mph": 10.155970307529163,
+                    "kph": 16.344305408271474
+                },
+                "total": {
+                    "mph": 8.336594707520891,
+                    "kph": 13.41633008356546
+                }
+            },
+            "elevation": {
+                "min": {
+                    "m": 7.6399818203879875,
+                    "ft": 25.065557955601726
+                },
+                "max": {
+                    "m": 187.29708411466208,
+                    "ft": 614.491765446748
+                },
+                "gain": {
+                    "m": 318.3180767052512,
+                    "ft": 1044.3506787776564
+                },
+                "descent": {
+                    "m": 397.668995691325,
+                    "ft": 1304.688347823927
+                }
+            }
+        }
     }
 }

@@ -16401,7 +16401,14 @@
             },
             "properties": {
                 "name": "START",
-                "description": "<b>Location Name:</b> San Gregorio General Store<br><br><b>Time:</b> 11:40 AM on Sunday, August 2nd, 2020<br><b>Elevation:</b> 71 feet &nbsp (22 meters)"
+                "meta": {
+                    "locationName": "San Gregorio General Store",
+                    "time": "2020-08-02T18:40:19Z",
+                    "elevation": {
+                        "m": 21.519466,
+                        "ft": 70.601925
+                    }
+                }
             }
         },
         {
@@ -16416,7 +16423,14 @@
             },
             "properties": {
                 "name": "FINISH",
-                "description": "<b>Location Name:</b> Alice's Restaurant<br><br><b>Time:</b> 1:01 PM on Sunday, August 2nd, 2020<br><b>Elevation:</b> 1478 feet &nbsp (450 meters)"
+                "meta": {
+                    "locationName": "Alice's Restaurant",
+                    "time": "2020-08-02T20:01:06Z",
+                    "elevation": {
+                        "m": 450.436545,
+                        "ft": 1477.810234
+                    }
+                }
             }
         },
         {
@@ -16430,20 +16444,54 @@
                 ]
             },
             "properties": {
-                "name": "DETAILS",
-                "description": "<b>Start Time:</b> 11:40 AM on Sunday, August 2nd, 2020<br><b>Distance:</b> 14.32 miles &nbsp (23.04 km)<br><b>Moving Time:</b> 1 hours, 5 minutes, and 37 seconds<br><b>Average Moving Speed:</b> 13.14 mph &nbsp (21.14 kph)<br><b>Elapsed Time:</b> 1 hours, 20 minutes, and 47 seconds<br><b>Average Elapsed Speed:</b> 10.61 mph &nbsp (17.07 kph)<br><b>Minimum Elevation:</b> 66 feet &nbsp (20 meters)<br><b>Maximum Elevation:</b> 1478 feet &nbsp (450 meters)<br><b>Total Climb:</b> 2214 feet &nbsp (675 meters)<br><b>Total Descent:</b> 974 feet &nbsp (297 meters)"
+                "name": "DETAILS"
             }
         }
     ],
     "metadata": {
         "rideName": "La Honda Climb",
-        "rideType": "bikelapse",
         "hasBikeLapseSync": true,
         "youTubeVideoID": "Kb1YkCAQzmo",
-        "stravaURL": "https://www.strava.com/activities/3856435073",
+        "stravaURL": "https://www.strava.com/activities/3895183366",
         "googleMapURL": "",
-        "lineColor": "rgba(62, 146, 204, 1)",
-        "lineColorEasy": "green",
-        "lineColorHard": "red"
+        "rideStats": {
+            "startTime": "2020-08-02T18:40:19Z",
+            "distance": {
+                "km": 23.0411,
+                "mi": 14.3171
+            },
+            "duration": {
+                "moving": "PT1H5M37S",
+                "total": "PT1H20M47S"
+            },
+            "avgSpeed": {
+                "moving": {
+                    "mph": 13.091582423164846,
+                    "kph": 21.068823977647956
+                },
+                "total": {
+                    "mph": 10.633703321642253,
+                    "kph": 17.113257685166083
+                }
+            },
+            "elevation": {
+                "min": {
+                    "m": 20.57823127284605,
+                    "ft": 67.51388428920424
+                },
+                "max": {
+                    "m": 450.20568278542646,
+                    "ft": 1477.0528123097386
+                },
+                "gain": {
+                    "m": 469.52225257151395,
+                    "ft": 1540.4273871267258
+                },
+                "descent": {
+                    "m": 61.61272779707535,
+                    "ft": 202.14150186575668
+                }
+            }
+        }
     }
 }

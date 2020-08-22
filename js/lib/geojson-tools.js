@@ -383,26 +383,6 @@ function getElevationStats(coordsArray){
       "ft": Math.abs( _toFeet(descent_m) )
     }
   }
-
-  // BEFORE WE STOPPED ROUNDING
-  // let elevationStats = {
-  //   "min": {
-  //     "m": Math.round(min_m),
-  //     "ft": _toFeet(min_m, 0)
-  //   },
-  //   "max": {
-  //     "m": Math.round(max_m),
-  //     "ft": _toFeet(max_m, 0)
-  //   },
-  //   "gain": {
-  //     "m": Math.round(gain_m),
-  //     "ft": _toFeet(gain_m, 0)
-  //   },
-  //   "descent": {
-  //     "m": Math.abs( Math.round(descent_m) ),
-  //     "ft": Math.abs( _toFeet(descent_m, 0) )
-  //   }
-  // }
   
   return elevationStats;
 

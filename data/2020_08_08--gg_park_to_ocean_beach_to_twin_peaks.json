@@ -23524,7 +23524,6 @@
     ],
     "metadata": {
         "rideName": "GG Park to Ocean Beach to Twin Peaks",
-        "rideType": "bikelapse",
         "hasBikeLapseSync": true,
         "youTubeVideoID": "QCJIzcRfyjo",
         "stravaURL": "https://www.strava.com/activities/3894440443",
@@ -23532,43 +23531,41 @@
         "rideStats": {
             "startTime": "2020-08-08T23:44:47Z",
             "distance": {
-                "km": 29.69,
-                "mi": 18.45
+                "km": 29.6857,
+                "mi": 18.4458
             },
-            "duration":{
+            "duration": {
                 "moving": "PT2H59S",
                 "total": "PT2H12M41S"
             },
             "avgSpeed": {
                 "moving": {
-                    "mph": 9.15,
-                    "kph": 14.72
+                    "mph": 9.147937732470037,
+                    "kph": 14.722209670753548
                 },
                 "total": {
-                    "mph": 8.34,
-                    "kph": 13.43
+                    "mph": 8.341273709332997,
+                    "kph": 13.424007034292174
                 }
             },
             "elevation": {
                 "min": {
-                  "m": 4,
-                  "ft": 12
+                    "m": 3.544745704636658,
+                    "ft": 11.629743497600133
                 },
                 "max": {
-                  "m": 265,
-                  "ft": 868
+                    "m": 264.70389066796724,
+                    "ft": 868.4511126590936
                 },
                 "gain": {
-                  "m": 409,
-                  "ft": 1342
+                    "m": 412.82046928353003,
+                    "ft": 1354.3979084441767
                 },
                 "descent": {
-                  "m": 402,
-                  "ft": 1320
+                    "m": 405.40704184245186,
+                    "ft": 1330.0756391583898
                 }
-              }
+            }
         }
     }
 }
-
-

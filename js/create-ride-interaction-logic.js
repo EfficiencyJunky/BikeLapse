@@ -247,10 +247,13 @@ function renameLineStringToROUTE(tempGeoJson) {
 function getUserInputsFromTextFields(){
 
     // defining a function and calling it all at once because I'm lazy and dumb
-    const selectedRadio = ( function() {
+    // this function just grabs the value of the checked radio button
+    // since radio button values are of type String, we then do a quick
+    // check to see if it's "true" and return a boolean true or false
+    const hasBikeLapseSync = ( function() {
         // get reference to all radios with name "rideType"
         // NOTE: this returns a NodeList object, not an Array
-        const radios = document.getElementsByName('rideType');
+        const radios = document.getElementsByName('hasBikeLapseSync');
 
         // need to use a for loop because radios is a NodeList not an Array
         for (let i = 0; i < radios.length; i++) {
@@ -262,14 +265,14 @@ function getUserInputsFromTextFields(){
         }
 
         return "none_checked";
-    })();
+    })() === "true" ? true : false;
 
+    let youtubeVideoID = document.getElementById('youTubeVideoID').value;
 
     const rideInfo = {    
         "rideName": document.getElementById('rideName').value,
-        "rideType": selectedRadio,
-        "hasBikeLapseSync": (selectedRadio === "bikelapse"),
-        "youTubeVideoID": document.getElementById('youTubeVideoID').value,
+        "hasBikeLapseSync": (youtubeVideoID !== "") ? hasBikeLapseSync : false,
+        "youTubeVideoID": youtubeVideoID,
         "stravaURL": document.getElementById('stravaURL').value,
         "googleMapURL": document.getElementById('googleMapURL').value
     }
@@ -282,6 +285,18 @@ function getUserInputsFromTextFields(){
                 "startName": startLocationName,
                 "finishName": finishLocationName
            };
+
+
+    function validateBikeLapseStatus(){
+
+
+
+
+
+    }
+
+
+
 }
 
 

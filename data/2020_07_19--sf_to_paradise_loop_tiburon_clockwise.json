@@ -91042,7 +91042,14 @@
             },
             "properties": {
                 "name": "START",
-                "description": "<b>Location Name:</b> Velo Rouge Cafe<br><b>Time:</b> 11:24 AM on Sunday, July 19th, 2020<br><b>Elevation:</b> 227 feet &nbsp (69 meters)"
+                "meta": {
+                    "locationName": "Velo Rouge Cafe",
+                    "time": "2020-07-19T18:24:27Z",
+                    "elevation": {
+                        "m": 69.1,
+                        "ft": 226.7
+                    }
+                }
             }
         },
         {
@@ -91057,7 +91064,14 @@
             },
             "properties": {
                 "name": "FINISH",
-                "description": "<b>Location Name:</b> Grattan Elementary<br><b>Time:</b> 5:39 PM on Sunday, July 19th, 2020<br><b>Elevation:</b> 315 feet &nbsp (96 meters)"
+                "meta": {
+                    "locationName": "Cole Valley",
+                    "time": "2020-07-20T00:39:29Z",
+                    "elevation": {
+                        "m": 95.9,
+                        "ft": 314.6
+                    }
+                }
             }
         },
         {
@@ -91071,20 +91085,54 @@
                 ]
             },
             "properties": {
-                "name": "DETAILS",
-                "description": "<b>Start Time:</b> 11:24 AM on Sunday, July 19th, 2020<br><b>Distance:</b> 47.86 miles &nbsp (77.03 km)<br><b>Duration:</b> 6 hours, 15 minutes, and 2 seconds<br><b>Average Speed:</b> 7.66 mph &nbsp (12.32 kph)<br><b>Minimum Elevation:</b> 2 feet &nbsp (1 meters)<br><b>Maximum Elevation:</b> 339 feet &nbsp (103 meters)<br><b>Total Climb:</b> 1674 feet &nbsp (510 meters)<br><b>Total Descent:</b> 1978 feet &nbsp (603 meters)"
+                "name": "DETAILS"
             }
         }
     ],
     "metadata": {
         "rideName": "SF to Paradise Loop / Tiburon (clockwise)",
-        "rideType": "regular",
         "hasBikeLapseSync": false,
         "youTubeVideoID": "bRjlD3Db7jw",
         "stravaURL": "https://www.strava.com/activities/3788375665",
         "googleMapURL": "https://www.google.com/maps/d/edit?mid=1dI-xNFHH0zHTO6jtW2X6a_UYsdQ&usp=sharing",
-        "lineColor": "rgba(62, 146, 204, 1)",
-        "lineColorEasy": "green",
-        "lineColorHard": "red"
+        "rideStats": {
+            "startTime": "2020-07-19T18:24:27Z",
+            "distance": {
+                "km": 77.0267,
+                "mi": 47.8622
+            },
+            "duration": {
+                "moving": "PT4H21M5S",
+                "total": "PT6H15M2S"
+            },
+            "avgSpeed": {
+                "moving": {
+                    "mph": 10.999292690711778,
+                    "kph": 17.70163549313757
+                },
+                "total": {
+                    "mph": 7.657271353657452,
+                    "kph": 12.323176606523866
+                }
+            },
+            "elevation": {
+                "min": {
+                    "m": 0.8241738572398891,
+                    "ft": 2.703982557786918
+                },
+                "max": {
+                    "m": 103.10805012236374,
+                    "ft": 338.28101516345583
+                },
+                "gain": {
+                    "m": 515.2411530391951,
+                    "ft": 1690.4237845371129
+                },
+                "descent": {
+                    "m": 567.5431910289717,
+                    "ft": 1862.0184028554916
+                }
+            }
+        }
     }
 }

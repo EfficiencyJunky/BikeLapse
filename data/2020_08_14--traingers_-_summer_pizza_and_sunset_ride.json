@@ -1831,7 +1831,10 @@
                     "2020-08-15T02:54:55Z",
                     "2020-08-15T02:54:56Z",
                     "2020-08-15T02:54:57Z",
-                    "2020-08-15T02:54:58Z"
+                    "2020-08-15T02:54:58Z",
+                    "2020-08-15T03:02:40Z",
+                    "2020-08-15T03:02:40Z",
+                    "2020-08-15T03:02:42Z"
                 ]
             },
             "geometry": {
@@ -10961,6 +10964,21 @@
                         -122.510379,
                         37.758147,
                         10.234494
+                    ],
+                    [
+                        -122.510373,
+                        37.758194,
+                        13.584469
+                    ],
+                    [
+                        -122.510373,
+                        37.758194,
+                        13.584469
+                    ],
+                    [
+                        -122.510373,
+                        37.758194,
+                        13.584469
                     ]
                 ]
             }
@@ -10977,7 +10995,14 @@
             },
             "properties": {
                 "name": "START",
-                "description": "<b>Location Name:</b> 8th and JFK\n                               <br><br> +\n                               <b>Time:</b> 6:17 PM on Friday, August 14th, 2020<br>\n                               <b>Elevation:</b> 240 feet &nbsp (73 meters)"
+                "meta": {
+                    "locationName": "8th and JFK",
+                    "time": "2020-08-15T01:17:25Z",
+                    "elevation": {
+                        "m": 73.186123,
+                        "ft": 240.11196
+                    }
+                }
             }
         },
         {
@@ -10985,14 +11010,21 @@
             "geometry": {
                 "type": "Point",
                 "coordinates": [
-                    -122.510379,
-                    37.758147,
-                    10.234494
+                    -122.510373,
+                    37.758194,
+                    13.584469
                 ]
             },
             "properties": {
                 "name": "FINISH",
-                "description": "<b>Location Name:</b> Kirkham and Ocean Beach\n                               <br><br> +\n                               <b>Time:</b> 7:54 PM on Friday, August 14th, 2020<br>\n                               <b>Elevation:</b> 34 feet &nbsp (10 meters)"
+                "meta": {
+                    "locationName": "Kirkham and Ocean Beach",
+                    "time": "2020-08-15T03:02:42Z",
+                    "elevation": {
+                        "m": 13.584469,
+                        "ft": 44.568469
+                    }
+                }
             }
         },
         {
@@ -11000,26 +11032,60 @@
             "geometry": {
                 "type": "Point",
                 "coordinates": [
-                    -122.478324,
-                    37.764465,
-                    67.112457
+                    -122.47831,
+                    37.764362,
+                    67.2869
                 ]
             },
             "properties": {
-                "name": "DETAILS",
-                "description": "<b>Start Time:</b>            6:17 PM on Friday, August 14th, 2020<br>\n            <b>Distance:</b>              7.59 miles &nbsp (12.22 km)<br>\n            <b>Moving Time:</b>           51 minutes, and 34 seconds<br>\n            <b>Average Moving Speed:</b>  8.83 mph &nbsp (14.21 kph)<br>\n            <b>Elapsed Time:</b>          1 hours, 37 minutes, and 33 seconds<br>\n            <b>Average Elapsed Speed:</b> 4.66 mph &nbsp (7.50 kph)<br>\n            <b>Minimum Elevation:</b>     -6 feet &nbsp (-2 meters)<br>\n            <b>Maximum Elevation:</b>     248 feet &nbsp (76 meters)<br>\n            <b>Total Climb:</b>           183 feet &nbsp (56 meters)<br>\n            <b>Total Descent:</b>         358 feet &nbsp (109 meters)"
+                "name": "DETAILS"
             }
         }
     ],
     "metadata": {
         "rideName": "Traingers - Summer Pizza and Sunset Ride",
-        "rideType": "bikelapse",
         "hasBikeLapseSync": true,
         "youTubeVideoID": "EekVvGeG3ls",
         "stravaURL": "https://www.strava.com/activities/3914420420",
         "googleMapURL": "",
-        "lineColor": "rgba(62, 146, 204, 1)",
-        "lineColorEasy": "green",
-        "lineColorHard": "red"
+        "rideStats": {
+            "startTime": "2020-08-15T01:17:25Z",
+            "distance": {
+                "km": 12.227,
+                "mi": 7.598
+            },
+            "duration": {
+                "moving": "PT51M34S",
+                "total": "PT1H45M17S"
+            },
+            "avgSpeed": {
+                "moving": {
+                    "mph": 8.834883720930232,
+                    "kph": 14.217441860465117
+                },
+                "total": {
+                    "mph": 4.330030077568466,
+                    "kph": 6.968054456229223
+                }
+            },
+            "elevation": {
+                "min": {
+                    "m": -1.796915224384323,
+                    "ft": -5.895391344769062
+                },
+                "max": {
+                    "m": 75.625473388166,
+                    "ft": 248.115078110831
+                },
+                "gain": {
+                    "m": 59.379167625692475,
+                    "ft": 194.8135483130769
+                },
+                "descent": {
+                    "m": 110.97729220956865,
+                    "ft": 364.0987393728412
+                }
+            }
+        }
     }
 }

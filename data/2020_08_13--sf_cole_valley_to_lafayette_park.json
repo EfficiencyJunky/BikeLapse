@@ -8583,7 +8583,14 @@
             },
             "properties": {
                 "name": "START",
-                "description": "<b>Location Name:</b> Cole Valley\n                               <br><br> +\n                               <b>Time:</b> 2:58 PM on Thursday, August 13th, 2020<br>\n                               <b>Elevation:</b> 327 feet &nbsp (100 meters)"
+                "meta": {
+                    "locationName": "Cole Valley",
+                    "time": "2020-08-13T21:58:37Z",
+                    "elevation": {
+                        "m": 99.547451,
+                        "ft": 326.599259
+                    }
+                }
             }
         },
         {
@@ -8598,7 +8605,14 @@
             },
             "properties": {
                 "name": "FINISH",
-                "description": "<b>Location Name:</b> Cole Valley\n                               <br><br> +\n                               <b>Time:</b> 4:36 PM on Thursday, August 13th, 2020<br>\n                               <b>Elevation:</b> 321 feet &nbsp (98 meters)"
+                "meta": {
+                    "locationName": "Cole Valley",
+                    "time": "2020-08-13T23:36:16Z",
+                    "elevation": {
+                        "m": 97.710159,
+                        "ft": 320.571398
+                    }
+                }
             }
         },
         {
@@ -8612,20 +8626,54 @@
                 ]
             },
             "properties": {
-                "name": "DETAILS",
-                "description": "<b>Start Time:</b>            2:58 PM on Thursday, August 13th, 2020<br>\n            <b>Distance:</b>              7.16 miles &nbsp (11.53 km)<br>\n            <b>Moving Time:</b>           41 minutes, and 9 seconds<br>\n            <b>Average Moving Speed:</b>  10.38 mph &nbsp (16.71 kph)<br>\n            <b>Elapsed Time:</b>          1 hours, 37 minutes, and 39 seconds<br>\n            <b>Average Elapsed Speed:</b> 4.39 mph &nbsp (7.07 kph)<br>\n            <b>Minimum Elevation:</b>     107 feet &nbsp (33 meters)<br>\n            <b>Maximum Elevation:</b>     384 feet &nbsp (117 meters)<br>\n            <b>Total Climb:</b>           709 feet &nbsp (216 meters)<br>\n            <b>Total Descent:</b>         709 feet &nbsp (216 meters)"
+                "name": "DETAILS"
             }
         }
     ],
     "metadata": {
         "rideName": "SF Cole Valley to Lafayette Park",
-        "rideType": "bikelapse",
         "hasBikeLapseSync": true,
         "youTubeVideoID": "ZnkJzy1tcJ0",
         "stravaURL": "https://www.strava.com/activities/3909770657",
         "googleMapURL": "",
-        "lineColor": "rgba(62, 146, 204, 1)",
-        "lineColorEasy": "green",
-        "lineColorHard": "red"
+        "rideStats": {
+            "startTime": "2020-08-13T21:58:37Z",
+            "distance": {
+                "km": 11.5292,
+                "mi": 7.1639
+            },
+            "duration": {
+                "moving": "PT41M9S",
+                "total": "PT1H37M39S"
+            },
+            "avgSpeed": {
+                "moving": {
+                    "mph": 10.445540704738761,
+                    "kph": 16.810498177399758
+                },
+                "total": {
+                    "mph": 4.401781874039939,
+                    "kph": 7.083993855606758
+                }
+            },
+            "elevation": {
+                "min": {
+                    "m": 32.62946249368158,
+                    "ft": 107.05204572777028
+                },
+                "max": {
+                    "m": 116.9966806986765,
+                    "ft": 383.8473899034458
+                },
+                "gain": {
+                    "m": 216.67375593141975,
+                    "ft": 710.8719254100391
+                },
+                "descent": {
+                    "m": 216.73468668624108,
+                    "ft": 711.0718294676872
+                }
+            }
+        }
     }
 }

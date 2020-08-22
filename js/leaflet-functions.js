@@ -21,17 +21,17 @@ L.Layer.include({
 });
 
 
-// *************************************************************************************** 
-// EXTEND THE ELEVATION CONTROL CLASS ALSO
-//    We want to be able to get access to the "_data" member of the Elevation Control
-//    because it does a lot of calculations for us
-// *************************************************************************************** 
-L.Control.Elevation.include({
-  getData: function () {
-    let data = this._data = this._data || {}; // Initialize the data, if missing.
-    return data;
-  }
-});
+// // *************************************************************************************** 
+// // EXTEND THE ELEVATION CONTROL CLASS ALSO
+// //    We want to be able to get access to the "_data" member of the Elevation Control
+// //    because it does a lot of calculations for us
+// // *************************************************************************************** 
+// L.Control.Elevation.include({
+//   getData: function () {
+//     let data = this._data = this._data || {}; // Initialize the data, if missing.
+//     return data;
+//   }
+// });
 
 
 
@@ -103,8 +103,11 @@ function createGeoJsonLayerGroupForRide(geoJson, rideMetadata){
 
   // ####### STYLE FUNCTION #################################################
   // Style's the features
-  // in our case, the only feature we style is the ROUTE LineString
+  // in our case, the only features we style are LineString features
   function styleFunction (geoJsonFeature) {
+
+    // declare the variable we will store our style object in
+    let syle;
 
     switch (geoJsonFeature.geometry.type) {
       case 'LineString':
@@ -113,12 +116,15 @@ function createGeoJsonLayerGroupForRide(geoJson, rideMetadata){
         // create the lineColor variable to use for the color of the Feature's line
         let lineColor = routeLineProperties["default"].lineColor;
 
-        // if the rideMetadata object has a "rideType" (not undefined),
-        // and the "rideType" itself is not undefined,
-        // use the value stored there as the key
-        // into the global line options object to get the corresponding lineColor
-        if(typeof(rideMetadata.rideType) !== "undefined" && rideMetadata.rideType !== undefined){
-          lineColor = routeLineProperties[rideMetadata.rideType].lineColor;
+        // if the "hasBikeLapseSync" member in the rideMetadata object is not undefined,
+        // and the value itself is true,
+        // then get the lineColor for a "bikelapse" ride
+        // else use the "regular" color
+        if(typeof(rideMetadata.hasBikeLapseSync) !== "undefined" && rideMetadata.hasBikeLapseSync){
+          lineColor = routeLineProperties["bikelapse"].lineColor;
+        }
+        else{
+          lineColor = routeLineProperties["regular"].lineColor;
         }
 
         // if the name includes a "$" then it's supposed to the easy route option and should be colored accordingly
@@ -130,16 +136,15 @@ function createGeoJsonLayerGroupForRide(geoJson, rideMetadata){
           lineColor = routeLineProperties.hard.lineColor;
         }
 
-        return { fillOpacity: 0.0, weight: 4, opacity: 1, color: lineColor};
+        style = { fillOpacity: 0.0, weight: 4, opacity: 1, color: lineColor};
         break;
-      // case 'OtherTypeHere?':
-      //   console.log("style the point");
-      //   return {}; // default behavior to do nothing for Point features
-      //   break;
+      default:
+        style = {};
+        break;
     }
     
     // default behavior
-    return {};
+    return style;
   }
 
 
@@ -151,8 +156,7 @@ function createGeoJsonLayerGroupForRide(geoJson, rideMetadata){
   // by using the following code: "return L.marker(latlng);"
   function pointToLayerFunction(geoJsonPoint, latlng) {
 
-    // console.log("pointToLayer");
-
+    // grab reference to the point name
     let pointName = geoJsonPoint.properties.name;
 
     // if the pointName is not "DETAILS" then use it for the markerType
@@ -165,6 +169,7 @@ function createGeoJsonLayerGroupForRide(geoJson, rideMetadata){
     // the markerType will be used to find the corresponding Icon in the mapIcons global settings object
     let icon = createMarkerIcon(markerType);
     
+    // return a marker created with the icon
     return L.marker(latlng, {icon: icon});
 
   }
@@ -194,23 +199,15 @@ function createGeoJsonLayerGroupForRide(geoJson, rideMetadata){
       case 'Point':
 
         if(properties.name === "DETAILS"){
-          layer.bindPopup(createPopupHTMLDetailsPoint(properties), bindPopupProperties);
+          // layer.bindPopup(createPopupHTMLDetailsPoint(properties), bindPopupProperties);
         }
         else{
-          layer.bindPopup(createPopupHTMLBasicPoints(feature), bindPopupProperties);
+          layer.bindPopup(createStartFinishPopupHTML(feature), bindPopupProperties);
         }
         
         break;
     }
 
-    // if we want to set the elevation to appear only when we click
-    // certain parts of the feature group, we can add the below code
-    // to any of the above "cases"
-    // layer.on('click dblclick', function(e) {
-    //   let 
-    //   showElevationForRideLayerID(e, e.target.feature.properties.ridezID);
-    //   // console.log(e);
-    // });
   }
 
 
@@ -250,50 +247,147 @@ function createGeoJsonLayerGroupForRide(geoJson, rideMetadata){
 
   }
 
-  // ####### CREATE THE HTML FOR DETAILS POINT POPUP BINDING #####################################
-  // creates the HTML code necessary for the "DETAILS" Popup
-  // IN THE FUTURE, WE MAY WANT TO GENERATE ALL THE 'detailsPointDesctiption' HTML
-  // FROM THE PROPERTIES WE STORE IN THE DETAILS PIN
-  function createPopupHTMLDetailsPoint(properties){
+  // // ####### CREATE THE HTML FOR DETAILS POINT POPUP BINDING #####################################
+  // // creates the HTML code necessary for the "DETAILS" Popup
+  // // IN THE FUTURE, WE MAY WANT TO GENERATE ALL THE 'detailsPointDesctiption' HTML
+  // // FROM THE PROPERTIES WE STORE IN THE DETAILS PIN
+  // function createPopupHTMLDetailsPoint(properties){
 
-    let rideName = validate(rideMetadata.rideName);
+  //   let rideName = validate(rideMetadata.rideName);
 
-    let stravaURL = validate(rideMetadata.stravaURL);
-    let stravaHTML = (stravaURL !== "" ? 
-                      `<h3>
-                        <a href="${stravaURL}" target="_blank">
-                          Click here for Strava Recording and Map
-                        </a>
-                      </h3>` : 'no strava URL<br>');
+  //   let stravaURL = validate(rideMetadata.stravaURL);
+  //   let stravaHTML = (stravaURL !== "" ? 
+  //                     `<h3>
+  //                       <a href="${stravaURL}" target="_blank">
+  //                         Click here for Strava Recording and Map
+  //                       </a>
+  //                     </h3>` : 'no strava URL<br>');
 
-    let googleMapURL = validate(rideMetadata.googleMapURL);
-    let googleMapHTML = (googleMapURL !== "" ? 
-                        `<h3>
-                          <a href="${googleMapURL}" target="_blank">
-                            Click here for detailed Google Map
-                          </a>
-                        </h3>` : 'no googlemap URL');
+  //   let googleMapURL = validate(rideMetadata.googleMapURL);
+  //   let googleMapHTML = (googleMapURL !== "" ? 
+  //                       `<h3>
+  //                         <a href="${googleMapURL}" target="_blank">
+  //                           Click here for detailed Google Map
+  //                         </a>
+  //                       </h3>` : 'no googlemap URL');
 
-    // get the description from the details point properties and create one if it's not defined   
-    let rideStats = validate(rideMetadata.rideStats);
-    let rideStatsHTML = (rideStats !== "" ? 
-                          getRideStatsHTML(rideStats) : "no ride stats found");
-
-
-    // get the description from the details point properties and create one if it's not defined   
-    let detailsPointDescription = validate(properties.description);
-    let detailsPointDescriptionHTML = (detailsPointDescription !== "" ? 
-                                      detailsPointDescription + "<br>THIS IS THE OLD METHOD" : "no description found");
-
-    let finalStatsHTML = (rideStatsHTML !== "no ride stats found") ? rideStatsHTML : detailsPointDescriptionHTML;
+  //   // get the description from the details point properties and create one if it's not defined   
+  //   let rideStats = validate(rideMetadata.rideStats);
+  //   let rideStatsHTML = (rideStats !== "" ? 
+  //                         getRideStatsHTML(rideStats) : "no ride stats found");
 
 
-    return  `<h2>${rideName}</h2>
-            ${finalStatsHTML}
-            <br><br>
-            ${stravaHTML}
-            ${googleMapHTML}`;
+  //   // get the description from the details point properties and create one if it's not defined   
+  //   let detailsPointDescription = validate(properties.description);
+  //   let detailsPointDescriptionHTML = (detailsPointDescription !== "" ? 
+  //                                     detailsPointDescription + "<br>THIS IS THE OLD METHOD" : "no description found");
+
+  //   let finalStatsHTML = (rideStatsHTML !== "no ride stats found") ? rideStatsHTML : detailsPointDescriptionHTML;
+
+
+  //   return  `<h2>${rideName}</h2>
+  //           ${finalStatsHTML}
+  //           <br><br>
+  //           ${stravaHTML}
+  //           ${googleMapHTML}`;
+  // }
+
+
+
+
+
+  // // *********************************************************************************************************************
+  // // THIS IS THE FUNCTION WHERE WE CREATE THE RIDESTATS HTML FOR THE RIDESTATS IN THE RIDE'S METADATA OBJECT
+  // // the description is made up of calculations from the data in the route LineString
+  // //      Time: Sunday, June 21, 2020 9:20 AM PDT<br>
+  // //      Distance: 26.38 miles<br>
+  // //      Duration: 3 hours, 11 minutes, and 11 seconds<br>
+  // //      Average Speed: 10.8 mph<br>
+  // //      Minimum Elevation: 24 feet<br>
+  // //      Maximum Elevation: 599 feet<br>
+  // //      Total climb: 1526 feet<br>
+  // //      Total descent: 100 feet
+  // // *********************************************************************************************************************
+  // function getRideStatsHTML(rideStats){
+
+  //   return `<b>Start Time:</b>            ${getFormattedDateTimeStringFromISO(rideStats.startTime)}<br>
+  //           <b>Distance:</b>              ${rideStats.distance.mi} miles &nbsp (${rideStats.distance.km} km)<br>
+  //           <b>Moving Time:</b>           ${getFormattedDurationStringFromISO(rideStats.duration.moving)}<br>
+  //           <b>Avg Speed Moving:</b>      ${rideStats.avgSpeed.moving.mph} mph &nbsp (${rideStats.avgSpeed.moving.kph} kph)<br>
+  //           <b>Total Time:</b>            ${getFormattedDurationStringFromISO(rideStats.duration.total)}<br>
+  //           <b>Avg Speed Total:</b>       ${rideStats.avgSpeed.total.mph} mph &nbsp (${rideStats.avgSpeed.total.kph} kph)<br>
+  //           <b>Minimum Elevation:</b>     ${rideStats.elevation.min.ft} feet &nbsp (${rideStats.elevation.min.m} meters)<br>
+  //           <b>Maximum Elevation:</b>     ${rideStats.elevation.max.ft} feet &nbsp (${rideStats.elevation.max.m} meters)<br>
+  //           <b>Total Climb:</b>           ${rideStats.elevation.gain.ft} feet &nbsp (${rideStats.elevation.gain.m} meters)<br>
+  //           <b>Total Descent:</b>         ${rideStats.elevation.descent.ft} feet &nbsp (${rideStats.elevation.descent.m} meters)`;
+  // }
+
+
+  // // takes an ISO formatted duration and converts to a custom formatted string
+  // function getFormattedDurationStringFromISO(isoDuration){
+
+  //   let duration = moment.duration(isoDuration);
+
+  //   // use the minutes and seconds to create a string that is formatted as "[minutes] minutes, and [seconds] seconds"
+  //   // let durationString = duration.minutes() + "m "  + duration.seconds() + "s";
+  //   let durationString = duration.minutes() + " minutes, and "  + duration.seconds() + " seconds";
+
+  //   // if the duration lasted more than 1 hour, pre-pend the string with "[hours] hours, "
+  //   if(duration.hours() > 0){
+  //     // durationString = duration.hours() + "h " + durationString;
+  //     durationString = duration.hours() + " hours, " + durationString;
+  //   }
+
+  //   return durationString;
+  // }
+
+
+  // ####### CREATE THE HTML FOR START/FINISH POINT POPUP BINDING #####################################
+  // creates the HTML code necessary for the "START" and "FINISH" Popups
+  // probably need to re-name this function
+  function createStartFinishPopupHTML(feature){
+
+    const properties = feature.properties;
+    const pointCoords = feature.geometry.coordinates;
+    const pointName = properties.name;    
+    
+    // get the meta from the point properties and create one if it's not defined   
+    let pointMeta = validate(properties.meta);
+
+    if(pointMeta !== "" ) {
+      return getPointMetaHTML(pointName, pointMeta, pointCoords);
+    }
+    else{
+      
+      let rideName = rideMetadata.rideName;
+
+      // get the description from the point properties and create one if it's not defined   
+      let pointDescription = validate(properties.description);
+      let pointDescriptionHTML = (pointDescription !== "" ? 
+      pointDescription + "<br>OLD METHOD" : "no description found");
+      
+      return  `<h3><b>${pointName}</b>: ${rideName}</h3>
+      ${pointDescriptionHTML}`;
+    }
+    
   }
+  
+  
+  
+  
+  function getPointMetaHTML(markerTypeText, pointMeta, pointCoords){
+    
+    return  `<h3><b>${markerTypeText}</b>: ${pointMeta.locationName}</h3>
+            <b>Time:</b> ${getFormattedDateTimeStringFromISO(pointMeta.time)}<br>
+            <b>Elevation:</b> ${_toFeet(pointCoords[elevationIndex], 0)} feet &nbsp (${Math.round(pointCoords[elevationIndex])} meters)`;
+
+    // return `<b>Location Name:</b> ${pointMeta.locationName}
+    //         <br><br>
+    //         <b>Time:</b> ${getFormattedDateTimeStringFromISO(pointMeta.time)}<br>
+    //         <b>Elevation:</b> ${_toFeet(pointCoords[elevationIndex], 0)} feet &nbsp (${Math.round(pointCoords[elevationIndex])} meters)`
+
+  }
+
 
   // formerly "getTextFromValue"
   // tests whether the value exists (either undefined or empty string) 
@@ -315,114 +409,4 @@ function createGeoJsonLayerGroupForRide(geoJson, rideMetadata){
 
   }
 
-
-
-  // *********************************************************************************************************************
-  // THIS IS THE FUNCTION WHERE WE CREATE THE RIDESTATS HTML FOR THE RIDESTATS IN THE RIDE'S METADATA OBJECT
-  // the description is made up of calculations from the data in the route LineString
-  //      Time: Sunday, June 21, 2020 9:20 AM PDT<br>
-  //      Distance: 26.38 miles<br>
-  //      Duration: 3 hours, 11 minutes, and 11 seconds<br>
-  //      Average Speed: 10.8 mph<br>
-  //      Minimum Elevation: 24 feet<br>
-  //      Maximum Elevation: 599 feet<br>
-  //      Total climb: 1526 feet<br>
-  //      Total descent: 100 feet
-  // *********************************************************************************************************************
-  function getRideStatsHTML(rideStats){
-
-    return `<b>Start Time:</b>            ${getFormattedDateTimeStringFromISO(rideStats.startTime)}<br>
-            <b>Distance:</b>              ${rideStats.distance.mi} miles &nbsp (${rideStats.distance.km} km)<br>
-            <b>Moving Time:</b>           ${getFormattedDurationStringFromISO(rideStats.duration.moving)}<br>
-            <b>Avg Speed Moving:</b>      ${rideStats.avgSpeed.moving.mph} mph &nbsp (${rideStats.avgSpeed.moving.kph} kph)<br>
-            <b>Total Time:</b>            ${getFormattedDurationStringFromISO(rideStats.duration.total)}<br>
-            <b>Avg Speed Total:</b>       ${rideStats.avgSpeed.total.mph} mph &nbsp (${rideStats.avgSpeed.total.kph} kph)<br>
-            <b>Minimum Elevation:</b>     ${rideStats.elevation.min.ft} feet &nbsp (${rideStats.elevation.min.m} meters)<br>
-            <b>Maximum Elevation:</b>     ${rideStats.elevation.max.ft} feet &nbsp (${rideStats.elevation.max.m} meters)<br>
-            <b>Total Climb:</b>           ${rideStats.elevation.gain.ft} feet &nbsp (${rideStats.elevation.gain.m} meters)<br>
-            <b>Total Descent:</b>         ${rideStats.elevation.descent.ft} feet &nbsp (${rideStats.elevation.descent.m} meters)`;
-  }
-
-
-  // takes an ISO formatted duration and converts to a custom formatted string
-  function getFormattedDurationStringFromISO(isoDuration){
-
-    let duration = moment.duration(isoDuration);
-
-    // use the minutes and seconds to create a string that is formatted as "[minutes] minutes, and [seconds] seconds"
-    // let durationString = duration.minutes() + "m "  + duration.seconds() + "s";
-    let durationString = duration.minutes() + " minutes, and "  + duration.seconds() + " seconds";
-
-    // if the duration lasted more than 1 hour, pre-pend the string with "[hours] hours, "
-    if(duration.hours() > 0){
-      // durationString = duration.hours() + "h " + durationString;
-      durationString = duration.hours() + " hours, " + durationString;
-    }
-
-    return durationString;
-  }
-
-
-
-
-
-
-  
-
-  // ####### CREATE THE HTML FOR START/FINISH POINT POPUP BINDING #####################################
-  // creates the HTML code necessary for the "START" and "FINISH" Popups
-  // probably need to re-name this function
-  function createPopupHTMLBasicPoints(feature){
-
-    const properties = feature.properties;
-    const pointCoords = feature.geometry.coordinates;
-
-    let markerTypeText = mapIcons[properties.name].displayText;
-
-    // let rideName = ridesData[currentRidezID].metadata.rideName;
-    let rideName = rideMetadata.rideName;
-    
-    // get the meta from the point properties and create one if it's not defined   
-    let pointMeta = validate(properties.meta);
-    let pointMetaHTML = (pointMeta !== "" ? 
-                          getPointMetaHTML(pointMeta, pointCoords) : "no point meta found");
-
-    // console.log(pointMetaHTML);
-
-    // get the description from the point properties and create one if it's not defined   
-    let pointDescription = validate(properties.description);
-    let pointDescriptionHTML = (pointDescription !== "" ? 
-                                pointDescription + "<br>OLD METHOD" : "no description found");
-
-    // let finalPointMetaHTML = (pointMetaHTML !== "no point meta found") ? pointMetaHTML : pointDescriptionHTML;
-
-    if(pointMetaHTML !== "no point meta found") {
-      return  `<h3><b>${markerTypeText}</b>: ${pointMeta.locationName}</h3>
-               <b>Time:</b> ${getFormattedDateTimeStringFromISO(pointMeta.time)}<br>
-               <b>Elevation:</b> ${_toFeet(pointCoords[elevationIndex], 0)} feet &nbsp (${Math.round(pointCoords[elevationIndex])} meters)`;                   
-    }
-    else{
-      return  `<h3><b>${markerTypeText}</b>: ${rideName}</h3>
-                      ${pointDescriptionHTML}`;
-    }
-
-    // return  `<h3><b>${markerTypeText}</b>: ${rideName}</h3>
-    //                 ${finalPointMetaHTML}`;
-
-  }
-
 }
-
-
-function getPointMetaHTML(pointMeta, pointCoords){
-
-  return `<b>Location Name:</b> ${pointMeta.locationName}
-          <br><br>
-          <b>Time:</b> ${getFormattedDateTimeStringFromISO(pointMeta.time)}<br>
-          <b>Elevation:</b> ${_toFeet(pointCoords[elevationIndex], 0)} feet &nbsp (${Math.round(pointCoords[elevationIndex])} meters)`
-
-}
-
-
-
-

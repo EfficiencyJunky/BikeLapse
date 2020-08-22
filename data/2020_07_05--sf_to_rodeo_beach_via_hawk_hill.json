@@ -50404,7 +50404,14 @@
             },
             "properties": {
                 "name": "START",
-                "description": "<b>Location Name:</b> Alta Plaza<br><b>Time:</b> 11:40 AM on Sunday, July 5th, 2020<br><b>Elevation:</b> 249 feet &nbsp (76 meters)"
+                "meta": {
+                    "locationName": "Alta Plaza",
+                    "time": "2020-07-05T18:40:38Z",
+                    "elevation": {
+                        "m": 75.9,
+                        "ft": 249
+                    }
+                }
             }
         },
         {
@@ -50419,7 +50426,14 @@
             },
             "properties": {
                 "name": "FINISH",
-                "description": "<b>Location Name:</b> Velo Rouge Cafe<br><b>Time:</b> 3:34 PM on Sunday, July 5th, 2020<br><b>Elevation:</b> 315 feet &nbsp (96 meters)"
+                "meta": {
+                    "locationName": "Velo Rouge Cafe",
+                    "time": "2020-07-05T22:34:35Z",
+                    "elevation": {
+                        "m": 95.9,
+                        "ft": 314.6
+                    }
+                }
             }
         },
         {
@@ -50433,20 +50447,54 @@
                 ]
             },
             "properties": {
-                "name": "DETAILS",
-                "description": "<b>Start Time:</b> 11:40 AM on Sunday, July 5th, 2020<br><b>Distance:</b> 22.71 miles &nbsp (36.55 km)<br><b>Duration:</b> 3 hours, 53 minutes, and 57 seconds<br><b>Average Speed:</b> 5.82 mph &nbsp (9.37 kph)<br><b>Minimum Elevation:</b> 9 feet &nbsp (3 meters)<br><b>Maximum Elevation:</b> 818 feet &nbsp (249 meters)<br><b>Total Climb:</b> 1349 feet &nbsp (411 meters)<br><b>Total Descent:</b> 1741 feet &nbsp (531 meters)"
+                "name": "DETAILS"
             }
         }
     ],
     "metadata": {
         "rideName": "SF to Rodeo Beach via Hawk Hill",
-        "rideType": "regular",
         "hasBikeLapseSync": false,
         "youTubeVideoID": "",
         "stravaURL": "https://www.strava.com/activities/3719729079",
         "googleMapURL": "https://www.google.com/maps/d/edit?mid=1hD_JODm9txFYwx-jcN_Lk17YExy1cX_c&usp=sharing",
-        "lineColor": "rgba(62, 146, 204, 1)",
-        "lineColorEasy": "green",
-        "lineColorHard": "red"
+        "rideStats": {
+            "startTime": "2020-07-05T18:40:38Z",
+            "distance": {
+                "km": 36.5511,
+                "mi": 22.7118
+            },
+            "duration": {
+                "moving": "PT2H22M34S",
+                "total": "PT3H53M57S"
+            },
+            "avgSpeed": {
+                "moving": {
+                    "mph": 9.558391395838203,
+                    "kph": 15.382740238484917
+                },
+                "total": {
+                    "mph": 5.824783073306262,
+                    "kph": 9.374079931609318
+                }
+            },
+            "elevation": {
+                "min": {
+                    "m": 2.7701680731417766,
+                    "ft": 9.088478221086467
+                },
+                "max": {
+                    "m": 249.2965371205198,
+                    "ft": 817.9020508464861
+                },
+                "gain": {
+                    "m": 427.434018024422,
+                    "ft": 1402.342623695245
+                },
+                "descent": {
+                    "m": 536.0346000435537,
+                    "ft": 1758.6437572068928
+                }
+            }
+        }
     }
 }

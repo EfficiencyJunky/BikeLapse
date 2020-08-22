@@ -55,8 +55,8 @@ function displaySelectedRide(rideMetadata, geoJsonLGroup, allowVideoDisplayDivTo
     // ********  THIS IS HOW WE CAN SWITCH BETWEEN CALCULATING RIDE STATS ******
     // the top option grabs it from the ride's metadata
     // the bottom option does the calculations from the route Linestring
-    // let rideStats = rideMetadata.rideStats;
-    let rideStats = getRideStats(lineStringFeature);
+    let rideStats = rideMetadata.rideStats;
+    // let rideStats = getRideStats(lineStringFeature);
     // abracadabra
 
 
