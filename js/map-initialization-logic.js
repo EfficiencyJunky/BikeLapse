@@ -154,7 +154,11 @@ function initializeMapOverlaysAndUI(hideElevationDisplayDiv = true, hideVideoDis
     // add it to the map
     legend.addTo(map);
     
-
+    // if we have defined our buttons in the legendOnAdd function, attach our "onchange" handler
+    if(document.getElementById("units-radio-buttons")){
+        document.getElementById("units-radio-buttons").onchange = handleUnitsRadioButtonChanges;
+    }
+    
     // *************************************************************
     //  ADD RIDE INFO -- RIDE INFO CONTROL LAYER
     //      then either remove it - if we are loading the index page
@@ -291,29 +295,16 @@ function initializeMapOverlaysAndUI(hideElevationDisplayDiv = true, hideVideoDis
     videoDisplayDiv.hidden = hideVideoDisplayDiv;
 
 
-
+    // *********************************************************************
+    //  CREATE RABBIT MARKER
+    //      if we haven't already defined the Rabbit Marker
+    //      then we should create it and save a reference
+    //      in our rabbitMarker variable so we can add/remove it later
+    // *********************************************************************
     // if the rabbitMarker hasn't been instantiated yet, create it
     if (rabbitMarker === undefined) {
-        let rabbitIconWidth = rabbitMarkerOptions.rabbitIconWidth;
-        let rabbitIconHeight = rabbitMarkerOptions.rabbitIconHeight;
-        let rabbitIconScaleFactor = rabbitMarkerOptions.scaleFactor;
 
-        let iconW = Math.round(rabbitIconWidth*rabbitIconScaleFactor);
-        let iconH = Math.round(rabbitIconHeight*rabbitIconScaleFactor);
-
-        let iconSize = [iconW, iconH];
-        let iconAnchor = [Math.round(iconW/2), iconH];
-
-        var rabbitIcon = L.icon({
-            iconUrl: rabbitMarkerOptions.iconUrl,
-            shadowUrl: rabbitMarkerOptions.shadowUrl,
-        
-            iconSize:     iconSize, // size of the icon
-            shadowSize:   iconSize, // size of the shadow
-            iconAnchor:   iconAnchor, // point of the icon which will correspond to marker's location
-            shadowAnchor: [3, iconH],  // the same for the shadow
-            popupAnchor:  [-3, -iconH] // point from which the popup should open relative to the iconAnchor
-        });
+        const rabbitIcon = L.icon(rabbitIconOptions);
 
         // create a leaflet marker with the icon to an arbitrary location on the map (i.e. [0,0])
         rabbitMarker = new L.Marker([0,0], {icon:rabbitIcon}).addTo(map);
@@ -339,7 +330,65 @@ function initializeMapOverlaysAndUI(hideElevationDisplayDiv = true, hideVideoDis
    ****     IT IS CALLED WHEN WE ADD THE LEGEND CONTROL LAYER TO THE MAP
 ################################################################################################### */
 function legendOnAdd(map) {
-  
+
+    // create a div for the legend
+    let div = L.DomUtil.create('div', 'info legend');
+
+    // add the innerHTML
+    div.innerHTML = `
+    <strong>Ride Types</strong><br>
+    <i class="${mapIcons["DETAILS-BIKELAPSE"].legendClass}"></i>${mapIcons["DETAILS-BIKELAPSE"].displayText}<br>
+    <i class="${mapIcons["DETAILS-REGULAR"].legendClass}"></i>${mapIcons["DETAILS-REGULAR"].displayText}
+    
+    
+    <div style="margin-top:8px;">
+        <strong>Markers</strong><br>
+    </div>
+    <i class="${mapIcons["START"].iconURLorClass}"></i>${mapIcons["START"].displayText}<br>
+    <i class="${mapIcons["FINISH"].iconURLorClass}"></i>${mapIcons["FINISH"].displayText}<br>
+    <div data-text="Rabbit shows on the map where you were in the video" class="rabbit-tooltip"><i class="${mapIcons["RABBIT"].legendClass}"></i>
+    <span >${mapIcons["RABBIT"].displayText}</span></div>
+    `;
+    
+    div.innerHTML = div.innerHTML + 
+                    `<div style="margin-top:8px;">
+                    <strong style="margin-top:10px;">Units</strong><br>
+                    </div>`;
+    
+    div.innerHTML = div.innerHTML + createUnitsToggleHTML();
+
+    return div;
+    
+}
+
+
+function createUnitsToggleHTML(){
+
+    let metricActive = (displayUnits === "metric") ? true : false;
+
+    const unitsToggleHTML = `
+    <div id="units-radio-buttons" class="btn-group btn-group-toggle" data-toggle="buttons">
+        <label class="btn btn-secondary btn-sm ${(metricActive ? "active" : "")}">
+            <input type="radio" name="units" id="units-metric" value="metric" autocomplete="off" ${(metricActive ? "checked" : "")}>Metric
+        </label>
+        <label class="btn btn-secondary btn-sm ${(!metricActive ? "active" : "")}">
+            <input type="radio" name="units" id="units-imperial" value="imperial" autocomplete="off" ${(!metricActive ? "checked" : "")}>Imperial
+        </label>
+    </div>
+    `;
+
+    return unitsToggleHTML;
+
+}
+
+
+
+
+
+
+
+function legendOnAdd_old(map) {
+
     // create a div for the legend
     let div = L.DomUtil.create('div', 'info legend');
 
@@ -393,6 +442,7 @@ function legendOnAdd(map) {
 
     return div;
 }
+
 
 
 

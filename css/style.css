@@ -37,6 +37,15 @@
   /* background-position: bottom;  */
 }
 
+.rabbit-icon {
+  /* background-image: url('https://maps.gstatic.com/mapfiles/ms2/micons/green.png'); */
+  background-image: url('../img/rabbit-marker.png');
+  background-size: 20px;
+  background-repeat: no-repeat;
+  color: rgb(236, 85, 85);
+  background-position: bottom;
+
+}
 
 /* create the line used to represent a "route" in the legend */
 .legend-route-icon { 
@@ -53,6 +62,82 @@
 
 
 
+/* 
+TOOLTIP FOR RABBIT IN LEGEND
+Thanks to this tutorial: https://blog.logrocket.com/creating-beautiful-tooltips-with-only-css/
+*/
+.rabbit-tooltip {
+  position:relative; /* making the .tooltip span a container for the tooltip text */
+  border-bottom:1px dashed #000; /* little indicater to indicate it's hoverable */
+}
+
+.rabbit-tooltip:before {
+  content: attr(data-text); /* here's the magic */
+  position:absolute;
+  
+  /* vertically center */
+  top:50%;
+  transform:translateY(-50%);
+  
+  /* move to left */
+  right:100%;
+  margin-right:15px;
+
+  /* basic styles */
+  width:300px;
+  padding:10px;
+  border-radius:10px;
+  background:#000;
+  color: #fff;
+  text-align:center;
+
+  display:none; /* hide by default */
+}
+
+/* if we want to add a tooltip that goes to the right */
+/* .rabbit-tooltip.right:before { */
+  /* reset defaults */
+  /* right:initial; */
+  /* margin:initial; */
+
+  /* move to right */
+  /* left:100%; */
+   /* and add a small left margin */
+  /* margin-left:15px; */
+/* } */
+
+
+.rabbit-tooltip:after {
+  content: "";
+  position:absolute;
+  
+  /* position tooltip correctly */
+  right:100%;
+  margin-right:-5px;
+ 
+  /* vertically center */
+  top:50%;
+  transform:translateY(-50%);
+ 
+  /* the arrow */
+  border:10px solid #000;
+  /* it will point in whatever direction is not transparent */
+  border-color: transparent transparent transparent black;
+  
+  display:none;
+}
+
+.rabbit-tooltip:hover:before, 
+.rabbit-tooltip:hover:after {
+  display:block;
+}
+
+
+
+
+
+
+
 /* ************************** LEGEND STYLING ************************** */
 /* set up the legend, which we are using both the "info" and "legend" class to style */
 .info {
@@ -65,12 +150,23 @@
 }
 
 
-/* make the elements in the bottom left leaflet corner
-   display on top of all the other corners
+/* set the z-index of our leaflet corners
    by default they are set to 1000
 */
-.leaflet-bottom.leaflet-left {
+.leaflet-top.leaflet-left {
+  z-index: 998 !important;
+  /* background-color: #4CAF50; */
+} 
+.leaflet-top.leaflet-right {
   z-index: 1001 !important;
+  /* background-color: #4CAF50; */
+} 
+.leaflet-bottom.leaflet-left {
+  z-index: 1000j !important;
+  /* background-color: #4CAF50; */
+} 
+.leaflet-bottom.leaflet-right {
+  z-index: 999 !important;
   /* background-color: #4CAF50; */
 } 
 
@@ -104,6 +200,7 @@ we would also need to add this class along with the usual class for each icon */
   margin-top: -1px;
   opacity: 1;
 }
+
 
 
 

@@ -64,12 +64,7 @@ map.getPane('bikeRidesPane').style.zIndex = 399;
 //          the rideInfoDisplayDiv is where we will display our ride info
 ###################################################################### */
 let rideInfoDisplayDiv;
-let displayUnits = "imperial";
-// let displayUnits = "metric";
-
-
-
-
+let displayUnits = "imperial"; // other option is "metric"
 
 
 /* ###################################################################
@@ -118,18 +113,37 @@ let youTubePlayerOptions = {
 // RABBIT MARKER USED TO SHOW THE LOCATION
 // FOR EACH FRAME OF THE VIDEO ON THE MAP
 // *******************************************
+// DECLARE OUR MUTABLE RABBIT VARIABLES TO BE USED TO UPDATE THE RABBIT'S DISPLAY
 let rabbitMarker;
-let rabbitMarkerOptions = {
-  iconUrl: '../img/rabbit-marker.png',
-  shadowUrl: '../img/rabbit-marker-shadow.png',  
-  rabbitIconWidth: 200,
-  rabbitIconHeight: 167,
-  scaleFactor: 0.2
-};
 let rabbitCoordsArray;
 let showRabbitOnRoute = false;
 
 
+// DECLARE OUR CONSTANT RABBIT VARIABLES THAT WE WILL USE TO GENERATE THE MARKER
+// if we want to change our rabbit image we can do that here
+// just change the URLs for the image or image shadow
+// and then set the Width/Height to the original values of the image itself
+// we will scale the image using the rabbitIconScaleFactor
+const rabbitImageURL = '../img/rabbit-marker.png';
+const rabbitShadowImageURL = '../img/rabbit-marker-shadow.png';
+const rabbitImageWidth = 200;
+const rabbitImageHeight = 167;
+const rabbitIconScaleFactor = 0.2;
+
+
+// CALCULATE THE NECESSARY VALUES TO USE AS OUR ICON OPTIONS
+const rabbitIconW = Math.round(rabbitImageWidth * rabbitIconScaleFactor);
+const rabbitIconH = Math.round(rabbitImageHeight * rabbitIconScaleFactor);
+
+const rabbitIconOptions = {
+  iconUrl: rabbitImageURL,
+  shadowUrl: rabbitShadowImageURL,
+  iconSize:     [rabbitIconW, rabbitIconH], // size of the icon
+  shadowSize:   [rabbitIconW, rabbitIconH], // size of the shadow
+  iconAnchor:   [Math.round(rabbitIconW/2), rabbitIconH], // point of the icon which will correspond to marker's location
+  shadowAnchor: [3, rabbitIconH],  // the same for the shadow
+  popupAnchor:  [-3, -rabbitIconH] // point from which the popup should open relative to the iconAnchor
+}
 
 
 
@@ -205,13 +219,16 @@ let defaultIconURL = "https://unpkg.com/leaflet@1.6.0/dist/images/marker-icon.pn
 let bikelapseIconURL = "../img/favicon-32x32.png";
 // let bikelapseIconURL = "https://maps.gstatic.com/mapfiles/ms2/micons/cycling.png";
 
-
 let mapIcons = {
   "START":             {displayText: "START",   iconType: "divIcon",  iconURLorClass: "start-icon", iconSize: [24, 24], iconAnchor: [12, 12], popupAnchor: [1, -8]},
   "FINISH":            {displayText: "FINISH",  iconType: "divIcon",  iconURLorClass: "finish-icon", iconSize: [24, 24], iconAnchor: [12, 12], popupAnchor: [1, -8]},
   "DETAILS-BIKELAPSE": {displayText: "BIKELAPSE", iconType: "regular",  iconURLorClass: bikelapseIconURL, iconSize: [32, 32], iconAnchor: [16, 32], popupAnchor: [0, -32], legendClass:"bikelapse-icon",},
   "DETAILS-REGULAR":   {displayText: "REGULAR", iconType: "regular",  iconURLorClass: defaultIconURL, iconSize: [18, 30], iconAnchor: [18/2, 30], popupAnchor: [0, -30], legendClass:"default-icon"},
+  "RABBIT":            {displayText: "RABBIT", iconType: "regular",  iconURLorClass: rabbitImageURL, iconSize: [rabbitIconW, rabbitIconH], iconAnchor: [Math.round(rabbitIconW/2), rabbitIconH], popupAnchor: [-3, -rabbitIconH], legendClass:"rabbit-icon"}
 }
+
+
+
 
 let mapIconsKeys = Object.keys(mapIcons);
 

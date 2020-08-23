@@ -19,17 +19,87 @@ function pauseYouTubeVideo(){
 }
 
 
+// ################## GETTERS AND SETTERS ##################
+// ################## GETTERS AND SETTERS ##################
+// ################## GETTERS AND SETTERS ##################
+function getCurrentVideoFrameIndex(){
+    //current time of the playhead (a float that is accurate to many milliseconds)
+    const vCurrentTime = player.getCurrentTime();
+    const vDuration = player.getDuration();
+
+    return frameIndex = Math.round(vCurrentTime * framesPerSecond) + getFrameOffsetFromCurrentTime(vCurrentTime, vDuration);
+    
+    // return frameIndex = Math.round(vCurrentTime * framesPerSecond);
+}
+
+function getVideoDurationInFrames(){
+
+    //duration of video (a float that is accurate to many milliseconds)
+    const vDuration = player.getDuration();
+
+    return Math.round(vDuration * framesPerSecond);
+}
+
+function getVideoDuration(){
+    return player.getDuration();
+}
+
+// this is where we set the length of the linestring to check against the video length
+// we pass in the callback because we won't know the video length until the user preses play on the video
+// so the callback is what we use to send the actual frameoffset back to the 
+function setLinestringLengthToCheckAgainstVideoDuration(linestringLengthToCheck, frameOffsetCallback){
+
+    _linestringLengthToCheck = linestringLengthToCheck;
+    _frameOffsetCallback = frameOffsetCallback;
+}
+
+// returns the current frameoffset
+function getFrameOffset(){
+    return _frameOffset;
+}
+
+// sets the current frameoffset
+function setFrameOffset(frameOffset){
+    _frameOffset = frameOffset;
+}
+
+// calculates the number of frames to add based on our frameOffset and the current time within the video
+function getFrameOffsetFromCurrentTime(currentTime, duration){
+
+    // if the frameOffset is 0, just return 0
+    if(_frameOffset === 0){return 0;}
+
+    // otherwise, calculate the number of frames to add
+    let framesToAdd = Math.round(_frameOffset / duration * currentTime);
+    
+    // make sure it's not NaN, or Infinite (in case of divide by Zero)
+    if(!isFinite(framesToAdd)){
+      framesToAdd = 0;
+    }
+
+    // console.log("add", framesToAdd, "frames");
+
+    // return the number of frames to add
+    return framesToAdd;
+
+}
+
+
+
 // ################## "PRIVATE" VARIABLES ##################
 // ################## "PRIVATE" VARIABLES ##################
 // ################## "PRIVATE" VARIABLES ##################
 let player;
 let framesPerSecond = 15;
-let frameOffset = 0;
+let _frameOffset = 0;
 let rabbitAndSliderSyncInterval = 250; // time in milliseconds between updating the rabbit
 let rabbitAndSliderSyncTimerID;
 const playbackRatesArray = [0.25, 0.5, 0.75, 1.0, 1.5, 2.0];
 let playbackRateIndex = 3;
 const defaultPlaybackRateIndex = playbackRateIndex;
+
+let _linestringLengthToCheck;
+let _frameOffsetCallback;
 
 let consoleLogsOn = false;
 
@@ -136,6 +206,9 @@ function onPlayerStateChange(event) {
         // notice we don't have a "break;" for the "PLAYING" state below because we want to update the button in both the ended and paused states. Leaving out the break means the code in both cases will execute if the state is "PLAYING"
         case YT.PlayerState.PLAYING:
             startRabbitAndSliderSyncronizer();
+            if(_linestringLengthToCheck){
+                checkIfVideoDurationAndLineStringLengthMatch();
+            }
         case YT.PlayerState.BUFFERING:
             playPauseButton.className = pauseButtonClass;
             break;
@@ -143,7 +216,7 @@ function onPlayerStateChange(event) {
         // (ended) -- what happens when the video finishes playing on its own
         case YT.PlayerState.ENDED:
             updateUIElementsFromVideoTimeStamp();    
-            //(consoleLogsOn === true) ? printRabbitInfo() : undefined; // can eventually remove this            
+            // printRabbitInfo();  // can eventually remove this
         // (unstarted) -- what happens when the video is initially loaded and ready, or is "stopped" by the player.stopVideo(); command
         case YT.PlayerState.UNSTARTED:            
             stopRabbitAndSliderSyncronizer();
@@ -156,7 +229,7 @@ function onPlayerStateChange(event) {
             playPauseButton.className = playButtonClass;
             // stopRabbitAndSliderSyncronizer();
             updateUIElementsFromVideoTimeStamp();
-
+            
             playbackRateIndex = defaultPlaybackRateIndex;
             player.setPlaybackRate(playbackRatesArray[playbackRateIndex]);
             break;
@@ -218,6 +291,7 @@ function startRabbitAndSliderSyncronizer() {
 }
 
 
+
 // this is how we move the rabbit around the map
 // we get the frame index of the video, 
 // and use that as the index into the coordsArray
@@ -225,15 +299,18 @@ function startRabbitAndSliderSyncronizer() {
 function updateUIElementsFromVideoTimeStamp(){
 
     //current time of the playhead (a float that is accurate to many milliseconds)
-    let vCurrentTime = player.getCurrentTime();
+    const vCurrentTime = player.getCurrentTime();
+    const vDuration = player.getDuration();
     
     // we only want to update the rabbit and ride stats if "showRabbitOnRoute" is true
     if(showRabbitOnRoute){
         
+
         // multiply that time by 15 frames per second (the framerate of BikeLapse videos)
         // rounding it first is smart tho. And for future we can add a frameOffset
         // to get our frame Index and then send that to the "syncRabbitMarkerToVideo" function
-        let frameIndex = Math.round(vCurrentTime * framesPerSecond) + frameOffset;
+        let frameIndex = Math.round(vCurrentTime * framesPerSecond) + getFrameOffsetFromCurrentTime(vCurrentTime, vDuration);
+
         syncRabbitMarkerToVideo("frameIndex", frameIndex);
         // setRabbitLatLonFromFrameIndex();
 
@@ -248,9 +325,7 @@ function updateUIElementsFromVideoTimeStamp(){
     }
 
 
-    if(sliderAvailable){
-        let vDuration = player.getDuration();
-
+    if(sliderAvailable){        
         // duration only is reported once the video starts playing
         // if the video has just been cued, the duration will return 0
         // we need to avoid divide by 0 so we add some extra safeguards here
@@ -261,38 +336,70 @@ function updateUIElementsFromVideoTimeStamp(){
 
 
 
+function checkIfVideoDurationAndLineStringLengthMatch(){
+
+    const videoFrameCount = getVideoDurationInFrames();
+    const highRange = _linestringLengthToCheck + 10;
+    const lowRange = _linestringLengthToCheck - 10;
+
+    if(videoFrameCount <= lowRange || videoFrameCount >= highRange){
+        alert(  `VIDEO DURATION AND LENGTH OF LINESTRING DO NOT MATCH\n` +
+                `${videoFrameCount} -- Video length in frames\n` +
+                `${_linestringLengthToCheck} -- Linestring coordinates array length\n` +
+                `In order for bikelapse to work, the two need to be nearly identical\n` +
+                `Make sure you've selected the right video for the GPX file imported\n` +
+                `Or select the "No" radio button to stop this popup from happening\n`
+             );
+    }
+    else{
+        console.log("video frame count", videoFrameCount);
+        console.log("linestring length", _linestringLengthToCheck);
+    }
+
+    _frameOffset = _linestringLengthToCheck - videoFrameCount;
+
+    _frameOffsetCallback(_frameOffset);
+
+}
+
+
+
+
+
+
+
 // $$$$$$$ REMOVE THIS IN FINAL VERSION $$$$$$$$$
 // prints a bunch of info for the rabbit
-function printRabbitInfo(){
+// function printRabbitInfo(){
 
-    if(showRabbitOnRoute){
-        let vDuration = player.getDuration();
-        let vCurrentTime = player.getCurrentTime();    
-        let currentFrameNum = Math.round(vCurrentTime * framesPerSecond) + frameOffset;
-        // let currentFrame = Math.round(vCurrentTime * framesPerSecond);
+//     if(showRabbitOnRoute){
+//         const vDuration = player.getDuration();
+//         const vCurrentTime = player.getCurrentTime();    
+//         const currentFrameNum = Math.round(vCurrentTime * framesPerSecond) + getFrameOffsetFromCurrentTime(vCurrentTime, vDuration);
+//         // let currentFrame = Math.round(vCurrentTime * framesPerSecond);
         
-        let percentWatched = (vDuration !== 0) ? vCurrentTime/vDuration : 0.0;
-        let calculatedCurrentFrame = Math.round(percentWatched * rabbitCoordsArray.length);
+//         let percentWatched = (vDuration !== 0) ? vCurrentTime/vDuration : 0.0;
+//         let calculatedCurrentFrame = Math.round(percentWatched * rabbitCoordsArray.length);
 
-        syncRabbitMarkerToVideo("frameIndex", currentFrameNum);
-        // syncRabbitMarkerToVideo("percentWatched", percentWatched);
+//         syncRabbitMarkerToVideo("frameIndex", currentFrameNum);
+//         // syncRabbitMarkerToVideo("percentWatched", percentWatched);
 
-        console.log("######### STATS 1 ###########");
-        console.log("video duration:", vDuration);
-        console.log("current time:", vCurrentTime);
-        console.log("% watched:", (percentWatched * 100).toFixed(2) + "%");
+//         console.log("######### STATS 1 ###########");
+//         console.log("video duration:", vDuration);
+//         console.log("current time:", vCurrentTime);
+//         console.log("% watched:", (percentWatched * 100).toFixed(2) + "%");
         
         
-        console.log("######### STATS 2 ###########");
-        console.log("current frame index (fps):", currentFrameNum);
-        console.log("coords length:", rabbitCoordsArray.length);
-        console.log("calculated frame index (% watched * coordslength):", calculatedCurrentFrame);
+//         console.log("######### STATS 2 ###########");
+//         console.log("current frame index (fps):", currentFrameNum);
+//         console.log("coords length:", rabbitCoordsArray.length);
+//         console.log("calculated frame index (% watched * coordslength):", calculatedCurrentFrame);
         
-        console.log("difference ((% watched * coords length) - (frame index * 15fps)):", calculatedCurrentFrame - currentFrameNum);
+//         console.log("difference ((% watched * coords length) - (frame index * 15fps)):", calculatedCurrentFrame - currentFrameNum);
 
-        console.log(getRabbitCoords());
-    }
-}
+//         console.log(getRabbitCoords());
+//     }
+// }
 
 
 

@@ -8,11 +8,9 @@
 let initialRidesToDisplay = [1, 3, 7, 8];
 
 // this is the value for our static width of the Elevation Control's display container
+// when we show/hide the elevationControl itself, we don't want the width
+// of the container it's in to change so that's why we have to set it to be
 const elevationDisplayDivWidth = `${550 * windowScaleFactor}px`;
-
-// this will be used to remember which ride is currently highlighted
-// (meaning it was the last one to be clicked)
-let highlightedRideID = "";
 
 
 // ******************************************************************* 
@@ -164,25 +162,25 @@ function geoJsonLayerGroupClicked(event){
   let geoJsonLGroup = event.target;
   
   // we can use L.Util.stamp() to get its Leaflet Internal ID
-  let clickedRideID = L.Util.stamp(geoJsonLGroup);
+  let clickedLayerID = L.Util.stamp(geoJsonLGroup);
 
-  if(highlightedRideID !== clickedRideID){
+  if(getSelectedLayerID() !== clickedLayerID){
     
     let clickedRideMetadata = geoJsonLGroup.getMetadata();
 
-    // displaySelectedRide(clickedRideID, geoJsonLGroup);
+    // displaySelectedRide(clickedLayerID, geoJsonLGroup);
     displaySelectedRide(clickedRideMetadata, geoJsonLGroup);
 
-    // if(ridesData[clickedRideID].metadata.hasBikeLapseSync){
+    // if(ridesData[clickedLayerID].metadata.hasBikeLapseSync){
     if(clickedRideMetadata.hasBikeLapseSync){  
       reCenterMap(geoJsonLGroup);
     }
     
-    // lastly, set our highlightedRideID to the clickedRideID
-    highlightedRideID = clickedRideID;
+    // lastly, set our selectedLayerID to the clickedLayerID
+    // setSelectedLayerID(clickedLayerID);
   }
   else{
-    console.log('clicked on ride with same "highlightedRideID" as before: ', highlightedRideID); 
+    console.log('clicked on ride with same "selectedLayerID" as before: ', getSelectedLayerID()); 
   }
 
 }
@@ -197,10 +195,10 @@ function geoJsonLayerGroupClicked(event){
 function geoJsonLayerGroupRemoved(event){
   // event.target gives us the entire GeoJSON LayerGroup
   // we can use L.Util.stamp() to get its Leaflet Internal ID
-  let removedRideID = L.Util.stamp(event.target);
-  // let removedRideID = event.target.getLayerId();
+  let removedLayerID = L.Util.stamp(event.target);
+  // let removedLayerID = event.target.getLayerId();
 
-  if(removedRideID === highlightedRideID) {
+  if(removedLayerID === getSelectedLayerID()) {
 
     // hide the rideInfoDisplayDiv
     rideInfoDisplayDiv.hidden = true;
@@ -222,7 +220,7 @@ function geoJsonLayerGroupRemoved(event){
       videoDisplayDiv.hidden = true;
     }
 
-    // reset the highlightedRideID
-    highlightedRideID = "";
+    // reset the selectedLayerID
+    clearSelectedLayerID();
   }
 }

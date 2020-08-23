@@ -409,26 +409,26 @@
               <div class="row mt-3 mr-1">
                 <div class="col-6 col-sm-3">
                   <div id="duration-moving-tot" class="stat-tot">
-                    <div class="stat-subtext">Moving Time:</div> 
+                    <div class="stat-subtext">Ride Time:</div> 
                     <div class="stat-tot-text">00h 00m</div>
                   </div>
                 </div>
                 <div class="col-6 col-sm-3">
                   <div id="distance-tot" class="stat-tot">
-                    <div class="stat-subtext">Total Distance:</div> 
-                    <div class="stat-tot-text">00.00 mi</div>                    
+                    <div class="stat-subtext">Ride Distance:</div> 
+                    <div class="stat-tot-text">00.00 units</div>                    
                   </div>
                 </div>      
                 <div class="col-6 mt-3 col-sm-3 mt-sm-0">
                   <div id="elevation-tot" class="stat-tot">
                     <div class="stat-subtext">Elev Gain:</div> 
-                    <div class="stat-tot-text">0000 ft</div>
+                    <div class="stat-tot-text">0000 units</div>
                   </div>
                 </div>
                 <div class="col-6 mt-3 col-sm-3 mt-sm-0">
                   <div id="speed-moving-avg" class="stat-tot">
                     <div class="stat-subtext">Avg Speed:</div> 
-                    <div class="stat-tot-text">00.00 mph</div>
+                    <div class="stat-tot-text">00.00 units</div>
                   </div>
                 </div>      
               </div>
@@ -469,26 +469,26 @@
               <div id="ride-stats-cumulative" class="row mt-2 mb-1 mr-1 collapse show">
                 <div class="col-6 col-sm-3">
                   <div id="duration-moving-cum" class="stat-cum">
-                    <div class="stat-subtext">Moving Time:</div> 
+                    <div class="stat-subtext">Elapsed Time:</div> 
                     <div class="stat-cum-text">0h 0m</div>
                   </div>
                 </div>
                 <div class="col-6 col-sm-3">        
                   <div id="distance-cum" class="stat-cum">
                     <div class="stat-subtext">Distance:</div> 
-                    <div class="stat-cum-text">0.00 mi</div>
+                    <div class="stat-cum-text">0.00 units</div>
                   </div>
                 </div>
                 <div class="col-6 col-sm-3">
                   <div id="elevation-cum" class="stat-cum">
                     <div class="stat-subtext">Elevation:</div> 
-                    <div class="stat-cum-text">0 ft</div>
+                    <div class="stat-cum-text">0 units</div>
                   </div>
                 </div>
                 <div class="col-6 col-sm-3">
                   <div id="speed-moving-now" class="stat-cum">
                     <div class="stat-subtext">Speed:</div> 
-                    <div class="stat-cum-text">0.00 mph</div>
+                    <div class="stat-cum-text">0.00 units</div>
                   </div>
                 </div>
                 <!-- </div>     -->
@@ -569,11 +569,6 @@
   <script type="text/javascript" src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" 
   integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" 
   crossorigin="anonymous"></script>
-
-  <!-- Latest jQuery, Daterangepicker (requires jQuery), Moment (only requires jQuery for stuff we likely don't need) -->
-  <!-- <script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script> -->
-  <!-- <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script> -->
-  <!-- <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script> -->
   
   
   <!-- ########### OTHER PEOPLE'S LIBRARIES WE'RE USING ############ -->
@@ -581,17 +576,18 @@
   <script type="text/javascript" src="js/lib/leaflet.elevation-0.0.4.min.js"></script>
   <!-- <script type="text/javascript" src="js/lib/leaflet.elevation-0.0.4.src.js"></script> -->
   
-  <!-- Specific to this page only -->
+  <!-- Specific to create-ride.html page only -->
   <script type="text/javascript" src='js/lib/togeojson.js'></script>
   
-  <!-- ########### MY LIBRARIES ############ -->
-  <script type="text/javascript" src='js/lib/geojson-tools.js'></script>
 
+  <!-- ########### MY JAVASCRIPT ############ -->
   <!-- API key -->
   <script type="text/javascript" src="js/config/mapbox_api_key.js"></script>
   <!-- <script type="text/javascript" src="js/config/mapbox_api_key_test.js"></script> -->
+  
+  <!-- My own library (sort of) -->
+  <script type="text/javascript" src='js/lib/geojson-tools.js'></script>
 
-  <!-- Our JS -->
   <!-- shared JS functionality -->
   <script type="text/javascript" src="js/global-settings.js"></script>
   <script type="text/javascript" src="js/youtube-logic.js"></script>
@@ -599,7 +595,6 @@
   <script type="text/javascript" src="js/map-initialization-logic.js"></script>
   <script type="text/javascript" src="js/common-display-update-logic.js"></script>
   
-
   <!-- specific JS functionality for the create-ride.html page -->
   <script type="text/javascript" src='js/create-ride-gpx-parsing.js'></script>
   <script type="text/javascript" src="js/create-ride-interaction-logic.js"></script>

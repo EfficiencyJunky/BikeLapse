@@ -1,6 +1,22 @@
 // #############################################################################
-// *********  GLOBAL VARIABLES ***********************
+// *********  "Private" CLASS VARIABLES  ***********************
 // #############################################################################
+// this will be used to remember which ride is currently selected
+// (meaning it was the last one to be clicked)
+let _selectedLayerID = "";
+
+// this is the metadata the currently selected ride
+let _selectedMetadata;
+
+// this is the LineString for the currently selected ride
+let _selectedLineStringFeature;
+
+// this is the cumulative ride stats calculated from the lineString of the currently selected ride
+let _cumulativeRideStats;
+
+// ******************************************************************
+//  RIDE STATS UI REFERENCES
+// ******************************************************************
 if(document.getElementById('ride-info-parent')){
   var rideNameDiv      = document.getElementById('ride-name');
   var startTimeDiv     = document.getElementById('ride-start-datetime');
@@ -28,22 +44,85 @@ if(document.getElementById('ride-stats-cumulative')){
 }
 
 
-let cumulativeRideStats;
+
+
+// ******************************************************************
+//  UNITS RADIO BUTTON "onchange" HANDLER
+// ******************************************************************
+// onchange handler for the units toggle radio buttons in our legend
+// updates all the UI elements that show units
+function handleUnitsRadioButtonChanges(event){
+  
+  // grab the value of the button that was clicked and assign to our global displayUnits
+  displayUnits = event.target.value;
+
+  // we always want to update the elevationControl to display proper units
+  // here we set the units using our extension method created in leafelet-functions.js
+  elevationControl.setUnits(displayUnits);
+
+  // check to see if a ride is selected or not
+  // if no ride is selected there's no point in doing any of this
+  if(_selectedLayerID !== ""){
+    
+    // reset the elevation control by calling this function
+    showElevationForLineStringFeature(_selectedLineStringFeature);
+
+    // now update the ride stats in the Ride Info "total" display
+    let rideStats = _selectedMetadata.rideStats;
+      
+    if(displayUnits === "metric"){
+      distanceTotalDiv.textContent  = `${rideStats.distance.km.toFixed(2)} km`;
+      elevationTotalDiv.textContent = `${rideStats.elevation.gain.m.toFixed(0)} m`;
+      speedMovingAvgDiv.textContent = `${rideStats.avgSpeed.moving.kph.toFixed(2)} kph`;
+    }
+    else{
+      distanceTotalDiv.textContent  = `${rideStats.distance.mi.toFixed(2)} mi`;
+      elevationTotalDiv.textContent = `${rideStats.elevation.gain.ft.toFixed(0)} ft`;
+      speedMovingAvgDiv.textContent = `${rideStats.avgSpeed.moving.mph.toFixed(2)} mph`;
+    }
+
+    // if this ride hasBikeLapseSync then we should also update the cumulative section
+    if(_selectedMetadata.hasBikeLapseSync){
+      let frameIndex = getCurrentVideoFrameIndex();
+      syncCumulativeRideStatsToVideo("frameIndex", frameIndex);
+    }
+  }
+  else{
+    // just update the elevationcontro
+    
+  }
+
+
+}
+
+
+
 
 
 
 // ################################################################################
-// *********  DISPLAY SELECTED RIDE AND ASSOCIATED DATA *************************
+// *********  MAIN DISPLAY UPDATE FUNCTIONS *************************
 // ################################################################################
+
+// ******************************************************************
+//  DISPLAY SELECTED RIDE AND ASSOCIATED DATA
+// ******************************************************************
 function displaySelectedRide(rideMetadata, geoJsonLGroup, allowVideoDisplayDivToBeHidden = true, ){
+
+  // ****************************************************************************
+  //  GET REFERENCE TO THE SELECTED LAYER ID AND METADATA
+  //      this gets used for updating ride details in the UI
+  // ****************************************************************************
+  _selectedLayerID = L.Util.stamp(geoJsonLGroup);
+  _selectedMetadata = rideMetadata;
+
 
   // ****************************************************************************
   //  GET REFERENCE TO THE ROUTE LINESTRING
   // ****************************************************************************
-  
   // get the feature who's name is ROUTE and who's type is "LineString"
   // so we can use its coordinatesArray to create the elevationHighlightGeoJSON we'll use to create the elevationFollowMarkerLayer
-  let lineStringFeature = getFeatureFromGeoJsonLayerGroup(geoJsonLGroup , "ROUTE", "LineString");
+  _selectedLineStringFeature = getFeatureFromGeoJsonLayerGroup(geoJsonLGroup , "ROUTE", "LineString");
 
 
 
@@ -56,7 +135,7 @@ function displaySelectedRide(rideMetadata, geoJsonLGroup, allowVideoDisplayDivTo
     // the top option grabs it from the ride's metadata
     // the bottom option does the calculations from the route Linestring
     let rideStats = rideMetadata.rideStats;
-    // let rideStats = getRideStats(lineStringFeature);
+    // let rideStats = getRideStats(_selectedLineStringFeature);
     // abracadabra
 
 
@@ -69,7 +148,7 @@ function displaySelectedRide(rideMetadata, geoJsonLGroup, allowVideoDisplayDivTo
     }
 
     // update date/time display
-    startTimeDiv.textContent = `${getFormattedDateTimeStringFromISO(lineStringFeature.properties.time)}`;
+    startTimeDiv.textContent = `${getFormattedDateTimeStringFromISO(_selectedLineStringFeature.properties.time)}`;
 
     // update Strava URL display
     stravaURLDiv.hidden = (rideMetadata.stravaURL === "");
@@ -107,7 +186,7 @@ function displaySelectedRide(rideMetadata, geoJsonLGroup, allowVideoDisplayDivTo
   // ****************************************************************************
   //  UPDATE THE ELEVATION DISPLAY
   // ****************************************************************************
-  showElevationForLineStringFeature(lineStringFeature);
+  showElevationForLineStringFeature(_selectedLineStringFeature);
   
   // make sure the div that contains the elevationControl display is not hidden
   elevationDisplayDiv.hidden = false;
@@ -131,11 +210,11 @@ function displaySelectedRide(rideMetadata, geoJsonLGroup, allowVideoDisplayDivTo
   // and set the rabbit marker to the start of the ride
   // also, show the rideStats section under the video
   if(hasValidVideoID && showRabbitOnRoute){ 
-    rabbitCoordsArray = lineStringFeature.geometry.coordinates;
+    rabbitCoordsArray = _selectedLineStringFeature.geometry.coordinates;
     if(rideStatsCumRow_JQ){
       rideStatsCumRow_JQ.collapse('show');
 
-      cumulativeRideStats = getCumulativeStatsArrayFromLineString(lineStringFeature, "moving");
+      _cumulativeRideStats = getCumulativeStatsArrayFromLineString(_selectedLineStringFeature, "moving");
     }
   }    
   else {
@@ -144,7 +223,7 @@ function displaySelectedRide(rideMetadata, geoJsonLGroup, allowVideoDisplayDivTo
     rabbitMarker.remove();
     if(rideStatsCumRow_JQ){
       rideStatsCumRow_JQ.collapse('hide');
-      cumulativeRideStats = undefined;
+      _cumulativeRideStats = undefined;
     }    
   }
 
@@ -270,7 +349,8 @@ function getRabbitCoords(){
 // #############################################################################
 // *********  RIDE STATS DISPLAY UPDATE FUNCTION ************************
 // #############################################################################
-
+// valType will tell us if we're sending in the "percentageWatched" or "frameIndex"
+// the value will be either the percentage float or the frameIndex int
 function syncCumulativeRideStatsToVideo(valType, value){
 
   let cumulativeStatsAtIndex;
@@ -280,10 +360,10 @@ function syncCumulativeRideStatsToVideo(valType, value){
     // notice we don't use a break for "percentWatched" 
     // because we also want the logic from "frameIndex" to be executed
     case "percentWatched":
-        value = Math.round(value * cumulativeRideStats.length);
+        value = Math.round(value * _cumulativeRideStats.length);
     case "frameIndex":
-        let frameIndex = (value < cumulativeRideStats.length) ? value : cumulativeRideStats.length - 1;
-        cumulativeStatsAtIndex = cumulativeRideStats[frameIndex];
+        let frameIndex = (value < _cumulativeRideStats.length) ? value : _cumulativeRideStats.length - 1;
+        cumulativeStatsAtIndex = _cumulativeRideStats[frameIndex];
         break;
   }
 
@@ -298,9 +378,9 @@ function syncCumulativeRideStatsToVideo(valType, value){
       speedMovingNowDiv.textContent = `${cumulativeStatsAtIndex.speed.toFixed(2)} kph`;
     }
     else{
-      distanceCumDiv.textContent    = `${_toMiles(cumulativeStatsAtIndex.distance / 1000, 2)} mi`;
+      distanceCumDiv.textContent    = `${_toMiles(cumulativeStatsAtIndex.distance / 1000).toFixed(2)} mi`;
       elevationCumDiv.textContent   = `${_toFeet(cumulativeStatsAtIndex.elevation, 0)} ft`;
-      speedMovingNowDiv.textContent = `${_toMiles(cumulativeStatsAtIndex.speed, 2)} mph`;
+      speedMovingNowDiv.textContent = `${_toMiles(cumulativeStatsAtIndex.speed).toFixed(2)} mph`;
     }
   }
 
@@ -335,6 +415,33 @@ function reCenterMap(geoJsonLGroup){
 
 
 }
+
+// #############################################################################
+// *********  GETTERS AND SETTERS ************************
+//   Eventually I would like to make these files more classlike
+//   this is an early attempt at doing that
+// #############################################################################
+
+function getSelectedLayerID(){
+
+  return _selectedLayerID;
+}
+
+
+function getSelectedLayerID(){
+
+  return _selectedLayerID;
+}
+
+function clearSelectedLayerID(){
+  _selectedLayerID = "";
+}
+
+
+function setSelectedLayerID(newLayer){
+  _selectedLayerID = newLayer;
+}
+
 
 
 // #############################################################################

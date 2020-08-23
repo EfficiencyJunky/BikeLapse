@@ -345,8 +345,6 @@
 
 
   <!-- ########### RIDE INFO CONTAINER - TOTAL RIDE STATS ############ -->
-  <!-- ABRACADABRA ABRACADABRA ABRACADABRA ABRACADABRA ABRACADABRA -->
-  <!-- <div id="ride-info-parent" > -->
   <div id="ride-info-parent" class="p-3" >
 
     <!-- Ride Info TITLE ROW -->
@@ -371,13 +369,13 @@
     <div class="row mt-2 mr-1">
       <div class="col-6 col-sm-3">
         <div id="duration-moving-tot" class="stat-tot">
-          <div class="stat-subtext">Moving Time:</div> 
+          <div class="stat-subtext">Ride Time:</div> 
           <div class="stat-tot-text">00h 00m</div>
         </div>
       </div>      
       <div class="col-6 col-sm-3">
         <div id="distance-tot" class="stat-tot">
-          <div class="stat-subtext">Distance:</div> 
+          <div class="stat-subtext">Ride Distance:</div> 
           <div class="stat-tot-text">00.00 mi</div>                    
         </div>
       </div>
@@ -396,10 +394,6 @@
     </div>
   </div>
 <!-- </div> -->
-
-  <!-- ABRACADABRA ABRACADABRA ABRACADABRA ABRACADABRA ABRACADABRA -->
-
-
 
 
 
@@ -435,7 +429,7 @@
     <div id="ride-stats-cumulative" class="row mt-2 mb-1 mr-1 collapse">
       <div class="col-3">
         <div id="duration-moving-cum" class="stat-cum">
-          <div class="stat-subtext">Moving:</div> 
+          <div class="stat-subtext">Elapsed Time:</div> 
           <div class="stat-cum-text">0h 0m</div>
         </div>
       </div>
@@ -507,35 +501,23 @@
   crossorigin="anonymous"></script>
 
 
-  <!-- Latest jQuery, Daterangepicker (requires jQuery), Moment (only requires jQuery for stuff we likely don't need) -->
-  <!-- <script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script> -->
-  <!-- <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script> -->
-  <!-- <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script> -->
   
-  
-
-
-
-
-
-
-  
-  <!-- ########### OTHER PEOPLE'S MAPING RELATED LIBRARIES WE'RE USING ############ -->
+  <!-- ########### OTHER PEOPLE'S LIBRARIES WE'RE USING ############ -->
   <script type="text/javascript" src="js/lib/moment.min.js"></script>
   <script type="text/javascript" src="js/lib/leaflet.elevation-0.0.4.min.js"></script>
   <!-- <script type="text/javascript" src="js/lib/leaflet.elevation-0.0.4.src.js"></script> -->
 
 
   
-  <!-- ########### MY LIBRARIES ############ -->
-  <script type="text/javascript" src='js/lib/geojson-tools.js'></script>
-
+  <!-- ########### MY JAVASCRIPT ############ -->
   <!-- API key -->
   <script type="text/javascript" src="js/config/mapbox_api_key.js"></script>
   <!-- <script type="text/javascript" src="js/config/mapbox_api_key_test.js"></script> -->
 
+  <!-- My own library (sort of) -->
+  <script type="text/javascript" src='js/lib/geojson-tools.js'></script>
+
   <!-- Our JS -->
-  <!-- shared JS functionality -->
   <script type="text/javascript" src="js/global-settings.js"></script>
   <script type="text/javascript" src="js/youtube-logic.js"></script>
   <script type="text/javascript" src="js/leaflet-functions.js"></script>

@@ -129,12 +129,16 @@ function handleGpxFileSelectionCombineAndConvertToGeoJson(event) {
         //******* Convert GPX/XML to GeoJSON with "toGeoJSON" library ******************
         let tempGeoJson = toGeoJSON.gpx(tempXmlDocDom);
 
+        
+        //******* Get user inputs and use it to create Points and Metadata ******************            
+        // get user inputs from text fields
+        const userInput = getUserInputsFromTextFields();
+
         // rename LineString to "ROUTE"
-        // get user input from text fields
         // add "metadata" object with those user inputs
         // add "START" and "FINISH" points with user inputs
         // add "DETAILS" point
-        geoJsonData = addSupplementalGeoJSONFeatures(tempGeoJson);
+        geoJsonData = addSupplementalGeoJSONFeatures(tempGeoJson, userInput);
         
         //******** Print GPX and GeoJson Contents to Textareas *************************
         // print out the contents of the final "gpx" AND "GeoJSON" files
@@ -173,14 +177,12 @@ function handleGpxFileSelectionCombineAndConvertToGeoJson(event) {
 // #######################################################################################
 // THIS IS THE FUNCTION THAT TAKES THE GEOJSON (THAT WAS CREATED BY CONVERTING THE GPX FILE)
 // AND ADDS INFORMATION TO IT SO THAT IT ADHERES TO THE CORRECT SPECIFICATIONS FOR THE BIKELAPSE WEBSITE
-function addSupplementalGeoJSONFeatures(tempGeoJson){
+function addSupplementalGeoJSONFeatures(tempGeoJson, userInput){
 
     // rename linestring to ROUTE, create an alert if conditions are not met
     // return the LineString Feature
     let routeLineString = renameLineStringToROUTE(tempGeoJson);
 
-    // get all the user input from the text fields
-    let userInput = getUserInputsFromTextFields();
 
     // add metadata from form inputs
     tempGeoJson["metadata"] = userInput.rideInfo;
@@ -269,12 +271,15 @@ function getUserInputsFromTextFields(){
 
     let youtubeVideoID = document.getElementById('youTubeVideoID').value;
 
+    
+
     const rideInfo = {    
         "rideName": document.getElementById('rideName').value,
         "hasBikeLapseSync": (youtubeVideoID !== "") ? hasBikeLapseSync : false,
         "youTubeVideoID": youtubeVideoID,
         "stravaURL": document.getElementById('stravaURL').value,
-        "googleMapURL": document.getElementById('googleMapURL').value
+        "googleMapURL": document.getElementById('googleMapURL').value,
+        "frameOffset": (hasBikeLapseSync) ? getFrameOffset() : 0
     }
 
     const startLocationName = document.getElementById('startLocationName').value;
@@ -285,16 +290,6 @@ function getUserInputsFromTextFields(){
                 "startName": startLocationName,
                 "finishName": finishLocationName
            };
-
-
-    function validateBikeLapseStatus(){
-
-
-
-
-
-    }
-
 
 
 }
@@ -424,10 +419,37 @@ function addRideToMap(){
     // ************************************************************* 
     displaySelectedRide(geoJsonData.metadata, geoJsonLayerGroup, allowHiddenVideoDisplayDiv = false);
 
+
+    // *************************************************************
+    //     IF THIS RIDE HAS BIKELAPSESYNC, 
+    //     TELL YOUTUBE VIDEO TO VERIFY THAT VIDEO SYNCS WITH GEOJSON
+    //        we will store the length of the linestring in the
+    //        "youtube-logic.js" file, which will trigger the 
+    //        youtube video to notify us if the length of the 
+    //        video is vastly different than the length of the linestring
+    // *************************************************************
+    if(geoJsonData.metadata.hasBikeLapseSync){
+        const lineString = getFeatureFromGeoJson(geoJsonData, "ROUTE", "LineString");
+        setLinestringLengthToCheckAgainstVideoDuration(lineString.geometry.coordinates.length, frameOffsetCallback);
+    }
+    else{
+        setLinestringLengthToCheckAgainstVideoDuration(undefined, undefined);
+    }
+
     // *************************************************************
     //     RECENTER THE MAP ON OUR RIDE
     // ************************************************************* 
     reCenterMap(geoJsonLayerGroup);
+}
+
+
+function frameOffsetCallback(numFramesOffsetBy){
+
+    geoJsonData.metadata["frameOffset"] = numFramesOffsetBy;
+    showGeoJSONInTextArea(geoJsonData);
+
+    // console.log("frameOffset (callback)", numFramesOffsetBy);
+
 }
 
 

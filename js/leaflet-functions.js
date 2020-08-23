@@ -26,6 +26,12 @@ L.Layer.include({
 // //    We want to be able to get access to the "_data" member of the Elevation Control
 // //    because it does a lot of calculations for us
 // // *************************************************************************************** 
+L.Control.Elevation.include({
+  setUnits: function (units) {    
+    this.options.imperial = (units === "imperial");
+  }
+});
+
 // L.Control.Elevation.include({
 //   getData: function () {
 //     let data = this._data = this._data || {}; // Initialize the data, if missing.
