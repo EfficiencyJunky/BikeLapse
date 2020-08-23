@@ -54,7 +54,7 @@ function createGeoJsonLayerGroupForRide(geoJson, rideMetadata){
                                             onEachFeature: onEachFeatureFunction,
                                             style: styleFunction,
                                             metadata: rideMetadata
-                                            // style: { fillOpacity: 0.0, weight: 4, opacity: 1, color: geoJsonData.metadata.lineColor}
+                                            // style: { fillOpacity: 0.0, weight: 4, opacity: 1, color: geoJson.metadata.lineColor}
                                           });
 
 

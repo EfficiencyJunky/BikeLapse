@@ -3,6 +3,16 @@
 // ************ GLOBAL VARIABLES and CLASS DECLARATIONS ************
 // ************ GLOBAL VARIABLES and CLASS DECLARATIONS ************
 ################################################################################ */
+// this is the object to hold our GeoJson that the user will download
+let _geoJsonData;
+
+
+
+
+// this will set whether we log the frame offset info to the console
+// since we only want to log it once each time a new video is loaded
+let _printFrameOffsetInfo = true;
+
 // ******************************************************************* 
 // ASYNCRONOUS COUNTER CLASS 
 //    Triggers a callback when all asyncronous tasks have completed
@@ -56,7 +66,6 @@ function handleGpxFileSelectionCombineAndConvertToGeoJson(event) {
     const selectedFiles = event.target.files;
     const numFilesSelected = selectedFiles.length;
 
-    // console.log("num files selected ", numFilesSelected);
 
     // let the user know we've received their request to import the file(s) and it might take a couple seconds to finish loading them
     gpxImportProgressLabel.innerHTML = gpxImportProgressLabel.innerHTML + '<br><b>Importing ' + numFilesSelected + ' files</b><br>' +
@@ -132,24 +141,23 @@ function handleGpxFileSelectionCombineAndConvertToGeoJson(event) {
         
         //******* Get user inputs and use it to create Points and Metadata ******************            
         // get user inputs from text fields
-        const userInput = getUserInputsFromTextFields();
+        const metadataAndPointNames = getMetadataAndPointNamesFromUserInputFields();
+
 
         // rename LineString to "ROUTE"
-        // add "metadata" object with those user inputs
         // add "START" and "FINISH" points with user inputs
         // add "DETAILS" point
-        geoJsonData = addSupplementalGeoJSONFeatures(tempGeoJson, userInput);
-        
+        // add Metadata from User Inputs
+        // add rideStats calculated from linestring
+        _geoJsonData = addGeoJSONPointFeaturesMetadataAndRideStats(tempGeoJson, metadataAndPointNames);
+
+
         //******** Print GPX and GeoJson Contents to Textareas *************************
         // print out the contents of the final "gpx" AND "GeoJSON" files
         // showGPXInTextArea(tempXmlDocDom);
         gpxTextarea.value = new XMLSerializer().serializeToString(tempXmlDocDom);
-        showGeoJSONInTextArea(geoJsonData);
+        showGeoJSONInTextArea(_geoJsonData);
 
-        //******* Load temporary GeoJson object into Globally accessible variable *****************
-        // load the geoJsonData Object with a single ride 
-        // and value is the GeoJSON we just created
-        // geoJsonData = modifiedTempGeoJson;
 
         //******* Let the user know the conversion worked **********************************
         gpxImportProgressLabel.innerHTML = gpxImportProgressLabel.innerHTML + '<br>Adding to map'
@@ -177,20 +185,24 @@ function handleGpxFileSelectionCombineAndConvertToGeoJson(event) {
 // #######################################################################################
 // THIS IS THE FUNCTION THAT TAKES THE GEOJSON (THAT WAS CREATED BY CONVERTING THE GPX FILE)
 // AND ADDS INFORMATION TO IT SO THAT IT ADHERES TO THE CORRECT SPECIFICATIONS FOR THE BIKELAPSE WEBSITE
-function addSupplementalGeoJSONFeatures(tempGeoJson, userInput){
+function addGeoJSONPointFeaturesMetadataAndRideStats(tempGeoJson, metadataAndPointNames){
 
     // rename linestring to ROUTE, create an alert if conditions are not met
     // return the LineString Feature
     let routeLineString = renameLineStringToROUTE(tempGeoJson);
 
+    // grab the metadata created from the user inputs
+    tempGeoJson["metadata"] = metadataAndPointNames.rideMetadata;
 
-    // add metadata from form inputs
-    tempGeoJson["metadata"] = userInput.rideInfo;
+    // add our frameoffset member
+    tempGeoJson.metadata["frameOffset"] = undefined;
+
+    // calculate ridestats    
     tempGeoJson.metadata["rideStats"] = getRideStats(routeLineString);
 
     // create Point Features for START/FINISH/DETAILS from the start/end and middle coordinate of the routeLineString
-    let startPoint = createPointFeature(routeLineString, "START", userInput.startName);
-    let finishPoint = createPointFeature(routeLineString, "FINISH", userInput.finishName);
+    let startPoint = createPointFeature(routeLineString, "START", metadataAndPointNames.startName);
+    let finishPoint = createPointFeature(routeLineString, "FINISH", metadataAndPointNames.finishName);
     let detailsPoint = createPointFeature(routeLineString, "DETAILS");
 
     tempGeoJson.features.push(startPoint);
@@ -202,7 +214,7 @@ function addSupplementalGeoJSONFeatures(tempGeoJson, userInput){
 }
 
 
-// Rename the LineString to "ROUTE" is called from the "addSupplementalGeoJSONFeatures" function above
+// Rename the LineString to "ROUTE" 
 function renameLineStringToROUTE(tempGeoJson) {
 
     // first make sure there's only one feature in the GeoJSON
@@ -246,13 +258,13 @@ function renameLineStringToROUTE(tempGeoJson) {
 //      This function creates the metadata object that we are going to add to the GeoJson
 //      and saves the Start/finish location name in two other variables we will use when creating those points
 // *********************************************************************************************************************
-function getUserInputsFromTextFields(){
+function getMetadataAndPointNamesFromUserInputFields(){
 
     // defining a function and calling it all at once because I'm lazy and dumb
     // this function just grabs the value of the checked radio button
     // since radio button values are of type String, we then do a quick
     // check to see if it's "true" and return a boolean true or false
-    const hasBikeLapseSync = ( function() {
+    const bikeLapseSyncRadioSelection = ( function() {
         // get reference to all radios with name "rideType"
         // NOTE: this returns a NodeList object, not an Array
         const radios = document.getElementsByName('hasBikeLapseSync');
@@ -269,24 +281,28 @@ function getUserInputsFromTextFields(){
         return "none_checked";
     })() === "true" ? true : false;
 
-    let youtubeVideoID = document.getElementById('youTubeVideoID').value;
+    // get the youtube ID
+    const youtubeVideoID = document.getElementById('youTubeVideoID').value;
 
-    
+    // if the youTube ID is set, use the chosen biklapseSync setting otherwise set to false
+    const hasBikeLapseSync = (youtubeVideoID !== "") ? bikeLapseSyncRadioSelection : false;
+ 
 
-    const rideInfo = {    
+    // create our rideInfo metadata with all user input data
+    // we add ride stats when first importing a GPX with addGeoJSONPointFeaturesMetadataAndRideStats()
+    const rideMetadata = {    
         "rideName": document.getElementById('rideName').value,
-        "hasBikeLapseSync": (youtubeVideoID !== "") ? hasBikeLapseSync : false,
+        "hasBikeLapseSync": hasBikeLapseSync,
         "youTubeVideoID": youtubeVideoID,
         "stravaURL": document.getElementById('stravaURL').value,
-        "googleMapURL": document.getElementById('googleMapURL').value,
-        "frameOffset": (hasBikeLapseSync) ? getFrameOffset() : 0
+        "googleMapURL": document.getElementById('googleMapURL').value
     }
 
     const startLocationName = document.getElementById('startLocationName').value;
     const finishLocationName = document.getElementById('finishLocationName').value;
 
     return { 
-                "rideInfo": rideInfo, 
+                "rideMetadata": rideMetadata, 
                 "startName": startLocationName,
                 "finishName": finishLocationName
            };
@@ -377,7 +393,7 @@ function showGeoJSONInTextArea(geoJson){
 
     // if a GeoJson was passed in, use it, otherwise use the globally defined one
     // we don't need to do it this way anymore so it's commented out
-    // let geoJsonToOutput = (geoJson !== undefined) ? geoJson : geoJsonData;
+    // let geoJsonToOutput = (geoJson !== undefined) ? geoJson : _geoJsonData;
     
     // stringify the GeoJson in order to print to the textarea
     geoJsonTextarea.value = JSON.stringify(geoJson, null, 4);
@@ -408,7 +424,7 @@ function addRideToMap(){
     // *****************************************************************
     //   CREATE (OR RE-CREATE) THE GEOJSONLAYERGROUP AND ADD TO THE MAP
     // *****************************************************************
-    geoJsonLayerGroup = createGeoJsonLayerGroupForRide(geoJsonData, geoJsonData.metadata);
+    geoJsonLayerGroup = createGeoJsonLayerGroupForRide(_geoJsonData, _geoJsonData.metadata);
 
     // add it to the map
     geoJsonLayerGroup.addTo(map);
@@ -417,23 +433,24 @@ function addRideToMap(){
     // *************************************************************
     //     DISPLAY ALL OF THE UI AND INFO FOR THE RIDE
     // ************************************************************* 
-    displaySelectedRide(geoJsonData.metadata, geoJsonLayerGroup, allowHiddenVideoDisplayDiv = false);
+    displaySelectedRide(_geoJsonData.metadata, geoJsonLayerGroup, allowHiddenVideoDisplayDiv = false);
 
 
     // *************************************************************
-    //     IF THIS RIDE HAS BIKELAPSESYNC, 
-    //     TELL YOUTUBE VIDEO TO VERIFY THAT VIDEO SYNCS WITH GEOJSON
-    //        we will store the length of the linestring in the
-    //        "youtube-logic.js" file, which will trigger the 
-    //        youtube video to notify us if the length of the 
-    //        video is vastly different than the length of the linestring
+    //     SET FRAME OFFSET CALLBACK CHECK --> "youtube-logic.js"
+    //          If this ride has bikelapse sync, we need to check to make
+    //          sure the video length (number of frames) actually will
+    //          sync with our geoJson data. But the YouTube API can only
+    //          give us the length of the video after the play button is
+    //          pressed for the first time. Hence this callback
     // *************************************************************
-    if(geoJsonData.metadata.hasBikeLapseSync){
-        const lineString = getFeatureFromGeoJson(geoJsonData, "ROUTE", "LineString");
-        setLinestringLengthToCheckAgainstVideoDuration(lineString.geometry.coordinates.length, frameOffsetCallback);
+    if(_geoJsonData.metadata.hasBikeLapseSync){
+        yt_setFameOffsetCheckCallback(checkIfVideoFrameCountAndLineStringLengthMatch);
+        _printFrameOffsetInfo = true;
+        yt_playYouTubeVideo();
     }
     else{
-        setLinestringLengthToCheckAgainstVideoDuration(undefined, undefined);
+        yt_setFameOffsetCheckCallback(undefined);
     }
 
     // *************************************************************
@@ -443,17 +460,74 @@ function addRideToMap(){
 }
 
 
-function frameOffsetCallback(numFramesOffsetBy){
 
-    geoJsonData.metadata["frameOffset"] = numFramesOffsetBy;
-    showGeoJSONInTextArea(geoJsonData);
+// *************************************************************
+//     CALLBACK FOR FRAME OFFSET CALCULATION
+//        In the case of a bikelapse, we need to check to
+//        Make sure the video length is equal to our linestring
+//        Video length in this case = (Video Duration in seconds * 15 fps)
+//        Linestring length = geometry.coordinates.length
+//                          = properties.coordtimes.length
+// ************************************************************* 
+function checkIfVideoFrameCountAndLineStringLengthMatch(videoFrameCount){
 
-    // console.log("frameOffset (callback)", numFramesOffsetBy);
+    // get a reference to our lineString
+    const lineString = getFeatureFromGeoJson(_geoJsonData, "ROUTE", "LineString");
+
+    // grab it's length
+    const linestringLength = lineString.geometry.coordinates.length;
+    
+    // calculate the frame offset (difference in length of video in frames and our linestringLength)
+    const frameOffset = linestringLength - videoFrameCount;
+
+    // check to make sure the frameOffset is within the tolerance range and warn accordingly
+    if(Math.abs(frameOffset) >= yt_getFrameOffsetTolerance() && !allowOffsetOutsideTolerance){
+        alert(  `VIDEO DURATION AND LENGTH OF LINESTRING DO NOT MATCH\n\n` +
+
+                `${videoFrameCount} -- Video length in frames\n` +
+                `${linestringLength} -- Linestring coordinates array length\n` +
+                `${frameOffset} -- Difference ("frameOffset")\n\n` +
+
+                `In order for bikelapse to work, the video length (in frames) ` +
+                `should be very close to the GeoJson linestring coords array length\n\n` +
+
+                `Make sure you've selected the right video for the GPX file imported\n` +
+                `Or select the "No" radio button in the Ride Info form\n` + 
+                `Otherwise you'll continue to see this annoying popup sorry!!!\n`
+             );
+    }
+    else{
+        if(_printFrameOffsetInfo){
+
+            const pithyRemark = (frameOffset === 0) ? "perfect match!" :
+            (frameOffset > 0) ? "lost some frames in your video huh?" : 
+            "that video is looking a touch too long :)";
+            
+            const frameOffsetInfo = {
+                "videoFrameCount":videoFrameCount,
+                "linestringLength": linestringLength,
+                "frameOffset": frameOffset,
+                "pithyRemark": pithyRemark
+            }
+            
+            console.log("Frame Offset Info", frameOffsetInfo);
+
+            _printFrameOffsetInfo = false;
+        }
+    }
+
+    // save the frameoffset in our geoJson metadata
+    _geoJsonData.metadata["frameOffset"] = frameOffset;   
+
+    // send the frameoffset back to our youtube player for playback purposes with our tolerance respected or not
+    yt_setFrameOffset(frameOffset, allowOffsetOutsideTolerance);
+
+    // show this update in the GeoJSONTextArea
+    showGeoJSONInTextArea(_geoJsonData);
 
 }
 
 
-  
 
 
 /* ########### UI INTERACTION HANDLERS ##########################################################################################
@@ -469,7 +543,7 @@ function frameOffsetCallback(numFramesOffsetBy){
 function handleFormChanges(event){
 
     // if we've imported data and are therefore displaying it in the map then carry out the event
-    if(geoJsonData !== undefined){
+    if(_geoJsonData !== undefined){
 
         if(event.type === "keyup" || (event.type === "change" && event.target.type === "radio") ){
             unsavedChanges(true);
@@ -489,20 +563,40 @@ function handleFormChanges(event){
 function saveChangesButtonHandler(event){
 
     // check to make sure the GeoJson has been created first
-    if(geoJsonData !== undefined){
-        // get user inputs from text fields
-        const userInput = getUserInputsFromTextFields();
+    if(_geoJsonData !== undefined){
+        // get user inputs from text fields returns ridemetadata and start/finish point names
+        const metadataAndPointNames = getMetadataAndPointNamesFromUserInputFields();
 
-        // pull the rideStats off the metadata
-        const rideStats = geoJsonData.metadata.rideStats;
+        const rideMetadataKeysToReplace = Object.keys(metadataAndPointNames.rideMetadata);
 
-        // replace fields in GeoJson with user inputs from text fields
-        geoJsonData.metadata = userInput.rideInfo;
-        geoJsonData.metadata.rideStats = rideStats;
+        // only replace the ride metadata given to us from the user inputs
+        rideMetadataKeysToReplace.forEach( (key, i) => {
+            // if the key is "youTubeVideoID" and it's different than the one we currently have stored
+            // or we don't have bikeLapseSync, then we should set "frameOffset" to undefined 
+            // otherwise, leave it the same as it was
+            if(key === "youTubeVideoID"){
+                const savedVideoID = _geoJsonData.metadata[key];
+                const newVideoID = metadataAndPointNames.rideMetadata[key];
+                const hasBikeLapseSync = metadataAndPointNames.rideMetadata.hasBikeLapseSync;
+
+                // if the video ID has changed, or we don't have bikeLapseSync, set "frameOffset" to undefined
+                if(savedVideoID !== newVideoID || !hasBikeLapseSync){
+                    _geoJsonData.metadata["frameOffset"] = undefined;
+                    // console.log("video different nullifying frameOffset");
+                }
+                else{
+                    // console.log("video same keeping frameOffset");
+                }
+            }
+
+            // lastly, replace they value for that key with the new value
+            _geoJsonData.metadata[key] = metadataAndPointNames.rideMetadata[key];
+            
+        });
 
         // loop through all the features in the GeoJson
         // replace the description for the features who's names are "START" and "FINISH" 
-        geoJsonData.features.forEach( (feature) => {
+        _geoJsonData.features.forEach( (feature) => {
 
             let featureName = feature.properties.name;
 
@@ -511,7 +605,7 @@ function saveChangesButtonHandler(event){
                 case "FINISH":
                     // if the feature's name is "START" use the user input from the Start Name box
                     // otherwise use the user input from the Finish Name box
-                    const newLocationName = (featureName === "START") ? userInput.startName : userInput.finishName;
+                    const newLocationName = (featureName === "START") ? metadataAndPointNames.startName : metadataAndPointNames.finishName;
 
                     // replace the existing name with the new one
                     feature.properties.meta.locationName = newLocationName;
@@ -522,7 +616,7 @@ function saveChangesButtonHandler(event){
         });        
 
         // print GeoJson to textarea
-        showGeoJSONInTextArea(geoJsonData);
+        showGeoJSONInTextArea(_geoJsonData);
         
         addRideToMap();
         
@@ -531,7 +625,7 @@ function saveChangesButtonHandler(event){
     }
     else{
         alert('Please import a GPX file (or files) first')
-        console.log("rides data is of type: ", typeof(geoJsonData));
+        console.log("rides data is of type: ", typeof(_geoJsonData));
     }
 
     
@@ -561,15 +655,15 @@ function downloadButtonHandler(event){
     // check to make sure the GeoJson has been created first
     // if it hasn't, send an alert that the user needs to
     // import a GPX file before we will generate a GeoJSON or GPX to save
-    if(geoJsonData !== undefined){
+    if(_geoJsonData !== undefined){
 
         // get the routeLineString from the rideData 
-        let routeLineString = getROUTELineStringFromGeoJson(geoJsonData);
+        let routeLineString = getROUTELineStringFromGeoJson(_geoJsonData);
 
                                                                     
         // pull the ISO date time so we can use for the file name later
         let rideTime = routeLineString.properties.time;
-        let rideName = geoJsonData.metadata.rideName;
+        let rideName = _geoJsonData.metadata.rideName;
         let fileExtension = "";
         let fileContents = "";
 
@@ -598,7 +692,7 @@ function downloadButtonHandler(event){
     }
     else{
         alert('Please import a GPX file (or files) first\nOnce imported, the GeoJSON will be generated\nIf multiple GPX files were imported they will be combined into one file');
-        console.log("rides data is of type: ", typeof(geoJsonData));
+        console.log("rides data is of type: ", typeof(_geoJsonData));
     }
     
 }

@@ -78,6 +78,12 @@ let displayUnits = "imperial"; // other option is "metric"
 // ****************************************************************************
 let videoDisplayDiv;
 
+// this will tell the youTube player to allow a frameOffset outside its tolerance
+// if false, the frameOffset will be set to 0 if it is outside the tolerance
+// if true, the frameOffset will be allowed 
+// (this will try to sync a ride to the video even if they don't line up)
+let allowOffsetOutsideTolerance = false;
+
 // *******************************************
 // YOUTUBE PLAYER PARAMETERS
 // *******************************************

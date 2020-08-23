@@ -39,9 +39,6 @@ videoDisplayDiv = document.getElementById('player-parent');
 ****  CREATE-RIDE SPECIFIC VARIABLES AND SETTINGS ****
 ###################################################################### */
 
-// this is the object to hold our GeoJson that the user will download
-let geoJsonData;
-
 // a globally accessible reference to the Leaflet GeoJSON Layers Group
 let geoJsonLayerGroup = undefined;
 

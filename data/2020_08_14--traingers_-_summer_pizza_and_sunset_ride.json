@@ -11045,6 +11045,7 @@
     "metadata": {
         "rideName": "Traingers - Summer Pizza and Sunset Ride",
         "hasBikeLapseSync": true,
+        "frameOffset": 3,
         "youTubeVideoID": "EekVvGeG3ls",
         "stravaURL": "https://www.strava.com/activities/3914420420",
         "googleMapURL": "",
@@ -11055,7 +11056,7 @@
                 "mi": 7.598
             },
             "duration": {
-                "moving": "PT51M34S",
+                "moving": "PT51M36S",
                 "total": "PT1H45M17S"
             },
             "avgSpeed": {

@@ -83,7 +83,7 @@ function handleUnitsRadioButtonChanges(event){
 
     // if this ride hasBikeLapseSync then we should also update the cumulative section
     if(_selectedMetadata.hasBikeLapseSync){
-      let frameIndex = getCurrentVideoFrameIndex();
+      let frameIndex = yt_getCurrentVideoFrameIndex();
       syncCumulativeRideStatsToVideo("frameIndex", frameIndex);
     }
   }
@@ -231,11 +231,11 @@ function displaySelectedRide(rideMetadata, geoJsonLGroup, allowVideoDisplayDivTo
   // if the video ID is valid (probably need a better validation method)
   if(hasValidVideoID){
     // load the youtube video
-    loadYouTubeVideo(youTubeVideoID);
+    yt_loadYouTubeVideo(youTubeVideoID);
   }
   else{
     // reset the video player with an empty video
-    loadYouTubeVideo("");    
+    yt_loadYouTubeVideo("");    
   }
 
   // set the visibility of the videoDisplayDiv according to "hasValidVideoID" and if we are allowing the videoDisplayDiv to be hidden or not

@@ -16451,6 +16451,7 @@
     "metadata": {
         "rideName": "La Honda Climb",
         "hasBikeLapseSync": true,
+        "frameOffset": 0,        
         "youTubeVideoID": "Kb1YkCAQzmo",
         "stravaURL": "https://www.strava.com/activities/3895183366",
         "googleMapURL": "",

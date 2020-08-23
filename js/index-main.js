@@ -171,9 +171,16 @@ function geoJsonLayerGroupClicked(event){
     // displaySelectedRide(clickedLayerID, geoJsonLGroup);
     displaySelectedRide(clickedRideMetadata, geoJsonLGroup);
 
-    // if(ridesData[clickedLayerID].metadata.hasBikeLapseSync){
+    // if the ride has bikelapse, zoom in on it and set the frameoffset
     if(clickedRideMetadata.hasBikeLapseSync){  
       reCenterMap(geoJsonLGroup);
+    
+      // set the frameOffset for the current ride (yt class will handle if it is undefined)
+      yt_setFrameOffset(clickedRideMetadata.frameOffset, allowOffsetOutsideTolerance);
+
+    }
+    else{
+      yt_setFrameOffset(undefined);
     }
     
     // lastly, set our selectedLayerID to the clickedLayerID
@@ -215,7 +222,8 @@ function geoJsonLayerGroupRemoved(event){
       // the youtube API is slow to respond and so the rabbit update interval timer
       // might trigger after we've stopped the video and done everything else
       showRabbitOnRoute = false;      
-      stopYouTubeVideo();      
+      yt_stopYouTubeVideo();
+      yt_setFrameOffset(undefined);      
       rabbitMarker.remove();
       videoDisplayDiv.hidden = true;
     }
