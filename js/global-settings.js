@@ -25,7 +25,7 @@ let map = L.map("map", {
 });
 
 // map zoom parameters
-let minimumZoom = 10;
+let minimumZoom = 2;
 let maximumZoom = 20;
 let terrainMaximumZoom = 18; // the stamen.com terrain map only has tiles for max zoom of 18
 let tonerMaximumZoom = 20; // the stamen.com toner map only has tiles for max zoom of 20
@@ -124,6 +124,9 @@ let rabbitMarker;
 let rabbitCoordsArray;
 let showRabbitOnRoute = false;
 
+// if this gets set to true, then we will display an intro popup message on the rabbit
+// and it will turn into a "play/pause" button after the user plays a BikeLapse video for the first time
+let showRabbitIntroPopupMessage = false;
 
 // DECLARE OUR CONSTANT RABBIT VARIABLES THAT WE WILL USE TO GENERATE THE MARKER
 // if we want to change our rabbit image we can do that here

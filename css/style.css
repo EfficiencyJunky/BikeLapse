@@ -261,7 +261,7 @@ we would also need to add this class along with the usual class for each icon */
   margin: 5px 0px;
 }
 
-#play-pause, 
+.play-pause-button, 
 #stop, 
 #playback-rate{
   font-family: Arial, Helvetica, sans-serif;
@@ -300,7 +300,7 @@ we would also need to add this class along with the usual class for each icon */
   width: 3rem;
 }
 
-#play-pause:hover, 
+.play-pause-button:hover, 
 #stop:hover, 
 .slider::-webkit-slider-thumb:hover,
 #playback-rate:hover  {
@@ -321,11 +321,11 @@ we would also need to add this class along with the usual class for each icon */
 /* ▇ - 9607 - stop button option 2 */
 /* ⏹ - 9209 - stop button option 3 */
 
-#play-pause.play::after{
+.play-pause-button.play::after{
     content: "►";
 }
 
-#play-pause.pause::after{
+.play-pause-button.pause::after{
     content: "⎮⎮";
 }
 

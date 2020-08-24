@@ -4,14 +4,16 @@
 
 // these are the indexes (starting at 1 not 0) in the bikeRideJSONFileNames object/file
 // for the rides we want to dislay on the map first  
-// let initialRidesToDisplay = [1, 3, 7, 10];
-let initialRidesToDisplay = [1, 3, 7, 8];
+// let _initialRidesToDisplay = [1, 3, 7, 10];
+let _initialRidesToDisplay = [1, 3, 7, 8];
 
 // this is the value for our static width of the Elevation Control's display container
 // when we show/hide the elevationControl itself, we don't want the width
 // of the container it's in to change so that's why we have to set it to be
-const elevationDisplayDivWidth = `${550 * windowScaleFactor}px`;
+const _elevationDisplayDivWidth = `${550 * windowScaleFactor}px`;
 
+// this will set our rabbit to have the popup intro message
+showRabbitIntroPopupMessage = true;
 
 // ******************************************************************* 
 // CREATE OUR LAYER CONTROL AND GET REFERENCE TO ITS HTML CONTAINER
@@ -62,14 +64,13 @@ layerControlDisplayLayer.addTo(map)
 // *******************************************************************  
 map.zoomControl.setPosition(mapUISettings.zoomCtl.position);
 
-
 // ******************************************************************* 
 // SET STATIC WIDTH FOR ELEVATION CONTROL DISPLAY DIV
 //    since we have a button to show/hide the elevation control
 //    we need to make sure that when we hide it...
 //    the div that contains it does not shrink
 // *******************************************************************
-document.getElementById("elevation-display-div").style.width = elevationDisplayDivWidth;
+document.getElementById("elevation-display-div").style.width = _elevationDisplayDivWidth;
 
 
 /* ###############################################################################
@@ -81,6 +82,9 @@ initializeMapOverlaysAndUI();
 // this will make sure that the zoom control stacks on top of the legend
 map.zoomControl.remove();
 map.zoomControl.addTo(map);
+
+// set the rabbit popup based on if it's the intro or not
+// initializeRabbitIntroPopup();
 
 /* ###############################################################################
    ****  LOAD THE JSON FILES FOR EACH RIDE                  ****
@@ -114,15 +118,15 @@ bikeRideJSONFileNames.forEach( (jsonFileName, i) => {
       
       // ****************************************************************************
       // ADD THE GEOJSON LAYER GROUP TO THE OVERLAY LAYER CONTROL
-      // AND ADD TO THE MAP IF THE CURRENT INDEX MATCHES ONE IN THE "initialRidesToDisplay" ARRAY
+      // AND ADD TO THE MAP IF THE CURRENT INDEX MATCHES ONE IN THE "_initialRidesToDisplay" ARRAY
       //    grab the ride's name from metadata and use as the display text in the layer control
       // ****************************************************************************
 
       // add the geoJsonLayerGroup to the layer control using the rides name as the display text      
       overlayLayerControl.addOverlay(geoJsonLayerGroup, rideJSON.metadata.rideName);
       
-      // if the index matches one of those in the 'initialRidesToDisplay' array, add it to the map
-      if(initialRidesToDisplay.includes(i+1)){
+      // if the index matches one of those in the '_initialRidesToDisplay' array, add it to the map
+      if(_initialRidesToDisplay.includes(i+1)){
         geoJsonLayerGroup.addTo(map);
       }
 
@@ -165,13 +169,15 @@ function geoJsonLayerGroupClicked(event){
   let clickedLayerID = L.Util.stamp(geoJsonLGroup);
 
   if(getSelectedLayerID() !== clickedLayerID){
-    
+    // yt_stopRabbitAndSliderSyncronizer();
+    // showRabbitOnRoute = false;
+
     let clickedRideMetadata = geoJsonLGroup.getMetadata();
 
     // displaySelectedRide(clickedLayerID, geoJsonLGroup);
     displaySelectedRide(clickedRideMetadata, geoJsonLGroup);
 
-    // if the ride has bikelapse, zoom in on it and set the frameoffset
+    // if the ride has bikelapse, zoom in on it, set the frameoffset, and set/modify the rabbit popup
     if(clickedRideMetadata.hasBikeLapseSync){  
       reCenterMap(geoJsonLGroup);
     
@@ -182,7 +188,7 @@ function geoJsonLayerGroupClicked(event){
     else{
       yt_setFrameOffset(undefined);
     }
-    
+
     // lastly, set our selectedLayerID to the clickedLayerID
     // setSelectedLayerID(clickedLayerID);
   }

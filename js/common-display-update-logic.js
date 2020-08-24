@@ -109,6 +109,12 @@ function handleUnitsRadioButtonChanges(event){
 // ******************************************************************
 function displaySelectedRide(rideMetadata, geoJsonLGroup, allowVideoDisplayDivToBeHidden = true, ){
 
+  // first we need to stop the Rabbit/Slider Syncronizer
+  // otherwise, it could update a few times before the next video is loaded
+  // which would cause a number of issues displaying the rabbit
+  yt_stopRabbitAndSliderSyncronizer();
+
+
   // ****************************************************************************
   //  GET REFERENCE TO THE SELECTED LAYER ID AND METADATA
   //      this gets used for updating ride details in the UI
@@ -207,10 +213,15 @@ function displaySelectedRide(rideMetadata, geoJsonLGroup, allowVideoDisplayDivTo
 
   // if the video exists and it has BikeLapse Sync
   // re-set the rabbitCoordsArray with the coordinates from the new ride
-  // and set the rabbit marker to the start of the ride
+  // update the rabbit marker's position
   // also, show the rideStats section under the video
-  if(hasValidVideoID && showRabbitOnRoute){ 
+  if(hasValidVideoID && showRabbitOnRoute){
+    
     rabbitCoordsArray = _selectedLineStringFeature.geometry.coordinates;
+
+    initializeRabbitMarkerAtCoords(rabbitCoordsArray[0]);
+
+    // if the rideStatsRow exists, make it visible and get the cumulative ride stats to show in it
     if(rideStatsCumRow_JQ){
       rideStatsCumRow_JQ.collapse('show');
 
@@ -226,6 +237,7 @@ function displaySelectedRide(rideMetadata, geoJsonLGroup, allowVideoDisplayDivTo
       _cumulativeRideStats = undefined;
     }    
   }
+
 
 
   // if the video ID is valid (probably need a better validation method)
@@ -307,9 +319,12 @@ function showElevationForLineStringFeature(lineStringFeature){
 
 
 // #############################################################################
-// *********  RABBIT DISPLAY UPDATE FUNCTION ************************
+// *********  RABBIT DISPLAY UPDATE FUNCTIONS ************************
 // #############################################################################
 
+// ********************************************************************************
+// this gets called by the "youtube-logic.js" when the video loads and as it plays
+// ********************************************************************************
 function syncRabbitMarkerToVideo(valType, value){
 
   let latlon;
@@ -333,17 +348,83 @@ function syncRabbitMarkerToVideo(valType, value){
   // set the latlon of the rabbitMarker
   rabbitMarker.setLatLng(latlon);
 
+}
+
+// ****************************************************************
+// simple method to set the rabbit to the given geoJson coords
+// ****************************************************************
+function initializeRabbitMarkerAtCoords(coords){    
+
+  const latlon = coords.slice(0, 2).reverse()
+
+  rabbitMarker.setLatLng(latlon);
+
   // if the rabbitMarker isn't visible, make it so
   if(!map.hasLayer(rabbitMarker)) {
     rabbitMarker.addTo(map);
-  }
+  }  
 
+  rabbitMarker.openPopup();
 }
 
+
+// HELPER METHOD NOT IN USE
 // simple method to print out the rabbit Marker object for debugging
 function getRabbitCoords(){    
   return rabbitMarker._latlng;
 }
+
+
+
+
+// ****************************************************************
+//     Set-up Rabbit Popup -- only used in index-main.js currently
+// ****************************************************************
+function initializeRabbitIntroPopup(){
+  
+  // popup properties to set maxWidth
+  const rabbitBindPopupProperties = {maxWidth: 125};
+
+  // create main internal container for popup
+  let div = L.DomUtil.create('div', 'd-flex flex-column');
+
+  // add some informative HTML about what the rabbit is doing
+  div.innerHTML = `
+    <div>
+      <h3 style="text-align:center;margin-bottom:8px;">Hi! I'm the BikeLapse Rabbit!</h3>
+      <span">I will show you on the map where you were in the video!<br>
+      It's a magical world we live in is it not?<br>
+      Enjoy the ride!</span>
+    </div>`;
+    
+  // create a button to start the rabbit moving
+  let button = L.DomUtil.create('button', 'btn btn-outline-info btn-block btn-sm mt-2', div);
+  
+  button.setAttribute('id', 'rabbit-start-button');
+
+  button.textContent = "Start BikeLapse";
+
+  button.onclick = setRabbitPopupContentToPlayPauseButton;
+
+  rabbitMarker.bindPopup(div, rabbitBindPopupProperties);
+
+}
+
+
+function setRabbitPopupContentToPlayPauseButton(pressPlay = true){
+
+  let rabbitPlayPauseButton = L.DomUtil.create('button', 'play-pause-button');
+
+  yt_addPlayPauseButton(rabbitPlayPauseButton);
+
+  rabbitMarker.setPopupContent(rabbitPlayPauseButton);
+
+  if(pressPlay){
+    yt_playYouTubeVideo();
+  }
+  
+}
+
 
 
 // #############################################################################

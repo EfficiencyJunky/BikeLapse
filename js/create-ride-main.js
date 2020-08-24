@@ -8,6 +8,7 @@ const mapHeight = `${600 * windowScaleFactor}px`;
 // override global map zoom and ride ID parameters
 minimumZoom = 2;
 // maximumZoom = 18;
+showRabbitIntroPopup = false;
 
 // override global padding to use when first displaying ride
 // when clicking on a BikeLapse ride, we will zoom into the ride
@@ -62,6 +63,8 @@ document.getElementById('map-placeholder-text').style.lineHeight = mapHeight;
 
 // set map initial center location and zoom for map
 map.setView([30, 0], minimumZoom);
+
+
 
 // carry out our usual initializations
 initializeBaseMaps();

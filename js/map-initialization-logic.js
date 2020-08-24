@@ -305,12 +305,16 @@ function initializeMapOverlaysAndUI(hideElevationDisplayDiv = true, hideVideoDis
     if (rabbitMarker === undefined) {
 
         const rabbitIcon = L.icon(rabbitIconOptions);
-
+        
         // create a leaflet marker with the icon to an arbitrary location on the map (i.e. [0,0])
         rabbitMarker = new L.Marker([0,0], {icon:rabbitIcon}).addTo(map);
-        
+
         // by default we don't want to see the marker
         rabbitMarker.remove();
+
+        if(showRabbitIntroPopupMessage){
+            initializeRabbitIntroPopup();
+        }
 
         // map.hasLayer(${layer_name}) will let us know if the layer is currently added to the map
         // console.log(map.hasLayer(rabbitMarker));
@@ -346,7 +350,7 @@ function legendOnAdd(map) {
     </div>
     <i class="${mapIcons["START"].iconURLorClass}"></i>${mapIcons["START"].displayText}<br>
     <i class="${mapIcons["FINISH"].iconURLorClass}"></i>${mapIcons["FINISH"].displayText}<br>
-    <div data-text="Rabbit shows on the map where you were in the video" class="rabbit-tooltip"><i class="${mapIcons["RABBIT"].legendClass}"></i>
+    <div data-text="BIKELAPSE ONLY: Rabbit shows on the map where you were in the video" class="rabbit-tooltip"><i class="${mapIcons["RABBIT"].legendClass}"></i>
     <span >${mapIcons["RABBIT"].displayText}</span></div>
     `;
     
