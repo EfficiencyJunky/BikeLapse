@@ -105,8 +105,8 @@ let getDistance = function (array, decimals, latLonReversed = false) {
 
     // make the latIndex 0 if parameter "latLonReversed" is false or 1 if true
     // then make the lonIndex 0 if latIndex is 1 or vice versa
-    let latIndex = (!latLonReversed) ? 0 : 1;
-    let lonIndex = 1 - latIndex;
+    const latIndex = (!latLonReversed) ? 0 : 1;
+    const lonIndex = 1 - latIndex;
 
     // if decimals isn't defined, default to 3 decimals places
     decimals = decimals || 3;

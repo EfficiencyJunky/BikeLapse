@@ -194,9 +194,17 @@ function geoJsonLayerGroupClicked(event){
   }
   else{
     console.log('clicked on ride with same "selectedLayerID" as before: ', getSelectedLayerID()); 
+    
+    const frameIndex = findROUTELinestringCoordsIndexFromLatLon(geoJsonLGroup, event.latlng);
+
+    yt_seekToTimeFromFrameIndex(frameIndex);
+
   }
 
 }
+
+
+
 
 
 // *************************************************************

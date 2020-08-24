@@ -217,6 +217,52 @@ function createGeoJsonLayerGroupForRide(geoJson, rideMetadata){
   }
 
 
+    /*
+     * Handles mouseover events of the data layers on the map.
+     */
+    // _handleLayerMouseOver: function(evt) {
+    //   if (!this._data || this._data.length === 0) {
+    //       return;
+    //   }
+    //   var latlng = evt.latlng;
+    //   var item = this._findItemForLatLng(latlng);
+    //   if (item) {
+    //       var x = item.xDiagCoord;
+    //       this._showDiagramIndicator(item, x);
+    //   }
+    // }
+
+
+
+
+  /*
+    * _findItemForLatLng -- Finds an item with the smallest delta in distance to the given latlng coords
+    */
+  // function findItemForLatlon(latlng) {
+  //   var result = null,
+  //       index = null,
+  //       d = Infinity;
+  //   this._data.forEach(function(item, i) {
+  //       var dist = latlng.distanceTo(item.latlng);
+  //       if (dist < d) {
+  //           d = dist;
+  //           result = item;
+  //           index = i;
+  //       }
+  //   });
+  //   return [result, index];
+  // }
+
+
+
+
+
+
+
+
+
+
+
 
 
   // #############################################################################

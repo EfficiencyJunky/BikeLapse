@@ -18,6 +18,36 @@ function yt_pauseYouTubeVideo(){
     _player.pauseVideo();
 }
 
+function yt_seekToTimeFromFrameIndex(frameIndex){
+
+    const playerState = _player.getPlayerState();
+
+    switch(playerState){        
+        case YT.PlayerState.ENDED:
+        case YT.PlayerState.PLAYING:
+        case YT.PlayerState.BUFFERING:
+        case YT.PlayerState.PAUSED:
+            const vDuration = _player.getDuration();
+
+            const durationFrames = vDuration * _framesPerSecond;
+
+            const vTimeToSeekTo = vDuration * (frameIndex/durationFrames);            
+
+            _player.seekTo(vTimeToSeekTo, true);
+
+            break;
+        case YT.PlayerState.UNSTARTED:  
+        case YT.PlayerState.CUED:
+            break;
+        default:
+            break;
+
+    }
+    
+}
+
+
+
 
 // ################## PUBLIC GETTERS AND SETTERS ##################
 function yt_getCurrentVideoFrameIndex(){
@@ -233,7 +263,9 @@ function onPlayerStateChange(event) {
         // notice we don't have a "break;" below for the "ENEDED" state because we want to update the button in both the ended and paused states. Leaving out the break means the code in both cases will execute if the state is "ENDED"
         // (ended) -- what happens when the video finishes playing on its own
         case YT.PlayerState.ENDED:
-            updateUIElementsFromVideoTimeStamp();    
+            // updateUIElementsFromVideoTimeStamp();
+            updateUIElementsFromVideoTimeStamp(syncSliderOnly = true);
+            syncRabbitMarkerToVideo("frameIndex", _player.getDuration() * _framesPerSecond);
             // printRabbitInfo();  // can eventually remove this
         // (unstarted) -- what happens when the video is initially loaded and ready, or is "stopped" by the player.stopVideo(); command
         case YT.PlayerState.UNSTARTED:            

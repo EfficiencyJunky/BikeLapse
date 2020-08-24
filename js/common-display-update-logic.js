@@ -303,6 +303,8 @@ function showElevationForLineStringFeature(lineStringFeature){
     }
   });
 
+
+
   // add the highlight layer to the map
   elevationFollowMarkerLayer.addTo(map);
 
@@ -695,4 +697,33 @@ function getLatLonArrayFromLineStringCoordsArray(lineStringCoordsArray){
 
 
 
+function findROUTELinestringCoordsIndexFromLatLon(geoJsonLGroup, latLon){
+
+  const lineString = getFeatureFromGeoJsonLayerGroup(geoJsonLGroup , "ROUTE", "LineString");
+  const coordsArray = lineString.geometry.coordinates;
+  return findIndexForLatlon(coordsArray, latLon);
+  
+  /*
+  * _findItemForLatLng -- Finds an item with the smallest delta in distance to the given latlng coords
+  */
+ function findIndexForLatlon(coords, latlng) {
+   let index = null,
+   // result = null,        
+   d = Infinity;
+   coords.forEach(function(coord, i) {
+     const coordLatLon = {
+       "lat": coord[1],
+       "lng": coord[0],
+      };
+      const dist = latlng.distanceTo(coordLatLon);
+      if (dist < d) {
+        d = dist;
+        // result = coord;
+        index = i;
+      }
+    });
+    return index;
+  }
+  
+}
 
