@@ -4,8 +4,9 @@
 
 // these are the indexes (starting at 1 not 0) in the bikeRideJSONFileNames object/file
 // for the rides we want to dislay on the map first  
-// let _initialRidesToDisplay = [1, 3, 7, 10];
-let _initialRidesToDisplay = [1, 3, 7, 8];
+// let _initialRidesToDisplay = [10];
+let _initialRidesToDisplay = [1, 3, 7, 10];
+// let _initialRidesToDisplay = [1, 3, 7, 8];
 
 // this is the value for our static width of the Elevation Control's display container
 // when we show/hide the elevationControl itself, we don't want the width
@@ -83,8 +84,6 @@ initializeMapOverlaysAndUI();
 map.zoomControl.remove();
 map.zoomControl.addTo(map);
 
-// set the rabbit popup based on if it's the intro or not
-// initializeRabbitIntroPopup();
 
 /* ###############################################################################
    ****  LOAD THE JSON FILES FOR EACH RIDE                  ****
@@ -196,6 +195,7 @@ function geoJsonLayerGroupClicked(event){
     console.log('clicked on ride with same "selectedLayerID" as before: ', getSelectedLayerID()); 
     
     const frameIndex = findROUTELinestringCoordsIndexFromLatLon(geoJsonLGroup, event.latlng);
+    // console.log("frameIndex", frameIndex);
 
     yt_seekToTimeFromFrameIndex(frameIndex);
 

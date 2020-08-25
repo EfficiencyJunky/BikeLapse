@@ -20,18 +20,34 @@ function yt_pauseYouTubeVideo(){
 
 function yt_seekToTimeFromFrameIndex(frameIndex){
 
-    const playerState = _player.getPlayerState();
+    const playerState = _player.getPlayerState();    
+    
+    // console.log(playerState);
 
     switch(playerState){        
         case YT.PlayerState.ENDED:
         case YT.PlayerState.PLAYING:
         case YT.PlayerState.BUFFERING:
         case YT.PlayerState.PAUSED:
-            const vDuration = _player.getDuration();
 
-            const durationFrames = vDuration * _framesPerSecond;
+            // capture the duration in time for the video
+            const vDuration = _player.getDuration();            
+            
+            // calculate the total number of frames + frame offset (duration of video in frames)
+            // this should be the same length as the linestring coordinates array
+            const vDurationFrames = Math.round(vDuration * _framesPerSecond) + _frameOffset;                                    
+            
+            // calculate the frameOffset for this specific frameIndex
+            const frameOffset = Math.round(_frameOffset * (frameIndex / vDurationFrames ));
+            
+            // calculate the time to seek to by subtracting the frameoffset and dividing by frames per second
+            const vTimeToSeekTo = (frameIndex - frameOffset) / _framesPerSecond;    
 
-            const vTimeToSeekTo = vDuration * (frameIndex/durationFrames);            
+            // console.log("video duration", vDuration);
+            // console.log("durationFrames", vDurationFrames);
+            // console.log("frameIndex", frameIndex);
+            // console.log("frameOffset", frameOffset);        
+            // console.log("vTimeToSeekTo", vTimeToSeekTo);
 
             _player.seekTo(vTimeToSeekTo, true);
 
@@ -59,6 +75,17 @@ function yt_getCurrentVideoFrameIndex(){
     
     // return frameIndex = Math.round(vCurrentTime * framesPerSecond);
 }
+
+function yt_getFinalFrameIndexFromVideoDuration(){
+    
+    const vDuration = _player.getDuration();
+
+    return frameIndex = Math.round(vDuration * _framesPerSecond) + getFrameOffsetFromCurrentTime(vDuration, vDuration);
+    
+    // return frameIndex = Math.round(vCurrentTime * framesPerSecond);
+}
+
+
 
 
 
@@ -129,6 +156,36 @@ function getFrameOffsetFromCurrentTime(currentTime, duration){
     return framesToAdd;
 
 }
+
+
+// // calculates the number of frames to add based on our frameOffset and the current time within the video
+// function getTimeOffsetFromCurrentFrameIndex(currentFrame, duration){
+
+//     // if the frameOffset is 0, just return 0
+//     if(_frameOffset === 0){return 0;}
+
+//     // otherwise, calculate the number of frames to add
+//     let framesToAdd = Math.round(_frameOffset / duration * currentTime);    
+
+//     // console.log("framesToAdd", framesToAdd);
+
+//     // make sure it's not NaN, or Infinite (in case of divide by Zero)
+//     if(!isFinite(framesToAdd)){        
+//       framesToAdd = 0;
+//     }
+
+//     // console.log("framesToAdd", framesToAdd, "\nframeOffset", _frameOffset);
+
+//     // return the number of frames to add
+//     return framesToAdd;
+
+// }
+
+
+
+
+
+
 
 // ################## "PRIVATE" VARIABLES ##################
 // ################## "PRIVATE" VARIABLES ##################
@@ -224,11 +281,12 @@ function onPlayerStateChange(event) {
 
     // an efficient way to structure "if/else" statements for purposes like this
     // converts the YT.PlayerState.{STATE_NAME} into human readable text
-    let logText =       playerState === YT.PlayerState.CUED      ? "cued" :
+    let logText =       
+                        playerState === YT.PlayerState.CUED      ? "cued" :
                         playerState === YT.PlayerState.UNSTARTED ? "unstarted" :
                         // playerState === YT.PlayerState.BUFFERING ? "buffering" :
                         // playerState === YT.PlayerState.PLAYING   ? "playing" :
-                        // playerState === YT.PlayerState.PAUSED    ? "paused" :
+                        playerState === YT.PlayerState.PAUSED    ? "paused" :
                         // playerState === YT.PlayerState.ENDED     ? "ended" :
                         // String("GetPlayerState: " + player.getPlayerState());
                         false;
@@ -251,27 +309,34 @@ function onPlayerStateChange(event) {
     switch(playerState){
         // notice we don't have a "break;" for the "PLAYING" state below because we want to update the button in both the ended and paused states. Leaving out the break means the code in both cases will execute if the state is "PLAYING"
         case YT.PlayerState.PLAYING:
-            startRabbitAndSliderSyncronizer();
             if(_frameOffsetCallback){
                 const videoFrameCount = getVideoDurationInFrames();
-                _frameOffsetCallback(videoFrameCount);                
-                // checkIfVideoDurationAndLineStringLengthMatch();
-            }
-        case YT.PlayerState.BUFFERING:
+                _frameOffsetCallback(videoFrameCount);
+            }        
+        case YT.PlayerState.BUFFERING:            
+            startRabbitAndSliderSyncronizer();
             setPlayPauseButtonsClass(_pauseButtonClass);
             break;
         // notice we don't have a "break;" below for the "ENEDED" state because we want to update the button in both the ended and paused states. Leaving out the break means the code in both cases will execute if the state is "ENDED"
         // (ended) -- what happens when the video finishes playing on its own
         case YT.PlayerState.ENDED:
             // updateUIElementsFromVideoTimeStamp();
-            updateUIElementsFromVideoTimeStamp(syncSliderOnly = true);
-            syncRabbitMarkerToVideo("frameIndex", _player.getDuration() * _framesPerSecond);
+            // yt_stopRabbitAndSliderSyncronizer();
+            // updateUIElementsFromVideoTimeStamp(syncSliderOnly = true);
+            // abracadabra
+            const frameIndex = yt_getFinalFrameIndexFromVideoDuration();
+            syncRabbitMarkerToVideo("frameIndex", frameIndex);
+            syncCumulativeRideStatsToVideo("frameIndex", frameIndex);
+            slider.value = 100;
+            
+            
             // printRabbitInfo();  // can eventually remove this
         // (unstarted) -- what happens when the video is initially loaded and ready, or is "stopped" by the player.stopVideo(); command
-        case YT.PlayerState.UNSTARTED:            
+        case YT.PlayerState.UNSTARTED:
             yt_stopRabbitAndSliderSyncronizer();
         // (paused) -- what happens when the user pauses the video, or scrubs the playhead (we don't stop the rabbit syncronizer because we want the rabbit to continue updating if the user scrubs the playhead while the video is paused)
         case YT.PlayerState.PAUSED:
+            
             setPlayPauseButtonsClass(_playButtonClass);            
             break;
         // (cued) -- also happens when video is "stopped" by the player.stopVideo(); command (which we send when the ride is removed from the map)
@@ -355,7 +420,8 @@ function updateUIElementsFromVideoTimeStamp(syncSliderOnly = false){
     // we only want to update the rabbit and ride stats if "showRabbitOnRoute" is true
     if(showRabbitOnRoute && !syncSliderOnly){
         
-        // console.log("updating rabbit");
+        (_consoleLogsOn === true) ? console.log("updating rabbit") : undefined;
+
         // multiply that time by 15 frames per second (the framerate of BikeLapse videos)
         // rounding it first is smart tho. And for future we can add a frameOffset
         // to get our frame Index and then send that to the "syncRabbitMarkerToVideo" function
@@ -376,6 +442,7 @@ function updateUIElementsFromVideoTimeStamp(syncSliderOnly = false){
 
 
     if(sliderAvailable){        
+        // console.log("updating  slider");
         // duration only is reported once the video starts playing
         // if the video has just been cued, the duration will return 0
         // we need to avoid divide by 0 so we add some extra safeguards here
@@ -383,6 +450,8 @@ function updateUIElementsFromVideoTimeStamp(syncSliderOnly = false){
         slider.value = percentWatched*100;
     }
 }
+
+
 
 
 
@@ -402,19 +471,14 @@ function setPlayPauseButtonsClass(buttonClassToAdd){
     });
 
 
-  // we will run this functionality once and only if we have initialized the rabbit popup content
-  // first we check to see if the "_pauseButtonClass" is the one being set (this means the play button was pressed)
-  // then we make sure this is a bikeLapse route thanks to "showRabbitOnRoute"
-  // and lastly we make sure that the "showRabbitIntroPopupMessage" is set to true (meaning we've initialized our rabbit popup)
-  if(buttonClassToAdd === _pauseButtonClass && showRabbitOnRoute && showRabbitIntroPopupMessage){
+    // we will run this functionality once and only if we have initialized the rabbit popup content
+    // first we check to see if the "_pauseButtonClass" is the one being set (this means the play button was pressed)
+    // then we make sure this is a bikeLapse route thanks to "showRabbitOnRoute"
+    // and lastly we make sure that the "showRabbitIntroPopupMessage" is set to true (meaning we've initialized our rabbit popup)
+    if(buttonClassToAdd === _pauseButtonClass && showRabbitOnRoute && showRabbitIntroPopupMessage){
 
-    // console.log("set rabbit popup to playpause");
-
-    setRabbitPopupContentToPlayPauseButton(pressPlay = false);
-
-    showRabbitIntroPopupMessage = false;
-
-  }
+        setRabbitPopupContentToPlayPauseButton(pressPlay = true);
+    }
 
 
 }
@@ -521,14 +585,23 @@ function yt_addPlayPauseButton(button){
 // at which point we want to seek the video playhead to the placement of the slider
 // and we can allow the slider to continue being updated by the YouTube player again
 slider.onchange = function(event){
-    
+    // console.log("slider on change");
     let sliderValue = event.target.value;
     let vDuration = _player.getDuration();
 
     // the second argument tells the video to keep playing from the new position in the case that it was already playing before we told it to seek
-    let vTimeToSeekTo = vDuration*sliderValue/100;
+    const vTimeToSeekTo = vDuration*sliderValue/100;
+
+    // eventually we should call "yt_stopRabbitAndSliderSyncronizer();" when the video is paused
+    // in which case we will need to update the cumulative stats and rabbit 
+    // when we move the slider and the video is paused
+    syncRabbitMarkerToVideo("percentWatched", sliderValue / 100);
+    syncCumulativeRideStatsToVideo("percentWatched", sliderValue / 100);
+    
     _player.seekTo(vTimeToSeekTo, true);
     
+
+
     sliderAvailable = true;
 }
 

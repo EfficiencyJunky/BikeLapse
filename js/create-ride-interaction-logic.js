@@ -401,7 +401,13 @@ function showGeoJSONInTextArea(geoJson){
 }
 
 
+// function geoJsonLayerGroupClicked(event){
 
+//     const frameIndex = findROUTELinestringCoordsIndexFromLatLon(geoJsonLayerGroup, event.latlng);
+
+//     yt_seekToTimeFromFrameIndex(frameIndex);    
+    
+// }
 // ************************************************************************
 // ADD RIDE TO MAP
 //      This is the function that will add the ride to the map initially
@@ -415,9 +421,9 @@ function addRideToMap(){
     // if we're updating the map (only used in create-ride interface), 
     // then the geoJsonLayerGroup will be set to undefined
     // we should remove the geoJsonLayerGroup before re-creating it
-    // if(operation === "update"){
+    // this will also remove event listeners so it's ok to add them every time
     if(geoJsonLayerGroup !== undefined){
-    //   clearElevationDisplay();
+        
       geoJsonLayerGroup.remove();
     }
     
@@ -425,6 +431,21 @@ function addRideToMap(){
     //   CREATE (OR RE-CREATE) THE GEOJSONLAYERGROUP AND ADD TO THE MAP
     // *****************************************************************
     geoJsonLayerGroup = createGeoJsonLayerGroupForRide(_geoJsonData, _geoJsonData.metadata);
+
+
+    // called when a user clicks on any part of the geoJsonLayerGroup (Point, LineString, etc.)
+    // this will sync the video to the place the user clicks on the Layer Group
+    geoJsonLayerGroup.on('click dblclick', function (event) {
+                
+        // could also use _geoJsonData.metadata.hasBikeLapseSync
+        if(geoJsonLayerGroup.getMetadata().hasBikeLapseSync){
+
+            const frameIndex = findROUTELinestringCoordsIndexFromLatLon(geoJsonLayerGroup, event.latlng);
+            
+            yt_seekToTimeFromFrameIndex(frameIndex);       
+        }
+    });
+
 
     // add it to the map
     geoJsonLayerGroup.addTo(map);

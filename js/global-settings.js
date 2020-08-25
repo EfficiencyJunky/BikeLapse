@@ -244,12 +244,12 @@ let mapIconsKeys = Object.keys(mapIcons);
 // white -- "rgba(255, 255, 255, 1)"
 // carol's bikelapse route color -- "rgb(53, 233, 218)"
 let routeLineProperties = {
-  "bikelapse": {"legendText": "BikeLapse",      "lineFillOpacity": 1, "lineWeight": 4.0, "lineOpacity": 1, "lineColor": "rgb(236, 85, 85)" },
-  "regular":   {"legendText": "Regular",        "lineFillOpacity": 1, "lineWeight": 4.0, "lineOpacity": 1, "lineColor": "rgba(62, 146, 204, 1)" },
-  "selected":  {"legendText": "Selected Route", "lineFillOpacity": 1, "lineWeight": 0.5, "lineOpacity": 1, "lineColor": "black" },
-  "default":   {"legendText": "Default Color",  "lineFillOpacity": 1, "lineWeight": 4.0, "lineOpacity": 1, "lineColor": "rgba(155, 155, 155, 1)" },
-  "easy":      {"legendText": "Easy",           "lineFillOpacity": 1, "lineWeight": 4.0, "lineOpacity": 1, "lineColor": "green" },
-  "hard":      {"legendText": "Hard",           "lineFillOpacity": 1, "lineWeight": 4.0, "lineOpacity": 1, "lineColor": "red" }
+  "bikelapse": {"legendText": "BikeLapse",      "lineFillOpacity": 0.0, "lineWeight": 6.0, "lineOpacity": 1.0, "lineColor": "rgb(236, 85, 85)" },
+  "regular":   {"legendText": "Regular",        "lineFillOpacity": 0.0, "lineWeight": 4.0, "lineOpacity": 1.0, "lineColor": "rgba(62, 146, 204, 1)" },
+  "selected":  {"legendText": "Selected Route", "lineFillOpacity": 0.0, "lineWeight": 0.5, "lineOpacity": 1.0, "lineColor": "black" },
+  "default":   {"legendText": "Default Color",  "lineFillOpacity": 0.0, "lineWeight": 4.0, "lineOpacity": 1.0, "lineColor": "rgba(155, 155, 155, 1)" },
+  "easy":      {"legendText": "Easy",           "lineFillOpacity": 0.0, "lineWeight": 4.0, "lineOpacity": 1.0, "lineColor": "green" },
+  "hard":      {"legendText": "Hard",           "lineFillOpacity": 0.0, "lineWeight": 4.0, "lineOpacity": 1.0, "lineColor": "red" }
 };
 
 let routeIconBaseClass = "legend-route-icon";

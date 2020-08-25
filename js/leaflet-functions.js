@@ -113,43 +113,52 @@ function createGeoJsonLayerGroupForRide(geoJson, rideMetadata){
   function styleFunction (geoJsonFeature) {
 
     // declare the variable we will store our style object in
-    let syle;
+    let style;
 
     switch (geoJsonFeature.geometry.type) {
       case 'LineString':
-        let lineStringName = geoJsonFeature.properties.name;
-
+        
         // create the lineColor variable to use for the color of the Feature's line
-        let lineColor = routeLineProperties["default"].lineColor;
+        let routeType = "default";
 
+        // grab the lineString's Name
+        const lineStringName = geoJsonFeature.properties.name;
+        
         // if the "hasBikeLapseSync" member in the rideMetadata object is not undefined,
         // and the value itself is true,
-        // then get the lineColor for a "bikelapse" ride
-        // else use the "regular" color
+        // then get set routeType to "bikelapse" else set to "regular"
         if(typeof(rideMetadata.hasBikeLapseSync) !== "undefined" && rideMetadata.hasBikeLapseSync){
-          lineColor = routeLineProperties["bikelapse"].lineColor;
+          routeType = "bikelapse";
+        }
+        // if the name includes a "$" then it's supposed to the easy route option and should be styled accordingly        
+        else if(lineStringName.includes("$")){
+          routeType = "easy";    
+        }
+        // if the name includes a "#" then it's supposed to the hard route option and should be styled accordingly
+        else if(lineStringName.includes("#")){
+          routeType = "hard";
         }
         else{
-          lineColor = routeLineProperties["regular"].lineColor;
+          routeType = "regular";
         }
 
-        // if the name includes a "$" then it's supposed to the easy route option and should be colored accordingly
-        // if the name includes a "#" then it's supposed to the hard route option and should be colored accordingly
-        if(lineStringName.includes("$")){
-          lineColor = routeLineProperties.easy.lineColor;
-        }
-        else if(lineStringName.includes("#")){
-          lineColor = routeLineProperties.hard.lineColor;
-        }
+        // create the final style options object
+        style = { 
+                  "fillOpacity": routeLineProperties[routeType].lineFillOpacity, 
+                  "weight": routeLineProperties[routeType].lineWeight, 
+                  "opacity": routeLineProperties[routeType].lineOpacity, 
+                  "color": routeLineProperties[routeType].lineColor
+                };
 
-        style = { fillOpacity: 0.0, weight: 4, opacity: 1, color: lineColor};
+
         break;
+      // default behavior
       default:
         style = {};
         break;
     }
     
-    // default behavior
+    
     return style;
   }
 
@@ -163,17 +172,17 @@ function createGeoJsonLayerGroupForRide(geoJson, rideMetadata){
   function pointToLayerFunction(geoJsonPoint, latlng) {
 
     // grab reference to the point name
-    let pointName = geoJsonPoint.properties.name;
+    const pointName = geoJsonPoint.properties.name;
 
     // if the pointName is not "DETAILS" then use it for the markerType
     // otherwise, check to see if "hasBikeLapseSync" is true in the metadata for the ride
     // and set the markerType accordingly
-    let markerType =  (pointName !== "DETAILS") ? pointName :
+    const markerType =  (pointName !== "DETAILS") ? pointName :
                       (rideMetadata.hasBikeLapseSync) ? "DETAILS-BIKELAPSE" :
                       "DETAILS-REGULAR";
 
     // the markerType will be used to find the corresponding Icon in the mapIcons global settings object
-    let icon = createMarkerIcon(markerType);
+    const icon = createMarkerIcon(markerType);
     
     // return a marker created with the icon
     return L.marker(latlng, {icon: icon});
@@ -192,10 +201,6 @@ function createGeoJsonLayerGroupForRide(geoJson, rideMetadata){
   // function (feature, layer) {}
   function onEachFeatureFunction(feature, layer) {
 
-    // console.log("onEachFeature");
-
-    let properties = feature.properties;
-
     switch (feature.geometry.type) {
       case 'LineString': 
 
@@ -204,7 +209,7 @@ function createGeoJsonLayerGroupForRide(geoJson, rideMetadata){
         break;
       case 'Point':
 
-        if(properties.name === "DETAILS"){
+        if(feature.properties.name === "DETAILS"){
           // layer.bindPopup(createPopupHTMLDetailsPoint(properties), bindPopupProperties);
         }
         else{

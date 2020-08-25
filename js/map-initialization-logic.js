@@ -325,7 +325,59 @@ function initializeMapOverlaysAndUI(hideElevationDisplayDiv = true, hideVideoDis
 }
 
 
+// ****************************************************************
+//     Set-up Rabbit Popup -- only used in index-main.js currently
+// ****************************************************************
+function initializeRabbitIntroPopup(){
+  
+    // popup properties to set maxWidth
+    const rabbitBindPopupProperties = {maxWidth: 125};
+  
+    // create main internal container for popup
+    let div = L.DomUtil.create('div', 'd-flex flex-column');
+  
+    // add some informative HTML about what the rabbit is doing
+    div.innerHTML = `
+      <div>
+        <h3 style="text-align:center;margin-bottom:8px;">Hi! I'm the BikeLapse Rabbit!</h3>
+        <span">I will show you on the map where you were in the video!<br>
+        It's a magical world we live in is it not?<br>
+        Enjoy the ride!</span>
+      </div>`;
+      
+    // create a button to start the rabbit moving
+    let button = L.DomUtil.create('button', 'btn btn-outline-info btn-block btn-sm mt-2', div);
+    
+    button.setAttribute('id', 'rabbit-start-button');
+  
+    button.textContent = "Start BikeLapse";
+  
+    button.onclick = setRabbitPopupContentToPlayPauseButton;
+  
+    rabbitMarker.bindPopup(div, rabbitBindPopupProperties);
 
+    // console.log(rabbitMarker);
+  
+}
+  
+
+function setRabbitPopupContentToPlayPauseButton(pressPlay = true){
+
+    let rabbitPlayPauseButton = L.DomUtil.create('button', 'play-pause-button');
+
+    yt_addPlayPauseButton(rabbitPlayPauseButton);
+
+    rabbitMarker.setPopupContent(rabbitPlayPauseButton);
+
+    // console.log(rabbitMarker);
+
+    if(pressPlay){
+        yt_playYouTubeVideo();
+    }
+
+    showRabbitIntroPopupMessage = false;
+    
+}
 
 
 /* ################################################################################################
@@ -446,6 +498,7 @@ function legendOnAdd_old(map) {
 
     return div;
 }
+
 
 
 
