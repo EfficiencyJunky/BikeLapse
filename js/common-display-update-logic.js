@@ -14,9 +14,6 @@ let _selectedLineStringFeature;
 // this is the cumulative ride stats calculated from the lineString of the currently selected ride
 let _cumulativeRideStats;
 
-// this sets if the rabbit is added and popup opened
-let _addRabbitToMapAndOpenPopup = false;
-
 // ******************************************************************
 //  RIDE STATS UI REFERENCES
 // ******************************************************************
@@ -214,21 +211,15 @@ function displaySelectedRide(rideMetadata, geoJsonLGroup, allowVideoDisplayDivTo
 
   // if the video exists and it has BikeLapse Sync
   // re-set the rabbitCoordsArray with the coordinates from the new ride
-  // update the rabbit marker's position
-  // also, show the rideStats section under the video
+  // initialize the rabbit
+  // also, update and initialize (show) the rideStats section under the video
   if(hasValidVideoID && showRabbitOnRoute){
     
     rabbitCoordsArray = _selectedLineStringFeature.geometry.coordinates;
     _cumulativeRideStats = getCumulativeStatsArrayFromLineString(_selectedLineStringFeature, "moving");
 
-    // syncRabbitMarkerToVideo("frameIndex", 0, addToMapAndOpenPopup = true);
-    // syncCumulativeRideStatsToVideo("frameIndex", 0);
-    _addRabbitToMapAndOpenPopup = true;
-    // initializeRabbitMarkerAtCoords(rabbitCoordsArray[0]);
-
-    // if the rideStatsRow exists, make it visible and get the cumulative ride stats to show in it
-    showHideCollapsableDivByID_JQuery("ride-stats-cumulative", "show");
-
+    initializeRabbitMarker(rabbitCoordsArray[0]);
+    initializeCumulativeRideStatsDisplay(_cumulativeRideStats[0]);
 
   }    
   else {
@@ -354,42 +345,35 @@ function syncRabbitMarkerToVideo(valType, value){
   // set the latlon of the rabbitMarker
   rabbitMarker.setLatLng(latlon);
 
-
-  // if the rabbitMarker isn't visible and we want to initialize it, make it so
-  if(!map.hasLayer(rabbitMarker) || _addRabbitToMapAndOpenPopup) {
-  // if(!map.hasLayer(rabbitMarker)) {
-    // console.log("adding rabbit");
-    rabbitMarker.addTo(map);
-       
-    // console.log(rabbitMarker.getPopup());
-    if(rabbitMarker.getPopup()){
-      rabbitMarker.openPopup();
-      console.log("opening popup");
-    }
-    _addRabbitToMapAndOpenPopup = false;
-  }  
-
-
-
-
 }
 
 // ****************************************************************
-// simple method to set the rabbit to the given geoJson coords
+// simple method to initialize the rabbit at the given geoJson coords
 // ****************************************************************
-// function initializeRabbitMarkerAtCoords(coords){    
+function initializeRabbitMarker(coord){    
 
-//   const latlon = coords.slice(0, 2).reverse()
+  const coordLatLon = {
+    "lat": coord[1],
+    "lng": coord[0],
+   };
 
-//   rabbitMarker.setLatLng(latlon);
+  rabbitMarker.setLatLng(coordLatLon);
 
-//   // if the rabbitMarker isn't visible, make it so
-//   if(!map.hasLayer(rabbitMarker)) {
-//     rabbitMarker.addTo(map);
-//   }  
+  // if the rabbitMarker isn't visible, make it so
+  if(!map.hasLayer(rabbitMarker)) {
+    rabbitMarker.addTo(map);
+  }  
 
-//   rabbitMarker.openPopup();
-// }
+  // if the rabbit marker has a popup, open it
+  if(rabbitMarker.getPopup()){
+    rabbitMarker.openPopup();
+    // console.log("opening popup");
+  }
+
+}
+
+
+
 
 
 // HELPER METHOD NOT IN USE
@@ -444,6 +428,37 @@ function syncCumulativeRideStatsToVideo(valType, value){
   }
 
 }
+
+
+
+function initializeCumulativeRideStatsDisplay(cumulativeStatsToDisplay){
+
+  // console.log(cumulativeStatsToDisplay);
+  // if the ride-stats-cumulative HTML Div actually exists...
+  if(document.getElementById('ride-stats-cumulative')){
+
+    durationMovingCumDiv.textContent = getFormattedDurationStringFromISO(cumulativeStatsToDisplay.duration);
+
+    if(displayUnits === "metric"){
+      distanceCumDiv.textContent    = `${(cumulativeStatsToDisplay.distance / 1000).toFixed(2)} km`;
+      elevationCumDiv.textContent   = `${cumulativeStatsToDisplay.elevation.toFixed(0)} m`;
+      speedMovingNowDiv.textContent = `${cumulativeStatsToDisplay.speed.toFixed(2)} kph`;
+    }
+    else{
+      distanceCumDiv.textContent    = `${_toMiles(cumulativeStatsToDisplay.distance / 1000).toFixed(2)} mi`;
+      elevationCumDiv.textContent   = `${_toFeet(cumulativeStatsToDisplay.elevation, 0)} ft`;
+      speedMovingNowDiv.textContent = `${_toMiles(cumulativeStatsToDisplay.speed).toFixed(2)} mph`;
+    }
+  }
+
+  // if the rideStatsRow exists, make it visible and get the cumulative ride stats to show in it
+  showHideCollapsableDivByID_JQuery("ride-stats-cumulative", "show");
+
+}
+
+
+
+
 
 
 
