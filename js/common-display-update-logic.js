@@ -14,6 +14,9 @@ let _selectedLineStringFeature;
 // this is the cumulative ride stats calculated from the lineString of the currently selected ride
 let _cumulativeRideStats;
 
+// this sets if the rabbit is added and popup opened
+let _addRabbitToMapAndOpenPopup = false;
+
 // ******************************************************************
 //  RIDE STATS UI REFERENCES
 // ******************************************************************
@@ -32,9 +35,7 @@ if(document.getElementById('ride-info-parent')){
 
 // RIDE STATS DISPLAY
 if(document.getElementById('ride-stats-cumulative')){
-  // store a refrence to a JQuery object for the DIV in our HTML with id="#ride-stats-cumulative"
-  // this is the only time in our entire program that we are going to use JQuery because Bootstrap requires it
-  var rideStatsCumRow_JQ = $("#ride-stats-cumulative");
+
 
   // all of our elements in the cumulative ride stats display section
   var distanceCumDiv      = document.getElementById('distance-cum').getElementsByClassName("stat-cum-text")[0];
@@ -83,7 +84,7 @@ function handleUnitsRadioButtonChanges(event){
 
     // if this ride hasBikeLapseSync then we should also update the cumulative section
     if(_selectedMetadata.hasBikeLapseSync){
-      let frameIndex = yt_getCurrentVideoFrameIndex();
+      let frameIndex = yt_getFrameIndexFromVideoTime();
       syncCumulativeRideStatsToVideo("frameIndex", frameIndex);
     }
   }
@@ -220,15 +221,15 @@ function displaySelectedRide(rideMetadata, geoJsonLGroup, allowVideoDisplayDivTo
     rabbitCoordsArray = _selectedLineStringFeature.geometry.coordinates;
     _cumulativeRideStats = getCumulativeStatsArrayFromLineString(_selectedLineStringFeature, "moving");
 
-    syncRabbitMarkerToVideo("frameIndex", 0, addToMapAndOpenPopup = true);
-    syncCumulativeRideStatsToVideo("frameIndex", 0);
-
+    // syncRabbitMarkerToVideo("frameIndex", 0, addToMapAndOpenPopup = true);
+    // syncCumulativeRideStatsToVideo("frameIndex", 0);
+    _addRabbitToMapAndOpenPopup = true;
     // initializeRabbitMarkerAtCoords(rabbitCoordsArray[0]);
 
     // if the rideStatsRow exists, make it visible and get the cumulative ride stats to show in it
-    if(rideStatsCumRow_JQ){
-      rideStatsCumRow_JQ.collapse('show');      
-    }
+    showHideCollapsableDivByID_JQuery("ride-stats-cumulative", "show");
+
+
   }    
   else {
     showRabbitOnRoute = false;
@@ -236,9 +237,9 @@ function displaySelectedRide(rideMetadata, geoJsonLGroup, allowVideoDisplayDivTo
     rabbitMarker.remove();
 
     _cumulativeRideStats = undefined;
-    if(rideStatsCumRow_JQ){
-      rideStatsCumRow_JQ.collapse('hide');      
-    }    
+
+    showHideCollapsableDivByID_JQuery("ride-stats-cumulative", "hide");
+
   }
 
 
@@ -330,7 +331,7 @@ function showElevationForLineStringFeature(lineStringFeature){
 // ********************************************************************************
 // this gets called by the "youtube-logic.js" when the video loads and as it plays
 // ********************************************************************************
-function syncRabbitMarkerToVideo(valType, value, addToMapAndOpenPopup = false){
+function syncRabbitMarkerToVideo(valType, value){
 
   let latlon;
 
@@ -355,10 +356,21 @@ function syncRabbitMarkerToVideo(valType, value, addToMapAndOpenPopup = false){
 
 
   // if the rabbitMarker isn't visible and we want to initialize it, make it so
-  if(!map.hasLayer(rabbitMarker) && addToMapAndOpenPopup) {
+  if(!map.hasLayer(rabbitMarker) || _addRabbitToMapAndOpenPopup) {
+  // if(!map.hasLayer(rabbitMarker)) {
+    // console.log("adding rabbit");
     rabbitMarker.addTo(map);
-    rabbitMarker.openPopup();
+       
+    // console.log(rabbitMarker.getPopup());
+    if(rabbitMarker.getPopup()){
+      rabbitMarker.openPopup();
+      console.log("opening popup");
+    }
+    _addRabbitToMapAndOpenPopup = false;
   }  
+
+
+
 
 }
 
@@ -485,8 +497,8 @@ function clearSelectedLayerID(){
 }
 
 
-function setSelectedLayerID(newLayer){
-  _selectedLayerID = newLayer;
+function setSelectedLayerID(newLayerID){
+  _selectedLayerID = newLayerID;
 }
 
 
@@ -494,6 +506,23 @@ function setSelectedLayerID(newLayer){
 // #############################################################################
 // *********  UTILITY FUNCTIONS ************************
 // #############################################################################
+
+// OUR ONLY JQUERY FUNCTION IN THE ENTIRE PROGRAM
+// this is the only place in our entire program that we are going to use JQuery because Bootstrap requires it
+function showHideCollapsableDivByID_JQuery(divID, showHide){
+  // store a refrence to a JQuery object for the DIV in our HTML with id="#"+divID
+  let divToShowHide = $("#" + divID);
+
+  if(divToShowHide){
+    divToShowHide.collapse(showHide);      
+  }
+
+}
+
+
+
+
+
 
 
 // this function is temporarily going to live here

@@ -146,8 +146,7 @@ bikeRideJSONFileNames.forEach( (jsonFileName, i) => {
 
         // if the windowScaleFactor is less than 1, then we should automatically collapse the layer control div with our rides in it
         if(windowScaleFactor < 1){
-          let layerControlDiv_JQ = $("#layer-control-div");
-          layerControlDiv_JQ.collapse('hide');
+          showHideCollapsableDivByID_JQuery("layer-control-div", "hide");
         }
       }
 
@@ -192,12 +191,18 @@ function geoJsonLayerGroupClicked(event){
     // setSelectedLayerID(clickedLayerID);
   }
   else{
-    console.log('clicked on ride with same "selectedLayerID" as before: ', getSelectedLayerID()); 
-    
-    const frameIndex = findROUTELinestringCoordsIndexFromLatLon(geoJsonLGroup, event.latlng);
-    // console.log("frameIndex", frameIndex);
+    //console.log('clicked on ride with same "selectedLayerID" as before: ', getSelectedLayerID()); 
 
-    yt_seekToTimeFromFrameIndex(frameIndex);
+    const hasBikeLapseSync = geoJsonLGroup.getMetadata().hasBikeLapseSync;        
+    
+    const featureName = event.layer.feature.properties.name 
+
+    if(hasBikeLapseSync && (featureName === "ROUTE" || featureName === "DETAILS")){
+
+      const frameIndex = findROUTELinestringCoordsIndexFromLatLon(geoJsonLGroup, event.latlng);
+  
+      yt_seekToTimeFromFrameIndex(frameIndex);
+    }
 
   }
 

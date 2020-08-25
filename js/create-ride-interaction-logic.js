@@ -436,9 +436,16 @@ function addRideToMap(){
     // called when a user clicks on any part of the geoJsonLayerGroup (Point, LineString, etc.)
     // this will sync the video to the place the user clicks on the Layer Group
     geoJsonLayerGroup.on('click dblclick', function (event) {
-                
-        // could also use _geoJsonData.metadata.hasBikeLapseSync
-        if(geoJsonLayerGroup.getMetadata().hasBikeLapseSync){
+        
+        // event.target gives us the entire GeoJSON Layer Group   
+        const geoJsonLGroup = event.target;
+
+        const hasBikeLapseSync = geoJsonLGroup.getMetadata().hasBikeLapseSync;
+        
+        const featureName = event.layer.feature.properties.name    
+
+        // if(geoJsonLGroup.getMetadata().hasBikeLapseSync){
+        if(hasBikeLapseSync && (featureName === "ROUTE" || featureName === "DETAILS")){        
 
             const frameIndex = findROUTELinestringCoordsIndexFromLatLon(geoJsonLayerGroup, event.latlng);
             
