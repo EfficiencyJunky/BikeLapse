@@ -167,8 +167,6 @@ function geoJsonLayerGroupClicked(event){
   let clickedLayerID = L.Util.stamp(geoJsonLGroup);
 
   if(getSelectedLayerID() !== clickedLayerID){
-    // yt_stopRabbitAndSliderSyncronizer();
-    // showRabbitOnRoute = false;
 
     let clickedRideMetadata = geoJsonLGroup.getMetadata();
 

@@ -279,10 +279,10 @@ function onPlayerStateChange(event) {
     // an efficient way to structure "if/else" statements for purposes like this
     // converts the YT.PlayerState.{STATE_NAME} into human readable text
     let logText =       
-                        playerState === YT.PlayerState.CUED      ? "cued" :
+                        // playerState === YT.PlayerState.CUED      ? "cued" :
                         playerState === YT.PlayerState.UNSTARTED ? "unstarted" :
-                        // playerState === YT.PlayerState.BUFFERING ? "buffering" :
-                        // playerState === YT.PlayerState.PLAYING   ? "playing" :
+                        playerState === YT.PlayerState.BUFFERING ? "buffering" :
+                        playerState === YT.PlayerState.PLAYING   ? "playing" :
                         playerState === YT.PlayerState.PAUSED    ? "paused" :
                         // playerState === YT.PlayerState.ENDED     ? "ended" :
                         // String("GetPlayerState: " + player.getPlayerState());
@@ -317,14 +317,14 @@ function onPlayerStateChange(event) {
         // notice we don't have a "break;" below for the "ENEDED" state because we want to update the button in both the ended and paused states. Leaving out the break means the code in both cases will execute if the state is "ENDED"
         // (ended) -- what happens when the video finishes playing on its own
         case YT.PlayerState.ENDED:
-            // since the current time is just the duration we can use current time
-            const vCurrentTime = _player.getCurrentTime();
-
+            // we need to use "getDuration()" here because the youtube API is stupid and will report the wrong current time if we jump right to the end with the playhead slider
+            const vDuration = _player.getDuration();
+            
             //update UI
-            updateUIElementsFromVideoTime(vCurrentTime);
+            updateUIElementsFromVideoTime(vDuration);
 
             //update slider            
-            yt_updateSliderFromVideoTime(vCurrentTime);
+            yt_updateSliderFromVideoTime(vDuration);
             
         // (unstarted) -- what happens when the video is initially loaded and ready, or is "stopped" by the player.stopVideo(); command
         case YT.PlayerState.UNSTARTED:
@@ -340,9 +340,9 @@ function onPlayerStateChange(event) {
 
             // DURATION IS 0 IN THE CUED STATE
             // update SLIDER            
-            const vCurrentTime2 = _player.getCurrentTime();
-            yt_updateSliderFromVideoTime(vCurrentTime2);            
-            updateUIElementsFromVideoTime(vCurrentTime2);
+            const vCurrentTime = _player.getCurrentTime();
+            yt_updateSliderFromVideoTime(vCurrentTime);            
+            updateUIElementsFromVideoTime(vCurrentTime);
 
             
             _playbackRateIndex = _defaultPlaybackRateIndex;
@@ -382,18 +382,21 @@ function onPlaybackRateChange(event){
 
 // stops the currently running interval timer who's ID is stored in "_rabbitAndSliderSyncTimerID"
 function yt_stopRabbitAndSliderSyncronizer(){
-    (_consoleLogsOn === true) ? console.log("STOP - interval timer") : undefined;
     
-    // garbage collection
-    clearInterval(_rabbitAndSliderSyncTimerID);
+    if(_rabbitAndSliderSyncTimerID !== undefined){
+        (_consoleLogsOn === true) ? console.log("STOP - interval timer") : undefined;
+        // garbage collection
+        clearInterval(_rabbitAndSliderSyncTimerID);
     
-    // this lets our "startRabbitAndSliderSyncronizer()" function know we need a new one
-    _rabbitAndSliderSyncTimerID = undefined;
+        // this lets our "startRabbitAndSliderSyncronizer()" function know we need a new one
+        _rabbitAndSliderSyncTimerID = undefined;
+    }
 }
 
 
 // starts an interval timer that updates the rabbit's position every "rabbitAndSliderSyncInterval" milliseconds
 function startRabbitAndSliderSyncronizer() {
+    
     // this "if" statement prevents us from generating additional interval timers in the case that we already have one running
     // we want to be careful not to generate more than one due to the way garbage collection works with these timers
     // we just have to make sure that everytime we call clearInterval(ID) we need to set "_rabbitAndSliderSyncTimerID" to undefined
