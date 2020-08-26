@@ -19480,7 +19480,7 @@
             "properties": {
                 "name": "START",
                 "meta": {
-                    "locationName": "Grattan Elementary",
+                    "locationName": "Cole Valley",
                     "time": "2020-07-28T00:21:38Z",
                     "elevation": {
                         "m": 101.640408,
@@ -19502,7 +19502,7 @@
             "properties": {
                 "name": "FINISH",
                 "meta": {
-                    "locationName": "Grattan Elementary",
+                    "locationName": "Cole Valley",
                     "time": "2020-07-28T01:50:45Z",
                     "elevation": {
                         "m": 92.870285,
@@ -19528,10 +19528,11 @@
     ],
     "metadata": {
         "rideName": "SF Southwest Big Loop",
-        "hasBikeLapseSync": false,
-        "youTubeVideoID": "",
+        "hasBikeLapseSync": true,
+        "youTubeVideoID": "lMTIzZ8XOmo",
         "stravaURL": "https://www.strava.com/activities/3895051451",
         "googleMapURL": "",
+        "frameOffset": 0,
         "rideStats": {
             "startTime": "2020-07-28T00:21:38Z",
             "distance": {

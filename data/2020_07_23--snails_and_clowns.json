@@ -12214,10 +12214,11 @@
     ],
     "metadata": {
         "rideName": "Snails and Clowns",
-        "hasBikeLapseSync": false,
-        "youTubeVideoID": "",
+        "hasBikeLapseSync": true,
+        "youTubeVideoID": "OrA1slavLNc",
         "stravaURL": "https://www.strava.com/activities/3895215836",
         "googleMapURL": "",
+        "frameOffset": 0,
         "rideStats": {
             "startTime": "2020-07-24T01:39:45Z",
             "distance": {
