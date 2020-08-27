@@ -258,3 +258,24 @@ let routeIconBaseClass = "legend-route-icon";
 
 
 
+// ******************************************************************* 
+// ASYNCRONOUS COUNTER CLASS 
+//    Triggers a callback when all asyncronous tasks have completed
+//    Because we only want to call the callback
+//    after all the API calls etc have finished running
+// *******************************************************************     
+class AsyncCounter {
+  constructor(numCalls, callback){
+      this.callback = callback;
+      this.numCalls = numCalls;
+      this.calls = 0;
+  }
+
+  increment(){
+      this.calls += 1;
+  
+      if(this.calls === this.numCalls){
+          this.callback();
+      }
+  }
+}

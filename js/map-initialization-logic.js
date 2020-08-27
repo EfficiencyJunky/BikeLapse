@@ -38,7 +38,9 @@ function initializeBaseMaps(){
 }
 
 
-
+// *****************************************************************
+//     LOAD THE BASEMAPS INTO A LAYER CONTROL OVERLAY
+// *****************************************************************
 function createBaseMaps(mapboxTilesAvailable = false){
     // *************************************************************
     // FIRST DEFINE THE BASEMAPS (AKA "TILE LAYERS") TO USE AS  
@@ -140,6 +142,10 @@ function createBaseMaps(mapboxTilesAvailable = false){
 }
 
 
+
+// *****************************************************************
+//   INITIALIZE ALL OF OUR OTHER OVERLAYS AND EXTERNAL UI ELEMENTS
+// *****************************************************************
 function initializeMapOverlaysAndUI(hideElevationDisplayDiv = true, hideVideoDisplayDiv = true, hideRideInfoDisplayDiv = true){
     // *************************************************************
     //  ADD LEGEND -- LEAFLET CONTROL OBJECT
@@ -156,7 +162,7 @@ function initializeMapOverlaysAndUI(hideElevationDisplayDiv = true, hideVideoDis
     
     // if we have defined our buttons in the legendOnAdd function, attach our "onchange" handler
     if(document.getElementById("units-radio-buttons")){
-        document.getElementById("units-radio-buttons").onchange = handleUnitsRadioButtonChanges;
+        document.getElementById("units-radio-buttons").onchange = dl_handleUnitsRadioButtonChanges;
     }
     
     // *************************************************************
@@ -164,7 +170,6 @@ function initializeMapOverlaysAndUI(hideElevationDisplayDiv = true, hideVideoDis
     //      then either remove it - if we are loading the index page
     //      or move it to a separate div - if we are loading the create-ride page
     // *************************************************************
-
     if(rideInfoDisplayDiv === undefined){
         
         // create the layer
@@ -253,6 +258,7 @@ function initializeMapOverlaysAndUI(hideElevationDisplayDiv = true, hideVideoDis
     // set the elevationDisplayDiv's hidden attribute to the variable we passed in (true by default meaning we want it to NOT be visible)
     elevationDisplayDiv.hidden = hideElevationDisplayDiv;
 
+
     // *************************************************************
     //  CREATE VIDEO DISPLAY DIV
     //      if we've declared a "videoDisplayDiv" variable
@@ -295,13 +301,13 @@ function initializeMapOverlaysAndUI(hideElevationDisplayDiv = true, hideVideoDis
     videoDisplayDiv.hidden = hideVideoDisplayDiv;
 
 
+
     // *********************************************************************
     //  CREATE RABBIT MARKER
     //      if we haven't already defined the Rabbit Marker
     //      then we should create it and save a reference
     //      in our rabbitMarker variable so we can add/remove it later
     // *********************************************************************
-    // if the rabbitMarker hasn't been instantiated yet, create it
     if (rabbitMarker === undefined) {
 
         const rabbitIcon = L.icon(rabbitIconOptions);
@@ -436,71 +442,6 @@ function createUnitsToggleHTML(){
     return unitsToggleHTML;
 
 }
-
-
-
-
-
-
-
-function legendOnAdd_old(map) {
-
-    // create a div for the legend
-    let div = L.DomUtil.create('div', 'info legend');
-
-    labels = ['<strong>Markers</strong>'];
-
-    mapIconsKeys.map( (key, i) => {
-
-        let legendClass;
-
-        // if the mapIcon has a legendClass defined, use it
-        if(typeof(mapIcons[key].legendClass) !== 'undefined'){
-            legendClass = mapIcons[key].legendClass;
-        }
-        // otherwise use the value in the iconURLorClass (same one we use for a divIcon most likely)
-        else{
-            legendClass = mapIcons[key].iconURLorClass;
-        }
-
-        labels.push('<i class="' + legendClass + '"></i>' + mapIcons[key].displayText);
-
-        // this is how we'd do it if we didn't want to use the <i> (bullet) element
-        // labels.push('<span class="' + legendClass + ' legend-icon-positioning"></span>' + (key ? key : 'undefined'));
-    });
-    
-    // takes the "labels" list and turns it into a single string with "<br>" appended between each item in the list
-    // basically just a different way to accomplish the same thing as using the "div.innerHTML +=" in the 
-    // above "mapIconsKeys.map" function. Potato Potahtoe
-    div.innerHTML = labels.join('<br>');
-
-    // create a horizontal line between the mapIcons section of the legend and the routes section
-    div.innerHTML += '<hr>';
-
-    // Create a title for the routes section
-    div.innerHTML += '<strong>Ride Types</strong>' + '<br>';
-
-    // add the HTML to create the routes info in the legend
-    routeLineKeys = Object.keys(routeLineProperties);
- 
-    routeLineKeys.forEach( (key,i) => {
-        if(key === "bikelapse" || key === "regular"){
-
-            let lineColor = routeLineProperties[key].lineColor;
-            let legendText = routeLineProperties[key].legendText
-
-            div.innerHTML += `<span class="${routeIconBaseClass}" style="background:${lineColor}"></span>` +
-                             `<span>${legendText}</span>` + '<br>';
-        }
-    });
-    
-    // div.setAttribute("style","z-index:999 !important;");
-
-    return div;
-}
-
-
-
 
 
 

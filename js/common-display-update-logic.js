@@ -15,8 +15,9 @@ let _selectedLineStringFeature;
 let _cumulativeRideStats;
 
 // ******************************************************************
-//  RIDE STATS UI REFERENCES
+//  RIDE INFO AND RIDE STATS UI ELEMENT REFERENCES
 // ******************************************************************
+// RIDE INFO AND TOTAL STATS DISPLAY
 if(document.getElementById('ride-info-parent')){
   var rideNameDiv      = document.getElementById('ride-name');
   var startTimeDiv     = document.getElementById('ride-start-datetime');
@@ -30,7 +31,7 @@ if(document.getElementById('ride-info-parent')){
   var speedMovingAvgDiv       = document.getElementById('speed-moving-avg').getElementsByClassName("stat-tot-text")[0];
 }
 
-// RIDE STATS DISPLAY
+// CUMULATIVE RIDE STATS DISPLAY
 if(document.getElementById('ride-stats-cumulative')){
 
 
@@ -47,9 +48,10 @@ if(document.getElementById('ride-stats-cumulative')){
 // ******************************************************************
 //  UNITS RADIO BUTTON "onchange" HANDLER
 // ******************************************************************
-// onchange handler for the units toggle radio buttons in our legend
-// updates all the UI elements that show units
-function handleUnitsRadioButtonChanges(event){
+// onchange handler for the units toggle radio buttons 
+// LOCATED IN OUR LEGEND
+// updates all the UI elements that display units
+function dl_handleUnitsRadioButtonChanges(event){
   
   // grab the value of the button that was clicked and assign to our global displayUnits
   displayUnits = event.target.value;
@@ -306,10 +308,6 @@ function showElevationForLineStringFeature(lineStringFeature){
 }
 
 
-
-// ****************************************************************
-//     VARIOUS HELPER FUNCTIONS
-// ****************************************************************
 
 
 

@@ -1,3 +1,58 @@
+// ################## "PRIVATE VARIABLES" ##################
+// ################## "PRIVATE VARIABLES" ##################
+// ################## "PRIVATE VARIABLES" ##################
+let _player;
+let _framesPerSecond = 15;
+let _frameOffset = 0;
+const _frameOffsetTolerance = 10;
+let _rabbitAndSliderSyncTimerID;
+const _rabbitAndSliderSyncInterval = 250; // time in milliseconds between updating the rabbit, slider, and cumulative stats display for bikelapse rides
+const _playbackRatesArray = [0.25, 0.5, 0.75, 1.0, 1.5, 2.0];
+const _defaultPlaybackRateIndex = _playbackRatesArray.indexOf(1.0);
+let _playbackRateIndex = _defaultPlaybackRateIndex;
+
+let _frameOffsetCallback;
+
+const _consoleLogsOn = false;
+
+
+
+// ################## MOCK CONSTRUCTOR ##################
+// ################## MOCK CONSTRUCTOR ##################
+// ################## MOCK CONSTRUCTOR ##################
+// BUTTONS
+// references to our video control buttons
+let playPauseButton = document.getElementById('play-pause');
+let playPauseButtonList = [playPauseButton];
+let stopButton = document.getElementById('stop');
+let playbackRateButton = document.getElementById('playback-rate');
+
+// for updating the playPauseButton's class to change its CSS and content
+const _playButtonClass = "play";
+const _pauseButtonClass = "pause";
+
+// SLIDER
+let slider = document.getElementById('slider');
+let sliderAvailable = true;
+
+
+
+// YOUTUBE PLAYER INITIALIZATION
+// 1. This code loads the IFrame Player API code asynchronously.
+var tag = document.createElement('script');
+tag.src = "https://www.youtube.com/iframe_api";
+
+var firstScriptTag = document.getElementsByTagName('script')[0];
+firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+
+
+
+
+
+
+
+
 // ################## "PUBLIC" METHODS ##################
 // ################## "PUBLIC" METHODS ##################
 // ################## "PUBLIC" METHODS ##################
@@ -49,7 +104,7 @@ function yt_seekToTimeFromFrameIndex(frameIndex){
             // console.log("frameOffset", frameOffset);        
             // console.log("vTimeToSeekTo", vTimeToSeekTo);
             updateUIElementsFromVideoTime(vTimeToSeekTo);
-            yt_updateSliderFromVideoTime(vTimeToSeekTo);
+            updateSliderFromVideoTime(vTimeToSeekTo);
             
             _player.seekTo(vTimeToSeekTo, true);
 
@@ -65,8 +120,38 @@ function yt_seekToTimeFromFrameIndex(frameIndex){
 }
 
 
+function yt_addPlayPauseButton(button){
+
+    const playerState = _player.getPlayerState();
+    
+    switch(playerState){
+        case YT.PlayerState.PLAYING:
+        case YT.PlayerState.BUFFERING:
+            button.classList.add(_pauseButtonClass);
+            break;
+        case YT.PlayerState.ENDED:
+        case YT.PlayerState.UNSTARTED:  
+        case YT.PlayerState.PAUSED:
+        case YT.PlayerState.CUED:
+            button.classList.add(_playButtonClass);
+            break;
+        default:
+            break;
+
+    }
+
+    button.onclick = videoTransportButtonsHandler;
+
+    playPauseButtonList.push(button);
+}
 
 
+
+
+
+
+// ################## PUBLIC GETTERS AND SETTERS ##################
+// ################## PUBLIC GETTERS AND SETTERS ##################
 // ################## PUBLIC GETTERS AND SETTERS ##################
 // function yt_getCurrentVideoFrameIndex(vCurrentTime){
 function yt_getFrameIndexFromVideoTime(vTime){
@@ -120,6 +205,8 @@ function yt_setFameOffsetCheckCallback(frameOffsetCallback){
 
 
 
+
+
 // ################## PRIVATE GETTERS AND SETTERS ##################
 // ################## PRIVATE GETTERS AND SETTERS ##################
 // ################## PRIVATE GETTERS AND SETTERS ##################
@@ -155,80 +242,6 @@ function getFrameOffsetFromCurrentTime(currentTime, duration){
 }
 
 
-// // calculates the number of frames to add based on our frameOffset and the current time within the video
-// function getTimeOffsetFromCurrentFrameIndex(currentFrame, duration){
-
-//     // if the frameOffset is 0, just return 0
-//     if(_frameOffset === 0){return 0;}
-
-//     // otherwise, calculate the number of frames to add
-//     let framesToAdd = Math.round(_frameOffset / duration * currentTime);    
-
-//     // console.log("framesToAdd", framesToAdd);
-
-//     // make sure it's not NaN, or Infinite (in case of divide by Zero)
-//     if(!isFinite(framesToAdd)){        
-//       framesToAdd = 0;
-//     }
-
-//     // console.log("framesToAdd", framesToAdd, "\nframeOffset", _frameOffset);
-
-//     // return the number of frames to add
-//     return framesToAdd;
-
-// }
-
-
-
-
-
-
-
-// ################## "PRIVATE" VARIABLES ##################
-// ################## "PRIVATE" VARIABLES ##################
-// ################## "PRIVATE" VARIABLES ##################
-let _player;
-let _framesPerSecond = 15;
-let _frameOffset = 0;
-const _frameOffsetTolerance = 10;
-let _rabbitAndSliderSyncTimerID;
-const _rabbitAndSliderSyncInterval = 250; // time in milliseconds between updating the rabbit, slider, and cumulative stats display for bikelapse rides
-const _playbackRatesArray = [0.25, 0.5, 0.75, 1.0, 1.5, 2.0];
-const _defaultPlaybackRateIndex = _playbackRatesArray.indexOf(1.0);
-let _playbackRateIndex = _defaultPlaybackRateIndex;
-
-let _frameOffsetCallback;
-
-const _consoleLogsOn = false;
-
-
-// ################## MOCK CONSTRUCTOR ##################
-// ################## MOCK CONSTRUCTOR ##################
-// ################## MOCK CONSTRUCTOR ##################
-// BUTTONS
-// references to our video control buttons
-let playPauseButton = document.getElementById('play-pause');
-let playPauseButtonList = [playPauseButton];
-let stopButton = document.getElementById('stop');
-let playbackRateButton = document.getElementById('playback-rate');
-
-// for updating the playPauseButton's class to change its CSS and content
-const _playButtonClass = "play";
-const _pauseButtonClass = "pause";
-
-// SLIDER
-let slider = document.getElementById('slider');
-let sliderAvailable = true;
-
-
-
-// YOUTUBE PLAYER INITIALIZATION
-// 1. This code loads the IFrame Player API code asynchronously.
-var tag = document.createElement('script');
-tag.src = "https://www.youtube.com/iframe_api";
-
-var firstScriptTag = document.getElementsByTagName('script')[0];
-firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
 
 
@@ -324,7 +337,7 @@ function onPlayerStateChange(event) {
             updateUIElementsFromVideoTime(vDuration);
 
             //update slider            
-            yt_updateSliderFromVideoTime(vDuration);
+            updateSliderFromVideoTime(vDuration);
             
         // (unstarted) -- what happens when the video is initially loaded and ready, or is "stopped" by the player.stopVideo(); command
         case YT.PlayerState.UNSTARTED:
@@ -341,7 +354,7 @@ function onPlayerStateChange(event) {
             // DURATION IS 0 IN THE CUED STATE
             // update SLIDER            
             const vCurrentTime = _player.getCurrentTime();
-            yt_updateSliderFromVideoTime(vCurrentTime);            
+            updateSliderFromVideoTime(vCurrentTime);            
             updateUIElementsFromVideoTime(vCurrentTime);
 
             
@@ -407,7 +420,7 @@ function startRabbitAndSliderSyncronizer() {
             //sync UI elements to current time of the playhead (a float that is accurate to many milliseconds)
             const vCurrentTime = _player.getCurrentTime();
             updateUIElementsFromVideoTime(vCurrentTime);
-            yt_updateSliderFromVideoTime(vCurrentTime);
+            updateSliderFromVideoTime(vCurrentTime);
             
             
         }, _rabbitAndSliderSyncInterval);
@@ -435,7 +448,7 @@ function updateUIElementsFromVideoTime(time){
 }
 
 
-function yt_updateSliderFromVideoTime(vTime){
+function updateSliderFromVideoTime(vTime){
 
     const vCurrentTime = (vTime) ? vTime : _player.getCurrentTime();
 
@@ -519,30 +532,7 @@ function videoTransportButtonsHandler(event) {
 
 }
 
-function yt_addPlayPauseButton(button){
 
-    const playerState = _player.getPlayerState();
-    
-    switch(playerState){
-        case YT.PlayerState.PLAYING:
-        case YT.PlayerState.BUFFERING:
-            button.classList.add(_pauseButtonClass);
-            break;
-        case YT.PlayerState.ENDED:
-        case YT.PlayerState.UNSTARTED:  
-        case YT.PlayerState.PAUSED:
-        case YT.PlayerState.CUED:
-            button.classList.add(_playButtonClass);
-            break;
-        default:
-            break;
-
-    }
-
-    button.onclick = videoTransportButtonsHandler;
-
-    playPauseButtonList.push(button);
-}
 
 
 // "onchange" callback is triggered when we release the slider

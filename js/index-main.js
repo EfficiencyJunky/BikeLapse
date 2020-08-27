@@ -84,6 +84,26 @@ initializeMapOverlaysAndUI();
 map.zoomControl.remove();
 map.zoomControl.addTo(map);
 
+// asyncronous counter that will trigger a callback to update the "All Rides" layercontrol once all rides have been added
+// updates the layerControlDisplayLayer's container div to be a static width
+// we do this so that when we hide the overlayLayerControl's div with our "hide" button
+// we don't want the size of the layerControlDisplayLayer container to shrink
+let rideJSONsFetchedCounter = new AsyncCounter(bikeRideJSONFileNames.length, function(){
+
+        // get the HTML container Div for the layerControlDisplayLayer
+        let layerControlDisplayDiv = layerControlDisplayLayer.getContainer();
+
+        // grab a reference to its current offsetWidth
+        let staticWidth = layerControlDisplayDiv.offsetWidth;
+
+        // make this the minWidth for eternity
+        layerControlDisplayDiv.style.minWidth = `${staticWidth}px`;
+
+        // if the windowScaleFactor is less than 1, then we should automatically collapse the layer control div with our rides in it
+        if(windowScaleFactor < 1){
+          showHideCollapsableDivByID_JQuery("layer-control-div", "hide");
+        }
+});
 
 /* ###############################################################################
    ****  LOAD THE JSON FILES FOR EACH RIDE                  ****
@@ -129,26 +149,8 @@ bikeRideJSONFileNames.forEach( (jsonFileName, i) => {
         geoJsonLayerGroup.addTo(map);
       }
 
-      // if this is the last JSON file to load
-      // update the layerControlDisplayLayer's container div to be a static width
-      // we do this so that when we hide the overlayLayerControl's div with our "hide" button
-      // we don't want the size of the layerControlDisplayLayer container to shrink
-      if(i >= bikeRideJSONFileNames.length - 1){
-
-        // get the HTML container Div for the layerControlDisplayLayer
-        let layerControlDisplayDiv = layerControlDisplayLayer.getContainer();
-
-        // grab a reference to its current offsetWidth
-        let staticWidth = layerControlDisplayDiv.offsetWidth;
-
-        // make this the minWidth for eternity
-        layerControlDisplayDiv.style.minWidth = `${staticWidth}px`;
-
-        // if the windowScaleFactor is less than 1, then we should automatically collapse the layer control div with our rides in it
-        if(windowScaleFactor < 1){
-          showHideCollapsableDivByID_JQuery("layer-control-div", "hide");
-        }
-      }
+      // update the async counter each ride
+      rideJSONsFetchedCounter.increment();
 
   });
 });
