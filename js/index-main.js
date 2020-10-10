@@ -5,7 +5,7 @@
 // these are the indexes (starting at 1 not 0) in the bikeRideJSONFileNames object/file
 // for the rides we want to dislay on the map first  
 // let _initialRidesToDisplay = [10];
-let _initialRidesToDisplay = [1, 3, 7, 10];
+let _initialRidesToDisplay = [1, 3, 7, 10, 11];
 // let _initialRidesToDisplay = [1, 3, 7, 8];
 
 // this is the value for our static width of the Elevation Control's display container
