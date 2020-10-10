@@ -8,5 +8,6 @@ let bikeRideJSONFileNames = [
         "2020_08_02--la_honda_climb.json",
         "2020_08_08--gg_park_to_ocean_beach_to_twin_peaks.json",
         "2020_08_13--sf_cole_valley_to_lafayette_park.json",
-        "2020_08_14--traingers_-_summer_pizza_and_sunset_ride.json"
+        "2020_08_14--traingers_-_summer_pizza_and_sunset_ride.json",
+        "2020_10_09--oak_west_oakland_bart_to_bay_bridge_to_oakland.json"
 ]
